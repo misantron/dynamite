@@ -6,68 +6,65 @@ namespace Dynamite;
 
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Enum\KeyType;
+use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Input\CreateTableInput;
 use AsyncAws\DynamoDb\Input\DeleteTableInput;
 use AsyncAws\DynamoDb\Input\UpdateTableInput;
-use AsyncAws\DynamoDb\ValueObject\AttributeDefinition;
-use AsyncAws\DynamoDb\ValueObject\GlobalSecondaryIndex;
-use AsyncAws\DynamoDb\ValueObject\KeySchemaElement;
-use AsyncAws\DynamoDb\ValueObject\LocalSecondaryIndex;
-use AsyncAws\DynamoDb\ValueObject\ProvisionedThroughput;
 use Dynamite\Exception\AttributeException;
 use Dynamite\Exception\DefinitionException;
+use Dynamite\Exception\ProjectionException;
 use Dynamite\Exception\TableException;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class AbstractMigration implements MigrationInterface
 {
     use TableTrait;
 
-    /**
-     * @var AttributeDefinition[]|null
-     */
+    private const DEFAULT_SERIALIZATION_CONTEXT = [
+        AbstractNormalizer::IGNORED_ATTRIBUTES => [
+            'dynamoDbClient',
+            'serializer',
+            'validator',
+        ],
+        AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+    ];
+
     #[
         Groups(['create']),
         SerializedName('AttributeDefinitions')
     ]
-    private ?array $attributeDefinitions;
+    private ?array $attributeDefinitions = null;
 
-    /**
-     * @var KeySchemaElement[]|null
-     */
     #[
         Groups(['create']),
         SerializedName('KeySchema')
     ]
-    private ?array $keySchema;
+    private ?array $keySchema = null;
 
-    /**
-     * @var LocalSecondaryIndex[]|null
-     */
     #[
         Groups(['create']),
         SerializedName('LocalSecondaryIndexes')
     ]
-    private ?array $localSecondaryIndexes;
+    private ?array $localSecondaryIndexes = null;
 
-    /**
-     * @var GlobalSecondaryIndex[]|null
-     */
     #[
-        Groups(['create']),
+        Groups(['create', 'update']),
         SerializedName('GlobalSecondaryIndexes')
     ]
-    private ?array $globalSecondaryIndexes;
+    private ?array $globalSecondaryIndexes = null;
 
     #[
-        Groups(['create']),
+        Groups(['create', 'update']),
         SerializedName('ProvisionedThroughput')
     ]
-    private ?ProvisionedThroughput $provisionedThroughput;
+    private ?array $provisionedThroughput = null;
 
     public function __construct(
         private readonly DynamoDbClient $dynamoDbClient,
@@ -86,12 +83,21 @@ abstract class AbstractMigration implements MigrationInterface
             throw AttributeException::unknownType($type);
         }
 
-        $this->attributeDefinitions[] = new AttributeDefinition([
+        $this->attributeDefinitions[] = [
             'AttributeName' => $name,
             'AttributeType' => $type,
-        ]);
+        ];
 
         return $this;
+    }
+
+    public function __get(string $name)
+    {
+        if (!property_exists($this, $name)) {
+            throw new \InvalidArgumentException("Try to access unknown property `$name`");
+        }
+
+        return $this->{$name};
     }
 
     protected function addHashKey(string $name): self
@@ -100,10 +106,10 @@ abstract class AbstractMigration implements MigrationInterface
             $this->keySchema = [];
         }
 
-        $this->keySchema[] = new KeySchemaElement([
+        $this->keySchema[] = [
             'AttributeName' => $name,
             'KeyType' => KeyType::HASH,
-        ]);
+        ];
 
         return $this;
     }
@@ -114,28 +120,29 @@ abstract class AbstractMigration implements MigrationInterface
             $this->keySchema = [];
         }
 
-        $this->keySchema[] = new KeySchemaElement([
+        $this->keySchema[] = [
             'AttributeName' => $name,
             'KeyType' => KeyType::RANGE,
-        ]);
+        ];
 
         return $this;
     }
 
     protected function setProvisionedThroughput(int $writeCapacity, int $readCapacity): self
     {
-        $this->provisionedThroughput = new ProvisionedThroughput([
+        $this->provisionedThroughput = [
             'ReadCapacityUnits' => $readCapacity,
             'WriteCapacityUnits' => $writeCapacity,
-        ]);
+        ];
 
         return $this;
     }
 
     protected function addGlobalSecondaryIndex(
         string $name,
+        string $projectionType,
         string $hashAttribute,
-        string $rangeAttribute,
+        string $rangeAttribute = null,
         int $writeCapacity = null,
         int $readCapacity = null
     ): self {
@@ -143,23 +150,36 @@ abstract class AbstractMigration implements MigrationInterface
             $this->globalSecondaryIndexes = [];
         }
 
-        $this->isAttributeExists($hashAttribute);
-        $this->isAttributeExists($rangeAttribute);
+        if (!ProjectionType::exists($projectionType)) {
+            throw ProjectionException::unknownType($projectionType);
+        }
 
-        $this->globalSecondaryIndexes[] = new GlobalSecondaryIndex([
+        $this->isAttributeExists($hashAttribute);
+
+        $keySchema = [
+            [
+                'AttributeName' => $hashAttribute,
+                'KeyType' => KeyType::HASH,
+            ],
+        ];
+
+        if ($rangeAttribute !== null) {
+            $this->isAttributeExists($rangeAttribute);
+
+            $keySchema[] = [
+                'AttributeName' => $rangeAttribute,
+                'KeyType' => KeyType::RANGE,
+            ];
+        }
+
+        $this->globalSecondaryIndexes[] = [
             'IndexName' => $name,
-            'KeySchema' => [
-                new KeySchemaElement([
-                    'AttributeName' => $hashAttribute,
-                    'KeyType' => KeyType::HASH,
-                ]),
-                new KeySchemaElement([
-                    'AttributeName' => $rangeAttribute,
-                    'KeyType' => KeyType::RANGE,
-                ]),
+            'KeySchema' => $keySchema,
+            'Projection' => [
+                'ProjectionType' => $projectionType,
             ],
             'ProvisionedThroughput' => $this->createIndexProvisionedThroughput($writeCapacity, $readCapacity),
-        ]);
+        ];
 
         return $this;
     }
@@ -173,24 +193,24 @@ abstract class AbstractMigration implements MigrationInterface
         $this->isAttributeExists($hashAttribute);
         $this->isAttributeExists($rangeAttribute);
 
-        $this->localSecondaryIndexes[] = new LocalSecondaryIndex([
+        $this->localSecondaryIndexes[] = [
             'IndexName' => $name,
             'KeySchema' => [
-                new KeySchemaElement([
+                [
                     'AttributeName' => $hashAttribute,
                     'KeyType' => KeyType::HASH,
-                ]),
-                new KeySchemaElement([
+                ],
+                [
                     'AttributeName' => $rangeAttribute,
                     'KeyType' => KeyType::RANGE,
-                ]),
+                ],
             ],
-        ]);
+        ];
 
         return $this;
     }
 
-    private function createIndexProvisionedThroughput(?int $writeCapacity, ?int $readCapacity): ProvisionedThroughput
+    private function createIndexProvisionedThroughput(?int $writeCapacity, ?int $readCapacity): array
     {
         if ($writeCapacity === null && $readCapacity === null) {
             if ($this->provisionedThroughput === null) {
@@ -200,10 +220,10 @@ abstract class AbstractMigration implements MigrationInterface
             return $this->provisionedThroughput;
         }
 
-        return new ProvisionedThroughput([
+        return [
             'ReadCapacityUnits' => $readCapacity,
             'WriteCapacityUnits' => $writeCapacity,
-        ]);
+        ];
     }
 
     private function isAttributeExists(string $attribute): void
@@ -213,7 +233,7 @@ abstract class AbstractMigration implements MigrationInterface
         }
 
         foreach ($this->attributeDefinitions as $definition) {
-            if ($definition->getAttributeName() === $attribute) {
+            if ($definition['AttributeName'] === $attribute) {
                 return;
             }
         }
@@ -225,8 +245,8 @@ abstract class AbstractMigration implements MigrationInterface
     {
         $hashKeysFound = [];
         foreach ($this->keySchema as $item) {
-            if ($item->getKeyType() === KeyType::HASH) {
-                $hashKeysFound[] = $item->getAttributeName();
+            if ($item['KeyType'] === KeyType::HASH) {
+                $hashKeysFound[] = $item['AttributeName'];
             }
         }
 
@@ -239,14 +259,22 @@ abstract class AbstractMigration implements MigrationInterface
 
     protected function create(): array
     {
+        $violations = $this->validator->validate($this);
+        if (\count($violations) > 0) {
+            throw new ValidationFailedException('', $violations);
+        }
+
         if ($this->isTableExists()) {
             throw TableException::alreadyExists($this->tableName);
         }
         $this->isHashKeySet();
 
-        $input = new CreateTableInput($this->serializer->normalize($this, context: ['groups' => 'create']));
+        $input = $this->serializer->normalize($this, context: array_merge(
+            self::DEFAULT_SERIALIZATION_CONTEXT,
+            ['groups' => 'create']
+        ));
 
-        $response = $this->dynamoDbClient->createTable($input);
+        $response = $this->dynamoDbClient->createTable(new CreateTableInput($input));
         $response->resolve();
 
         return $response->info();
@@ -254,13 +282,21 @@ abstract class AbstractMigration implements MigrationInterface
 
     protected function update(): array
     {
+        $violations = $this->validator->validate($this);
+        if (\count($violations) > 0) {
+            throw new ValidationFailedException('', $violations);
+        }
+
         if (!$this->isTableExists()) {
             throw TableException::notExists($this->tableName);
         }
 
-        $input = new UpdateTableInput($this->serializer->normalize($this, context: ['groups' => 'update']));
+        $input = $this->serializer->normalize($this, context: array_merge(
+            self::DEFAULT_SERIALIZATION_CONTEXT,
+            ['groups' => 'update']
+        ));
 
-        $response = $this->dynamoDbClient->updateTable($input);
+        $response = $this->dynamoDbClient->updateTable(new UpdateTableInput($input));
         $response->resolve();
 
         return $response->info();
@@ -268,11 +304,16 @@ abstract class AbstractMigration implements MigrationInterface
 
     protected function delete(): array
     {
+        $violations = $this->validator->validate($this);
+        if (\count($violations) > 0) {
+            throw new ValidationFailedException('', $violations);
+        }
+
         if (!$this->isTableExists()) {
             throw TableException::notExists($this->tableName);
         }
 
-        $input = new DeleteTableInput($this->serializer->normalize($this, context: ['groups' => 'delete']));
+        $input = new DeleteTableInput(['TableName' => $this->tableName]);
 
         $response = $this->dynamoDbClient->deleteTable($input);
         $response->resolve();

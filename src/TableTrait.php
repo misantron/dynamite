@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
-use AsyncAws\DynamoDb\Input\ListTablesInput;
+use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -13,10 +13,10 @@ trait TableTrait
 {
     #[
         NotBlank(message: 'Table name must be specified'),
-        Groups(['create', 'delete']),
+        Groups(['create', 'update']),
         SerializedName('TableName')
     ]
-    private string $tableName;
+    private string $tableName = '';
 
     protected function setTableName(string $tableName): self
     {
@@ -27,19 +27,13 @@ trait TableTrait
 
     private function isTableExists(): bool
     {
-        $input = new ListTablesInput([
-            'ExclusiveStartTableName' => $this->tableName,
-            'Limit' => 1,
-        ]);
+        try {
+            $response = $this->dynamoDbClient->describeTable(['TableName' => $this->tableName]);
+            $response->resolve();
 
-        $response = $this->dynamoDbClient->listTables($input);
-
-        foreach ($response->getTableNames(true) as $name) {
-            if ($this->tableName === $name) {
-                return true;
-            }
+            return true;
+        } catch (ResourceNotFoundException) {
+            return false;
         }
-
-        return false;
     }
 }
