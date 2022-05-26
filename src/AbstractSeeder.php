@@ -27,8 +27,10 @@ abstract class AbstractSeeder implements SeederInterface
     )]
     private array $items;
 
-    public function __construct(private readonly DynamoDbClient $dynamoDbClient, private readonly ValidatorInterface $validator)
-    {
+    public function __construct(
+        private readonly DynamoDbClient $dynamoDbClient,
+        private readonly ValidatorInterface $validator
+    ) {
         $this->items = [];
     }
 
@@ -81,7 +83,9 @@ abstract class AbstractSeeder implements SeederInterface
             'RequestItems' => [
                 $this->tableName => array_map(
                     static fn (array $item): WriteRequest => new WriteRequest([
-                        'PutRequest' => new PutRequest(['Item' => $item]),
+                        'PutRequest' => new PutRequest([
+                            'Item' => $item,
+                        ]),
                     ]),
                     $this->items
                 ),

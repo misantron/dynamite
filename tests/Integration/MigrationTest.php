@@ -21,7 +21,6 @@ class MigrationTest extends IntegrationTestCase
         $this->createTable();
 
         $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
-
             public function up(): void
             {
                 $this
@@ -30,11 +29,12 @@ class MigrationTest extends IntegrationTestCase
                     ->update()
                 ;
             }
-
         };
         $migration->up();
 
-        $response = $this->dynamoDbClient->describeTable(['TableName' => 'Users']);
+        $response = $this->dynamoDbClient->describeTable([
+            'TableName' => 'Users',
+        ]);
         $response->resolve();
 
         self::assertSame('5', $response->getTable()->getProvisionedThroughput()->getReadCapacityUnits());
@@ -48,15 +48,15 @@ class MigrationTest extends IntegrationTestCase
         $this->createTable();
 
         $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
-
             public function up(): void
             {
                 $this->setTableName('Users')->delete();
             }
-
         };
         $migration->up();
 
-        $this->dynamoDbClient->describeTable(['TableName' => 'Users'])->resolve();
+        $this->dynamoDbClient->describeTable([
+            'TableName' => 'Users',
+        ])->resolve();
     }
 }

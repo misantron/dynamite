@@ -28,7 +28,9 @@ trait TableTrait
     private function isTableExists(): bool
     {
         try {
-            $response = $this->dynamoDbClient->describeTable(['TableName' => $this->tableName]);
+            $response = $this->dynamoDbClient->describeTable([
+                'TableName' => $this->tableName,
+            ]);
             $response->resolve();
 
             return true;

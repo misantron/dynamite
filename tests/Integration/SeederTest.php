@@ -15,20 +15,22 @@ class SeederTest extends IntegrationTestCase
     {
         $this->createTable();
 
-        $seeder = new class ($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
-
+        $seeder = new class($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
             public function seed(): void
             {
                 $this
                     ->setTableName('Users')
                     ->addItem([
-                        'Id' => ['S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e'],
-                        'Email' => ['S' => 'test@example.com'],
+                        'Id' => [
+                            'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
+                        ],
+                        'Email' => [
+                            'S' => 'test@example.com',
+                        ],
                     ])
                     ->save()
                 ;
             }
-
         };
         $seeder->seed();
 
@@ -36,7 +38,9 @@ class SeederTest extends IntegrationTestCase
             'TableName' => 'Users',
             'KeyConditionExpression' => 'Id = :Id',
             'ExpressionAttributeValues' => [
-                ':Id' => new AttributeValue(['S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e']),
+                ':Id' => new AttributeValue([
+                    'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
+                ]),
             ],
         ];
 
@@ -49,34 +53,46 @@ class SeederTest extends IntegrationTestCase
     {
         $this->createTable();
 
-        $seeder = new class ($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
-
+        $seeder = new class($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
             public function seed(): void
             {
                 $this
                     ->setTableName('Users')
                     ->addItems([
                         [
-                            'Id' => ['S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e'],
-                            'Email' => ['S' => 'test.one@example.com'],
+                            'Id' => [
+                                'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
+                            ],
+                            'Email' => [
+                                'S' => 'test.one@example.com',
+                            ],
                         ],
                         [
-                            'Id' => ['S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'],
-                            'Email' => ['S' => 'test.two@example.com'],
+                            'Id' => [
+                                'S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63',
+                            ],
+                            'Email' => [
+                                'S' => 'test.two@example.com',
+                            ],
                         ],
                         [
-                            'Id' => ['S' => '41757ca6-9b51-4bd8-adc4-22e0ba2902f8'],
-                            'Email' => ['S' => 'test.three@example.com'],
-                        ]
+                            'Id' => [
+                                'S' => '41757ca6-9b51-4bd8-adc4-22e0ba2902f8',
+                            ],
+                            'Email' => [
+                                'S' => 'test.three@example.com',
+                            ],
+                        ],
                     ])
                     ->save()
                 ;
             }
-
         };
         $seeder->seed();
 
-        $response = $this->dynamoDbClient->scan(new ScanInput(['TableName' => 'Users']));
+        $response = $this->dynamoDbClient->scan(new ScanInput([
+            'TableName' => 'Users',
+        ]));
 
         self::assertSame(3, $response->getCount());
     }

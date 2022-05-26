@@ -25,7 +25,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class IntegrationTestCase extends TestCase
 {
     protected DynamoDbClient $dynamoDbClient;
+
     protected SerializerInterface $serializer;
+
     protected ValidatorInterface $validator;
 
     protected function setUp(): void
@@ -40,16 +42,16 @@ class IntegrationTestCase extends TestCase
     protected function tearDown(): void
     {
         try {
-            $this->dynamoDbClient->deleteTable(['TableName' => 'Users'])->resolve();
+            $this->dynamoDbClient->deleteTable([
+                'TableName' => 'Users',
+            ])->resolve();
         } catch (ResourceNotFoundException) {
-
         }
     }
 
     protected function createTable(): TableExistsWaiter
     {
         $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
-
             public function up(): void
             {
                 $this
@@ -62,11 +64,12 @@ class IntegrationTestCase extends TestCase
                     ->create()
                 ;
             }
-
         };
         $migration->up();
 
-        $response = $this->dynamoDbClient->tableExists(['TableName' => 'Users']);
+        $response = $this->dynamoDbClient->tableExists([
+            'TableName' => 'Users',
+        ]);
         $response->resolve();
 
         return $response;
@@ -75,7 +78,9 @@ class IntegrationTestCase extends TestCase
     private function getDynamoDbClient(): DynamoDbClient
     {
         return new DynamoDbClient(
-            ['endpoint' => 'http://localhost:8010'],
+            [
+                'endpoint' => 'http://localhost:8010',
+            ],
             new Credentials('accessKey', 'secretKey')
         );
     }

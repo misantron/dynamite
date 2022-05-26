@@ -6,5 +6,4 @@ namespace Dynamite\Exception;
 
 interface ExceptionInterface
 {
-
 }

@@ -271,7 +271,9 @@ abstract class AbstractMigration implements MigrationInterface
 
         $input = $this->serializer->normalize($this, context: array_merge(
             self::DEFAULT_SERIALIZATION_CONTEXT,
-            ['groups' => 'create']
+            [
+                'groups' => 'create',
+            ]
         ));
 
         $response = $this->dynamoDbClient->createTable(new CreateTableInput($input));
@@ -293,7 +295,9 @@ abstract class AbstractMigration implements MigrationInterface
 
         $input = $this->serializer->normalize($this, context: array_merge(
             self::DEFAULT_SERIALIZATION_CONTEXT,
-            ['groups' => 'update']
+            [
+                'groups' => 'update',
+            ]
         ));
 
         $response = $this->dynamoDbClient->updateTable(new UpdateTableInput($input));
@@ -313,7 +317,9 @@ abstract class AbstractMigration implements MigrationInterface
             throw TableException::notExists($this->tableName);
         }
 
-        $input = new DeleteTableInput(['TableName' => $this->tableName]);
+        $input = new DeleteTableInput([
+            'TableName' => $this->tableName,
+        ]);
 
         $response = $this->dynamoDbClient->deleteTable($input);
         $response->resolve();
