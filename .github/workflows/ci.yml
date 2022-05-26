@@ -1,0 +1,33 @@
+name: CI
+
+on: [push]
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: none
+      - name: Init Docker environment
+        run: make start-docker
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ github.sha }}
+          restore-keys: composer-
+      - name: Install dependencies
+        run: composer install --prefer-dist
+      - name: Install PHPUnit
+        run: vendor/bin/simple-phpunit install
+      - name: PHPUnit run
+        run: vendor/bin/simple-phpunit
