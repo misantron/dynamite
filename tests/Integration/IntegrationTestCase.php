@@ -9,7 +9,6 @@ use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use AsyncAws\DynamoDb\Result\TableExistsWaiter;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Dynamite\AbstractMigration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
@@ -32,11 +31,9 @@ class IntegrationTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $reader = new AnnotationReader();
-
         $this->dynamoDbClient = $this->getDynamoDbClient();
-        $this->serializer = $this->getSerializer($reader);
-        $this->validator = $this->getValidator($reader);
+        $this->serializer = $this->getSerializer();
+        $this->validator = $this->getValidator();
     }
 
     protected function tearDown(): void
@@ -85,18 +82,18 @@ class IntegrationTestCase extends TestCase
         );
     }
 
-    private function getSerializer(AnnotationReader $reader): SerializerInterface
+    private function getSerializer(): SerializerInterface
     {
-        $classMetadataFactory = new ClassMetadataFactory(new SerializerAnnotationLoader($reader));
+        $classMetadataFactory = new ClassMetadataFactory(new SerializerAnnotationLoader());
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
 
         return new Serializer([new ObjectNormalizer($classMetadataFactory, $nameConverter)]);
     }
 
-    private function getValidator(AnnotationReader $reader): ValidatorInterface
+    private function getValidator(): ValidatorInterface
     {
         return Validation::createValidatorBuilder()
-            ->addLoader(new ValidatorAnnotationLoader($reader))
+            ->addLoader(new ValidatorAnnotationLoader())
             ->getValidator();
     }
 }
