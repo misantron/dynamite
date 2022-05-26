@@ -35,9 +35,11 @@ abstract class AbstractSeeder implements SeederInterface
     /**
      * @param array<int, array> $items
      */
-    protected function setItems(array $items): self
+    protected function addItems(array $items): self
     {
-        $this->items = $items;
+        foreach ($items as $item) {
+            $this->items[] = $item;
+        }
 
         return $this;
     }
@@ -52,7 +54,7 @@ abstract class AbstractSeeder implements SeederInterface
         return $this;
     }
 
-    protected function execute(): array
+    protected function save(): array
     {
         $violations = $this->validator->validate($this);
         if (\count($violations) > 0) {

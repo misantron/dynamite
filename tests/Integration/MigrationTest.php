@@ -5,41 +5,33 @@ declare(strict_types=1);
 namespace Dynamite\Tests\Integration;
 
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
-use Dynamite\Tests\Integration\Mock\CreateTableMigration;
-use Dynamite\Tests\Integration\Mock\DeleteTableMigration;
-use Dynamite\Tests\Integration\Mock\UpdateTableMigration;
+use Dynamite\AbstractMigration;
 
 class MigrationTest extends IntegrationTestCase
 {
-    protected function tearDown(): void
-    {
-        try {
-            $this->dynamoDbClient->deleteTable(['TableName' => 'Users'])->resolve();
-        } catch (ResourceNotFoundException) {
-
-        }
-    }
-
     public function testCreateTable(): void
     {
-        $migration = new CreateTableMigration($this->dynamoDbClient, $this->serializer, $this->validator);
-        $migration->up();
-
-        $response = $this->dynamoDbClient->tableExists(['TableName' => 'Users']);
-        $response->resolve();
+        $response = $this->createTable();
 
         self::assertTrue($response->isSuccess());
     }
 
     public function testUpdateTable(): void
     {
-        $migration = new CreateTableMigration($this->dynamoDbClient, $this->serializer, $this->validator);
-        $migration->up();
+        $this->createTable();
 
-        $response = $this->dynamoDbClient->tableExists(['TableName' => 'Users']);
-        $response->resolve();
+        $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
 
-        $migration = new UpdateTableMigration($this->dynamoDbClient, $this->serializer, $this->validator);
+            public function up(): void
+            {
+                $this
+                    ->setTableName('Users')
+                    ->setProvisionedThroughput(5, 5)
+                    ->update()
+                ;
+            }
+
+        };
         $migration->up();
 
         $response = $this->dynamoDbClient->describeTable(['TableName' => 'Users']);
@@ -53,13 +45,16 @@ class MigrationTest extends IntegrationTestCase
     {
         $this->expectException(ResourceNotFoundException::class);
 
-        $migration = new CreateTableMigration($this->dynamoDbClient, $this->serializer, $this->validator);
-        $migration->up();
+        $this->createTable();
 
-        $response = $this->dynamoDbClient->tableExists(['TableName' => 'Users']);
-        $response->resolve();
+        $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
 
-        $migration = new DeleteTableMigration($this->dynamoDbClient, $this->serializer, $this->validator);
+            public function up(): void
+            {
+                $this->setTableName('Users')->delete();
+            }
+
+        };
         $migration->up();
 
         $this->dynamoDbClient->describeTable(['TableName' => 'Users'])->resolve();
