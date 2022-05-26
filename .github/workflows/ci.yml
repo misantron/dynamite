@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   ecs:
-    name: Easy Code Style
+    name: Easy Coding Standard
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,5 +20,5 @@ jobs:
           restore-keys: ecs-
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
-      - name: PHP Code Style run
+      - name: Easy Coding Standard run
         run: vendor/bin/ecs check
