@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Integration;
 
-use AsyncAws\Core\Credentials\NullProvider;
+use AsyncAws\Core\Credentials\Credentials;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
@@ -75,8 +75,8 @@ class IntegrationTestCase extends TestCase
     private function getDynamoDbClient(): DynamoDbClient
     {
         return new DynamoDbClient(
-            ['endpoint' => 'http://localhost:4575'],
-            new NullProvider()
+            ['endpoint' => 'http://localhost:8010'],
+            new Credentials('accessKey', 'secretKey')
         );
     }
 

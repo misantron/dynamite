@@ -15,7 +15,7 @@ jobs:
           php-version: 8.1
           coverage: none
       - name: Init Docker environment
-        run: make start-docker
+        run: make docker-start
       - name: Get composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
