@@ -7,7 +7,6 @@ namespace Dynamite;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
 use AsyncAws\DynamoDb\Input\PutItemInput;
-use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\Exception\TableException;
@@ -47,7 +46,7 @@ abstract class AbstractSeeder implements SeederInterface
     }
 
     /**
-     * @param array<string, AttributeValue> $item
+     * @param array<string, array<string, string>> $item
      */
     protected function addItem(array $item): self
     {

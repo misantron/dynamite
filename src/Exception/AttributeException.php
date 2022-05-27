@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Exception;
 
-class AttributeException extends AbstractException
+final class AttributeException extends AbstractException
 {
     public static function unknownType(string $type): static
     {

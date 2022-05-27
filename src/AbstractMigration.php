@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -68,7 +68,7 @@ abstract class AbstractMigration implements MigrationInterface
 
     public function __construct(
         private readonly DynamoDbClient $dynamoDbClient,
-        private readonly SerializerInterface $serializer,
+        private readonly NormalizerInterface $serializer,
         private readonly ValidatorInterface $validator
     ) {
     }
@@ -97,7 +97,7 @@ abstract class AbstractMigration implements MigrationInterface
             throw new \InvalidArgumentException("Try to access unknown property `$name`");
         }
 
-        return $this->{$name};
+        return $this->{$name}; // @phpstan-ignore-line
     }
 
     protected function addHashKey(string $name): self

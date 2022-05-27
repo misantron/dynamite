@@ -14,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader as SerializerAnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader as ValidatorAnnotationLoader;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -25,7 +25,7 @@ class IntegrationTestCase extends TestCase
 {
     protected DynamoDbClient $dynamoDbClient;
 
-    protected SerializerInterface $serializer;
+    protected NormalizerInterface $serializer;
 
     protected ValidatorInterface $validator;
 
@@ -82,7 +82,7 @@ class IntegrationTestCase extends TestCase
         );
     }
 
-    private function getSerializer(): SerializerInterface
+    private function getSerializer(): NormalizerInterface
     {
         $classMetadataFactory = new ClassMetadataFactory(new SerializerAnnotationLoader());
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);

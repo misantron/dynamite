@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Exception;
 
-class TableException extends AbstractException
+final class TableException extends AbstractException
 {
     public static function notExists(string $tableName): static
     {

@@ -44,10 +44,6 @@ class DirectoryResolver
         );
     }
 
-    /**
-     * @param string $path
-     * @return \SplFileInfo[]
-     */
     private function createIterator(string $path): \OuterIterator
     {
         return new \RegexIterator(

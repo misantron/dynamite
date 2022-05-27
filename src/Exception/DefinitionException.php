@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Exception;
 
-class DefinitionException extends AbstractException
+final class DefinitionException extends AbstractException
 {
     public static function provisionedThroughputNotDefined(): static
     {
