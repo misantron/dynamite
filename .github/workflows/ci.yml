@@ -39,5 +39,7 @@ jobs:
           restore-keys: phpstan-
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
+      - name: Install PHPUnit
+        run: vendor/bin/simple-phpunit install
       - name: PHPStan run
         run: vendor/bin/phpstan analyse
