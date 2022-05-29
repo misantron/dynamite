@@ -76,9 +76,9 @@ class IntegrationTestCase extends TestCase
     {
         return new DynamoDbClient(
             [
-                'endpoint' => 'http://localhost:8010',
+                'endpoint' => 'http://localhost:8000',
             ],
-            new Credentials('accessKey', 'secretKey')
+            new Credentials('AccessKey', 'SecretKey')
         );
     }
 
