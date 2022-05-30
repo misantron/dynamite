@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dynamite\Command;
 
 use AsyncAws\DynamoDb\DynamoDbClient;
-use Dynamite\Helper\DirectoryResolver;
+use Dynamite\Helper\Finder;
 use Dynamite\SeederInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -40,9 +40,9 @@ class SeedCommand extends Command
 
     public function run(InputInterface $input, OutputInterface $output): int
     {
-        $resolver = new DirectoryResolver($input->getOption('path'));
+        $finder = new Finder($input->getOption('path'));
 
-        foreach ($resolver->getClasses(SeederInterface::class) as $class) {
+        foreach ($finder->getClasses(SeederInterface::class) as $class) {
             $seeder = new $class($this->dynamoDbClient, $this->validator);
             $seeder->seed();
         }

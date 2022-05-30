@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader as ValidatorAnno
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class IntegrationTestCase extends TestCase
+abstract class IntegrationTestCase extends TestCase
 {
     protected DynamoDbClient $dynamoDbClient;
 

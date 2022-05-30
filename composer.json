@@ -12,7 +12,7 @@
         "symfony/validator": "^5.4 | ^6.0"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.6",
+        "phpstan/phpstan": "^1.7",
         "phpstan/phpstan-phpunit": "^1.1",
         "phpstan/phpstan-strict-rules": "^1.2",
         "symfony/phpunit-bridge": "^5.4 | ^6.0",
@@ -25,7 +25,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Dynamite\\Tests\\": "tests"
+            "Dynamite\\Tests\\": "tests",
+            "Dynamite\\Tests\\Seeders\\": "tests/resources/seeders",
+            "Dynamite\\Tests\\Migrations\\": "tests/resources/migrations"
         }
     },
     "config": {

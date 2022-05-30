@@ -4,20 +4,27 @@ declare(strict_types=1);
 
 namespace Dynamite\Helper;
 
-class DirectoryResolver
+class Finder
 {
     public function __construct(private readonly string $path)
     {
     }
 
-    public function getClasses(string $interface): iterable
+    public function getClasses(string $interface): array
     {
         $files = [];
+        /** @var \SplFileInfo $fileInfo */
         foreach ($this->createIterator($this->path) as $fileInfo) {
+            if (!str_ends_with($fileInfo->getFilename(), '.php')) {
+                continue;
+            }
+
             $filepath = $fileInfo->getRealPath();
+            // @codeCoverageIgnoreStart
             if ($filepath === false) {
                 continue;
             }
+            // @codeCoverageIgnoreEnd
 
             self::requireOnce($filepath);
 
@@ -46,12 +53,8 @@ class DirectoryResolver
 
     private function createIterator(string $path): \OuterIterator
     {
-        return new \RegexIterator(
-            new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path)
-            ),
-            '/^.+\.php$/i',
-            \RegexIterator::GET_MATCH
+        return new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
         );
     }
 
