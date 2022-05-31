@@ -10,8 +10,8 @@ use AsyncAws\DynamoDb\Input\PutItemInput;
 use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\Exception\TableException;
+use Dynamite\Exception\ValidationException;
 use Symfony\Component\Validator\Constraints\Count;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class AbstractSeeder implements SeederInterface
@@ -59,7 +59,7 @@ abstract class AbstractSeeder implements SeederInterface
     {
         $violations = $this->validator->validate($this);
         if (\count($violations) > 0) {
-            throw new ValidationFailedException('', $violations);
+            throw new ValidationException($violations);
         }
 
         if (!$this->isTableExists()) {
