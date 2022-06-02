@@ -9,6 +9,7 @@ use Dynamite\Exception\SchemaException;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class Table
@@ -16,19 +17,21 @@ final class Table
     #[
         Groups(['create', 'update']),
         SerializedName('TableName'),
-        NotBlank(message: 'Table name is not defined', allowNull: false)
+        NotBlank(message: 'Table name is not defined')
     ]
     private ?string $tableName = null;
 
     #[
         Groups(['create']),
-        SerializedName('AttributeDefinitions')
+        SerializedName('AttributeDefinitions'),
+        Count(min: 1, minMessage: 'Table attributes must contains at least one definition')
     ]
     private ?array $attributeDefinitions = null;
 
     #[
         Groups(['create']),
-        SerializedName('KeySchema')
+        SerializedName('KeySchema'),
+        Count(min: 1, minMessage: 'Table key schema must contains at least one element')
     ]
     private ?array $keySchema = null;
 
@@ -46,7 +49,8 @@ final class Table
 
     #[
         Groups(['create', 'update']),
-        SerializedName('ProvisionedThroughput')
+        SerializedName('ProvisionedThroughput'),
+        NotBlank(message: 'Table provisioned throughput is required')
     ]
     private ?array $provisionedThroughput = null;
 
@@ -174,7 +178,7 @@ final class Table
                         throw SchemaException::provisionedThroughputNotSet();
                     }
 
-                    $index['ProvisionedThroughput'] = $this->getProvisionedThroughput();
+                    $index['ProvisionedThroughput'] = $this->provisionedThroughput;
                 }
 
                 $this->assertKeySchemaAttributesDefined($index['KeySchema']);

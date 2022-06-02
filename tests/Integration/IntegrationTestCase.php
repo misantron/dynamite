@@ -7,6 +7,7 @@ namespace Dynamite\Tests\Integration;
 use AsyncAws\Core\Credentials\Credentials;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Enum\ProjectionType;
+use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use AsyncAws\DynamoDb\Result\TableExistsWaiter;
 use Dynamite\AbstractMigration;
@@ -50,8 +51,8 @@ abstract class IntegrationTestCase extends TestCase
             {
                 $this
                     ->setTableName('Users')
-                    ->addAttribute('Id', 'S')
-                    ->addAttribute('Email', 'S')
+                    ->addAttribute('Id', ScalarAttributeType::S)
+                    ->addAttribute('Email', ScalarAttributeType::S)
                     ->addHashKey('Id')
                     ->setProvisionedThroughput(1, 1)
                     ->addGlobalSecondaryIndex('Emails', ProjectionType::KEYS_ONLY, 'Email')

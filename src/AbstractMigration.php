@@ -95,7 +95,7 @@ abstract class AbstractMigration implements MigrationInterface
         return $this;
     }
 
-    protected function create(): array
+    protected function create(): void
     {
         $violations = $this->validator->validate($this->schema);
         if (\count($violations) > 0) {
@@ -113,13 +113,10 @@ abstract class AbstractMigration implements MigrationInterface
             context: $this->schema->getSerializationContext('create')
         );
 
-        $response = $this->dynamoDbClient->createTable(new CreateTableInput($input));
-        $response->resolve();
-
-        return $response->info();
+        $this->dynamoDbClient->createTable(new CreateTableInput($input))->resolve();
     }
 
-    protected function update(): array
+    protected function update(): void
     {
         $violations = $this->validator->validate($this->schema);
         if (\count($violations) > 0) {
@@ -135,13 +132,10 @@ abstract class AbstractMigration implements MigrationInterface
             context: $this->schema->getSerializationContext('update')
         );
 
-        $response = $this->dynamoDbClient->updateTable(new UpdateTableInput($input));
-        $response->resolve();
-
-        return $response->info();
+        $this->dynamoDbClient->updateTable(new UpdateTableInput($input))->resolve();
     }
 
-    protected function delete(): array
+    protected function delete(): void
     {
         $violations = $this->validator->validate($this->schema);
         if (\count($violations) > 0) {
@@ -156,9 +150,6 @@ abstract class AbstractMigration implements MigrationInterface
             'TableName' => $this->schema->getTableName(),
         ];
 
-        $response = $this->dynamoDbClient->deleteTable(new DeleteTableInput($input));
-        $response->resolve();
-
-        return $response->info();
+        $this->dynamoDbClient->deleteTable(new DeleteTableInput($input))->resolve();
     }
 }

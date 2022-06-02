@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class Records
 {
-    #[NotBlank(message: 'Table name is not defined', allowNull: false)]
+    #[NotBlank(message: 'Table name is not defined')]
     private ?string $tableName = null;
 
     #[Count(

@@ -46,11 +46,7 @@ class MigrationTest extends UnitTestCase
             {
                 $this
                     ->setTableName('Users')
-                    ->addGlobalSecondaryIndex(
-                        'Index',
-                        'EXCLUDE',
-                        'Id'
-                    )
+                    ->addGlobalSecondaryIndex('Index', 'EXCLUDE', 'Id')
                     ->create()
                 ;
             }
