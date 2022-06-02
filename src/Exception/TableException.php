@@ -6,13 +6,13 @@ namespace Dynamite\Exception;
 
 final class TableException extends AbstractException
 {
-    public static function notExists(string $tableName): static
+    public static function notExists(string $tableName): TableException
     {
-        return new static("Table `$tableName` does not exist");
+        return new TableException("Table `$tableName` does not exist");
     }
 
-    public static function alreadyExists(string $tableName): static
+    public static function alreadyExists(string $tableName): TableException
     {
-        return new static("Table `$tableName` already exists");
+        return new TableException("Table `$tableName` already exists");
     }
 }

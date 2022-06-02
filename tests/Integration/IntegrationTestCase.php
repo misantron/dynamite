@@ -10,19 +10,15 @@ use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use AsyncAws\DynamoDb\Result\TableExistsWaiter;
 use Dynamite\AbstractMigration;
+use Dynamite\Tests\DependencyMockTrait;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader as SerializerAnnotationLoader;
-use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader as ValidatorAnnotationLoader;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class IntegrationTestCase extends TestCase
 {
+    use DependencyMockTrait;
+
     protected DynamoDbClient $dynamoDbClient;
 
     protected NormalizerInterface $serializer;
@@ -31,9 +27,9 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->dynamoDbClient = $this->getDynamoDbClient();
-        $this->serializer = $this->getSerializer();
-        $this->validator = $this->getValidator();
+        $this->dynamoDbClient = $this->createDynamoDbClient();
+        $this->serializer = $this->createSerializer();
+        $this->validator = $this->createValidator();
     }
 
     protected function tearDown(): void
@@ -43,6 +39,7 @@ abstract class IntegrationTestCase extends TestCase
                 'TableName' => 'Users',
             ])->resolve();
         } catch (ResourceNotFoundException) {
+            // ignore exception
         }
     }
 
@@ -72,7 +69,7 @@ abstract class IntegrationTestCase extends TestCase
         return $response;
     }
 
-    private function getDynamoDbClient(): DynamoDbClient
+    private function createDynamoDbClient(): DynamoDbClient
     {
         return new DynamoDbClient(
             [
@@ -80,20 +77,5 @@ abstract class IntegrationTestCase extends TestCase
             ],
             new Credentials('AccessKey', 'SecretKey')
         );
-    }
-
-    private function getSerializer(): NormalizerInterface
-    {
-        $classMetadataFactory = new ClassMetadataFactory(new SerializerAnnotationLoader());
-        $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
-
-        return new Serializer([new ObjectNormalizer($classMetadataFactory, $nameConverter)]);
-    }
-
-    private function getValidator(): ValidatorInterface
-    {
-        return Validation::createValidatorBuilder()
-            ->addLoader(new ValidatorAnnotationLoader())
-            ->getValidator();
     }
 }

@@ -51,10 +51,11 @@ class Finder
         );
     }
 
-    private function createIterator(string $path): \OuterIterator
+    private function createIterator(string $path): \RecursiveIteratorIterator
     {
         return new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS),
+            \RecursiveIteratorIterator::LEAVES_ONLY
         );
     }
 

@@ -6,6 +6,7 @@ namespace Dynamite\Tests\Unit;
 
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
+use AsyncAws\DynamoDb\Input\DescribeTableInput;
 use AsyncAws\DynamoDb\Input\PutItemInput;
 use AsyncAws\DynamoDb\Result\BatchWriteItemOutput;
 use AsyncAws\DynamoDb\Result\DescribeTableOutput;
@@ -37,11 +38,11 @@ class SeederTest extends UnitTestCase
             self::fail('Exception is not thrown');
         } catch (\Throwable $e) {
             $expectedErrors = [
-                'items' => [
-                    'At least 1 record is required',
-                ],
                 'tableName' => [
-                    'Table name must be specified',
+                    'Table name is not defined',
+                ],
+                'records' => [
+                    'At least 1 record is required',
                 ],
             ];
 
@@ -64,9 +65,9 @@ class SeederTest extends UnitTestCase
         $dynamoDbClientMock
             ->expects(self::once())
             ->method('describeTable')
-            ->with([
+            ->with(new DescribeTableInput([
                 'TableName' => 'Users',
-            ])
+            ]))
             ->willThrowException($this->createResourceNotFoundException())
         ;
 
@@ -97,9 +98,9 @@ class SeederTest extends UnitTestCase
         $dynamoDbClientMock
             ->expects(self::once())
             ->method('describeTable')
-            ->with([
+            ->with(new DescribeTableInput([
                 'TableName' => 'Users',
-            ])
+            ]))
             ->willReturn(new DescribeTableOutput($this->createMockedResponse()))
         ;
         $dynamoDbClientMock
@@ -145,9 +146,9 @@ class SeederTest extends UnitTestCase
         $dynamoDbClientMock
             ->expects(self::once())
             ->method('describeTable')
-            ->with([
+            ->with(new DescribeTableInput([
                 'TableName' => 'Users',
-            ])
+            ]))
             ->willReturn(new DescribeTableOutput($this->createMockedResponse()))
         ;
         $dynamoDbClientMock

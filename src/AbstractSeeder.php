@@ -11,26 +11,20 @@ use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\Exception\TableException;
 use Dynamite\Exception\ValidationException;
-use Symfony\Component\Validator\Constraints\Count;
+use Dynamite\Schema\Records;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class AbstractSeeder implements SeederInterface
 {
     use TableTrait;
 
-    #[Count(
-        min: 1,
-        max: 100,
-        minMessage: 'At least {{ limit }} record is required',
-        maxMessage: 'Max batch size is {{ limit }} records'
-    )]
-    private array $items;
+    private Records $schema;
 
     public function __construct(
         private readonly DynamoDbClient $dynamoDbClient,
         private readonly ValidatorInterface $validator
     ) {
-        $this->items = [];
+        $this->schema = new Records();
     }
 
     /**
@@ -39,7 +33,7 @@ abstract class AbstractSeeder implements SeederInterface
     protected function addItems(array $items): self
     {
         foreach ($items as $item) {
-            $this->items[] = $item;
+            $this->schema->addRecord($item);
         }
 
         return $this;
@@ -50,26 +44,26 @@ abstract class AbstractSeeder implements SeederInterface
      */
     protected function addItem(array $item): self
     {
-        $this->items[] = $item;
+        $this->schema->addRecord($item);
 
         return $this;
     }
 
     protected function save(): array
     {
-        $violations = $this->validator->validate($this);
+        $violations = $this->validator->validate($this->schema);
         if (\count($violations) > 0) {
             throw new ValidationException($violations);
         }
 
         if (!$this->isTableExists()) {
-            throw TableException::notExists($this->tableName);
+            throw TableException::notExists($this->schema->getTableName());
         }
 
-        if ($this->isSingleRequest()) {
+        if ($this->schema->isSingleRecord()) {
             $input = new PutItemInput([
-                'TableName' => $this->tableName,
-                'Item' => current($this->items),
+                'TableName' => $this->schema->getTableName(),
+                'Item' => current($this->schema->getRecords()),
             ]);
 
             $response = $this->dynamoDbClient->putItem($input);
@@ -80,13 +74,13 @@ abstract class AbstractSeeder implements SeederInterface
 
         $input = new BatchWriteItemInput([
             'RequestItems' => [
-                $this->tableName => array_map(
+                $this->schema->getTableName() => array_map(
                     static fn (array $item): WriteRequest => new WriteRequest([
                         'PutRequest' => new PutRequest([
                             'Item' => $item,
                         ]),
                     ]),
-                    $this->items
+                    $this->schema->getRecords()
                 ),
             ],
         ]);
@@ -95,10 +89,5 @@ abstract class AbstractSeeder implements SeederInterface
         $response->resolve();
 
         return $response->info();
-    }
-
-    private function isSingleRequest(): bool
-    {
-        return \count($this->items) === 1;
     }
 }
