@@ -50,7 +50,7 @@ final class Table
     #[
         Groups(['create', 'update']),
         SerializedName('ProvisionedThroughput'),
-        NotBlank(message: 'Table provisioned throughput is required')
+        NotBlank(message: 'Table provisioned throughput is required', groups: ['create'])
     ]
     private ?array $provisionedThroughput = null;
 
