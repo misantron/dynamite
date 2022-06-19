@@ -73,7 +73,7 @@ class TableTest extends UnitTestCase
         $schema->getKeySchema();
     }
 
-    public function testAssertHashKeySet(): void
+    public function testAssertHashKeySetWithoutHashKeyDefinition(): void
     {
         $this->expectException(SchemaException::class);
         $this->expectExceptionMessage('Table key require at least one hash attribute');
@@ -81,6 +81,27 @@ class TableTest extends UnitTestCase
         $schema = new Table();
         $schema->setProvisionedThroughput(1, 1);
         $schema->assertHashKeySet();
+    }
+
+    public function testAssertHashKeySet(): void
+    {
+        $schema = new Table();
+        $schema->addAttribute('Id', ScalarAttributeType::S);
+        $schema->addKeyElement('Id', KeyType::HASH);
+        $schema->assertHashKeySet();
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testGetKeySchemaWithNotDefinedAttribute(): void
+    {
+        $this->expectException(SchemaException::class);
+        $this->expectErrorMessage('Attribute `Email` is not defined');
+
+        $schema = new Table();
+        $schema->addAttribute('Id', ScalarAttributeType::S);
+        $schema->addKeyElement('Email', KeyType::HASH);
+        $schema->getKeySchema();
     }
 
     public function testAddAttribute(): void
@@ -101,5 +122,17 @@ class TableTest extends UnitTestCase
         ];
 
         self::assertSame($expected, $schema->getAttributeDefinitions());
+    }
+
+    public function testGetSerializationContext(): void
+    {
+        $schema = new Table();
+
+        $expected = [
+            'groups' => 'create',
+            'skip_null_values' => true,
+        ];
+
+        self::assertSame($expected, $schema->getSerializationContext('create'));
     }
 }

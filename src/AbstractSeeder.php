@@ -52,7 +52,7 @@ abstract class AbstractSeeder implements SeederInterface
     protected function save(): array
     {
         $violations = $this->validator->validate($this->schema);
-        if (\count($violations) > 0) {
+        if ($violations->count() > 0) {
             throw new ValidationException($violations);
         }
 

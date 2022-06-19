@@ -32,6 +32,15 @@ abstract class AbstractMigration implements MigrationInterface
         $this->schema = new Table();
     }
 
+    protected function addAttributes(array $items): self
+    {
+        foreach ($items as [$name, $type]) {
+            $this->addAttribute($name, $type);
+        }
+
+        return $this;
+    }
+
     protected function addAttribute(string $name, string $type): self
     {
         if (!ScalarAttributeType::exists($type)) {
@@ -98,7 +107,7 @@ abstract class AbstractMigration implements MigrationInterface
     protected function create(): void
     {
         $violations = $this->validator->validate($this->schema);
-        if (\count($violations) > 0) {
+        if ($violations->count() > 0) {
             throw new ValidationException($violations);
         }
 
@@ -119,7 +128,7 @@ abstract class AbstractMigration implements MigrationInterface
     protected function update(): void
     {
         $violations = $this->validator->validate($this->schema);
-        if (\count($violations) > 0) {
+        if ($violations->count() > 0) {
             throw new ValidationException($violations);
         }
 
@@ -138,7 +147,7 @@ abstract class AbstractMigration implements MigrationInterface
     protected function delete(): void
     {
         $violations = $this->validator->validate($this->schema);
-        if (\count($violations) > 0) {
+        if ($violations->count() > 0) {
             throw new ValidationException($violations);
         }
 

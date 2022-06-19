@@ -23,8 +23,7 @@ trait TableTrait
                 'TableName' => $this->schema->getTableName(),
             ];
 
-            $response = $this->dynamoDbClient->describeTable(new DescribeTableInput($input));
-            $response->resolve();
+            $this->dynamoDbClient->describeTable(new DescribeTableInput($input))->resolve();
 
             return true;
         } catch (ResourceNotFoundException) {
