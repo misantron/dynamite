@@ -6,51 +6,59 @@ namespace Dynamite\Schema;
 
 use AsyncAws\DynamoDb\Enum\KeyType;
 use Dynamite\Exception\SchemaException;
+use Dynamite\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
-use Symfony\Component\Validator\Constraints\Count;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class Table
 {
     #[
-        Groups(['create', 'update']),
+        Groups(['create', 'update', 'delete']),
         SerializedName('TableName'),
-        NotBlank(message: 'Table name is not defined')
+        Assert\TableOrIndexName
     ]
     private ?string $tableName = null;
 
     #[
-        Groups(['create']),
+        Groups(['create', 'update']),
         SerializedName('AttributeDefinitions'),
-        Count(min: 1, minMessage: 'Table attributes must contains at least one definition')
+        Assert\AttributeDefinitions
     ]
     private ?array $attributeDefinitions = null;
 
     #[
         Groups(['create']),
         SerializedName('KeySchema'),
-        Count(min: 1, minMessage: 'Table key schema must contains at least one element')
+        Assert\KeySchema
     ]
     private ?array $keySchema = null;
 
     #[
         Groups(['create']),
-        SerializedName('LocalSecondaryIndexes')
+        SerializedName('LocalSecondaryIndexes'),
+        Assert\LocalSecondaryIndexes
     ]
     private ?array $localSecondaryIndexes = null;
 
     #[
-        Groups(['create', 'update']),
-        SerializedName('GlobalSecondaryIndexes')
+        Groups(['create']),
+        SerializedName('GlobalSecondaryIndexes'),
+        Assert\GlobalSecondaryIndexes
     ]
     private ?array $globalSecondaryIndexes = null;
 
     #[
+        Groups(['update']),
+        SerializedName('GlobalSecondaryIndexUpdates'),
+        Assert\GlobalSecondaryIndexUpdates
+    ]
+    private ?array $globalSecondaryIndexUpdates = null;
+
+    #[
         Groups(['create', 'update']),
         SerializedName('ProvisionedThroughput'),
-        NotBlank(message: 'Table provisioned throughput is required', groups: ['create'])
+        Assert\ProvisionedThroughput(['groups' => ['create']])
     ]
     private ?array $provisionedThroughput = null;
 
@@ -127,36 +135,14 @@ final class Table
             $this->globalSecondaryIndexes = [];
         }
 
-        $keySchema = [
-            [
-                'AttributeName' => $hashAttribute,
-                'KeyType' => KeyType::HASH,
-            ],
-        ];
-
-        if ($rangeAttribute !== null) {
-            $keySchema[] = [
-                'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyType::RANGE,
-            ];
-        }
-
-        $provisionedThroughput = null;
-        if ($readCapacity !== null && $writeCapacity !== null) {
-            $provisionedThroughput = [
-                'ReadCapacityUnits' => $readCapacity,
-                'WriteCapacityUnits' => $writeCapacity,
-            ];
-        }
-
-        $this->globalSecondaryIndexes[] = [
-            'IndexName' => $name,
-            'KeySchema' => $keySchema,
-            'Projection' => [
-                'ProjectionType' => $projectionType,
-            ],
-            'ProvisionedThroughput' => $provisionedThroughput,
-        ];
+        $this->globalSecondaryIndexes[] = $this->buildGlobalSecondaryIndex(
+            $name,
+            $projectionType,
+            $hashAttribute,
+            $rangeAttribute,
+            $writeCapacity,
+            $readCapacity
+        );
     }
 
     public function getGlobalSecondaryIndexes(): ?array
@@ -187,6 +173,104 @@ final class Table
             },
             $this->globalSecondaryIndexes
         );
+    }
+
+    public function createGlobalSecondaryIndex(
+        string $name,
+        string $projectionType,
+        string $hashAttribute,
+        ?string $rangeAttribute,
+        ?int $writeCapacity,
+        ?int $readCapacity
+    ): void {
+        if ($this->globalSecondaryIndexUpdates === null) {
+            $this->globalSecondaryIndexUpdates = [];
+        }
+
+        $this->globalSecondaryIndexUpdates['Create'] = $this->buildGlobalSecondaryIndex(
+            $name,
+            $projectionType,
+            $hashAttribute,
+            $rangeAttribute,
+            $writeCapacity,
+            $readCapacity
+        );
+    }
+
+    private function buildGlobalSecondaryIndex(
+        string $name,
+        string $projectionType,
+        string $hashAttribute,
+        ?string $rangeAttribute,
+        ?int $writeCapacity,
+        ?int $readCapacity
+    ): array {
+        $keySchema = [
+            [
+                'AttributeName' => $hashAttribute,
+                'KeyType' => KeyType::HASH,
+            ],
+        ];
+
+        if ($rangeAttribute !== null) {
+            $keySchema[] = [
+                'AttributeName' => $rangeAttribute,
+                'KeyType' => KeyType::RANGE,
+            ];
+        }
+
+        $provisionedThroughput = null;
+        if ($readCapacity !== null && $writeCapacity !== null) {
+            $provisionedThroughput = [
+                'ReadCapacityUnits' => $readCapacity,
+                'WriteCapacityUnits' => $writeCapacity,
+            ];
+        }
+
+        return [
+            'IndexName' => $name,
+            'KeySchema' => $keySchema,
+            'Projection' => [
+                'ProjectionType' => $projectionType,
+            ],
+            'ProvisionedThroughput' => $provisionedThroughput,
+        ];
+    }
+
+    public function updateGlobalSecondaryIndex(string $name, ?int $writeCapacity, ?int $readCapacity): void
+    {
+        if ($this->globalSecondaryIndexUpdates === null) {
+            $this->globalSecondaryIndexUpdates = [];
+        }
+
+        $provisionedThroughput = null;
+        if ($readCapacity !== null && $writeCapacity !== null) {
+            $provisionedThroughput = [
+                'ReadCapacityUnits' => $readCapacity,
+                'WriteCapacityUnits' => $writeCapacity,
+            ];
+        }
+
+        $this->globalSecondaryIndexUpdates['Update'] = [
+            'IndexName' => $name,
+            'ProvisionedThroughput' => $provisionedThroughput,
+        ];
+    }
+
+    public function deleteGlobalSecondaryIndex(string $name): void
+    {
+        if ($this->globalSecondaryIndexUpdates === null) {
+            $this->globalSecondaryIndexUpdates = [];
+        }
+
+        $this->globalSecondaryIndexUpdates['Delete'] = [
+            'IndexName' => $name,
+        ];
+    }
+
+    public function getGlobalSecondaryIndexUpdates(): ?array
+    {
+        return $this->globalSecondaryIndexUpdates;
     }
 
     public function addLocalSecondaryIndex(string $name, string $hashAttribute, ?string $rangeAttribute): void

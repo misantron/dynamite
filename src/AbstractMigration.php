@@ -11,6 +11,7 @@ use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Input\CreateTableInput;
 use AsyncAws\DynamoDb\Input\DeleteTableInput;
 use AsyncAws\DynamoDb\Input\UpdateTableInput;
+use Dynamite\Exception\IndexException;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Exception\TableException;
 use Dynamite\Exception\ValidationException;
@@ -97,6 +98,44 @@ abstract class AbstractMigration implements MigrationInterface
         return $this;
     }
 
+    protected function createGlobalSecondaryIndex(
+        string $name,
+        string $projectionType,
+        string $hashAttribute,
+        string $rangeAttribute = null,
+        int $writeCapacity = null,
+        int $readCapacity = null
+    ): self {
+        if (!ProjectionType::exists($projectionType)) {
+            throw SchemaException::unexpectedProjectionType($projectionType);
+        }
+
+        $this->schema->createGlobalSecondaryIndex(
+            $name,
+            $projectionType,
+            $hashAttribute,
+            $rangeAttribute,
+            $writeCapacity,
+            $readCapacity
+        );
+
+        return $this;
+    }
+
+    protected function updateGlobalSecondaryIndex(string $name, int $writeCapacity = null, int $readCapacity = null): self
+    {
+        $this->schema->updateGlobalSecondaryIndex($name, $writeCapacity, $readCapacity);
+
+        return $this;
+    }
+
+    protected function deleteGlobalSecondaryIndex(string $name): self
+    {
+        $this->schema->deleteGlobalSecondaryIndex($name);
+
+        return $this;
+    }
+
     protected function addLocalSecondaryIndex(string $name, string $hashAttribute, string $rangeAttribute = null): self
     {
         $this->schema->addLocalSecondaryIndex($name, $hashAttribute, $rangeAttribute);
@@ -136,6 +175,18 @@ abstract class AbstractMigration implements MigrationInterface
             throw TableException::notExists($this->schema->getTableName());
         }
 
+        foreach ($this->schema->getGlobalSecondaryIndexUpdates() ?? [] as $action => $item) {
+            if ($action === 'Create') {
+                if ($this->isGlobalSecondaryIndexExists($item['IndexName'])) {
+                    throw IndexException::alreadyExists($item['IndexName']);
+                }
+            } elseif ($action === 'Update' || $action === 'Delete') {
+                if (!$this->isGlobalSecondaryIndexExists($item['IndexName'])) {
+                    throw IndexException::notExists($item['IndexName']);
+                }
+            }
+        }
+
         $input = $this->serializer->normalize(
             $this->schema,
             context: $this->schema->getSerializationContext('update')
@@ -155,9 +206,10 @@ abstract class AbstractMigration implements MigrationInterface
             throw TableException::notExists($this->schema->getTableName());
         }
 
-        $input = [
-            'TableName' => $this->schema->getTableName(),
-        ];
+        $input = $this->serializer->normalize(
+            $this->schema,
+            context: $this->schema->getSerializationContext('delete')
+        );
 
         $this->dynamoDbClient->deleteTable(new DeleteTableInput($input))->resolve();
     }

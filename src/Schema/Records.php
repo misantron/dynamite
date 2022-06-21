@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace Dynamite\Schema;
 
-use Symfony\Component\Validator\Constraints\Count;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Dynamite\Validator\Constraints as Assert;
 
 final class Records
 {
-    #[NotBlank(message: 'Table name is not defined')]
+    #[Assert\TableOrIndexName]
     private ?string $tableName = null;
 
-    #[Count(
-        min: 1,
-        max: 100,
-        minMessage: 'At least {{ limit }} record is required',
-        maxMessage: 'Max batch size is {{ limit }} records'
-    )]
+    #[Assert\Records]
     private array $records = [];
 
     public function setTableName(string $tableName): void
