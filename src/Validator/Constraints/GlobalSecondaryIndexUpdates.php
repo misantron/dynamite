@@ -25,7 +25,9 @@ final class GlobalSecondaryIndexUpdates extends Assert\Compound
                             new Projection(),
                         ]),
                         'ProvisionedThroughput' => new Assert\Required([
-                            new ProvisionedThroughput(['groups' => ['update']]),
+                            new ProvisionedThroughput([
+                                'groups' => ['update'],
+                            ]),
                         ]),
                     ]),
                 ]),
@@ -35,17 +37,21 @@ final class GlobalSecondaryIndexUpdates extends Assert\Compound
                             new TableOrIndexName(),
                         ]),
                         'ProvisionedThroughput' => new Assert\Required([
-                            new ProvisionedThroughput(['groups' => ['update']]),
+                            new ProvisionedThroughput([
+                                'groups' => ['update'],
+                            ]),
                         ]),
                     ]),
                 ]),
-                'Delete' => new Assert\Optional([
-                    new Assert\Collection([
-                        'IndexName' => new Assert\Required([
-                            new TableOrIndexName(),
+                'Delete' => new Assert\Optional(
+                    [
+                        new Assert\Collection([
+                            'IndexName' => new Assert\Required([
+                                new TableOrIndexName(),
+                            ]),
                         ]),
-                    ]),
-                ]),
+                    ]
+                ),
             ]),
         ];
     }

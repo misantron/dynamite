@@ -58,7 +58,9 @@ final class Table
     #[
         Groups(['create', 'update']),
         SerializedName('ProvisionedThroughput'),
-        Assert\ProvisionedThroughput(['groups' => ['create']])
+        Assert\ProvisionedThroughput([
+            'groups' => ['create'],
+        ])
     ]
     private ?array $provisionedThroughput = null;
 

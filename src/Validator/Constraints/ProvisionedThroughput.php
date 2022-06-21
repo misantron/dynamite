@@ -23,7 +23,7 @@ final class ProvisionedThroughput extends Assert\Compound
                     new Assert\Type('integer'),
                     new Assert\Positive(),
                 ], groups: $options['groups']),
-            ], groups: $options['groups'])
+            ], groups: $options['groups']),
         ];
     }
 }
