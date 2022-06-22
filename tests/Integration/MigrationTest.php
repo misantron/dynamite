@@ -11,15 +11,16 @@ class MigrationTest extends IntegrationTestCase
 {
     public function testCreateTable(): void
     {
-        $response = $this->createTable();
+        $response = $this->dynamoDbClient->tableExists([
+            'TableName' => 'Users',
+        ]);
+        $response->resolve();
 
         self::assertTrue($response->isSuccess());
     }
 
     public function testUpdateTable(): void
     {
-        $this->createTable();
-
         $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
             public function up(): void
             {
@@ -44,13 +45,15 @@ class MigrationTest extends IntegrationTestCase
     public function testDeleteTable(): void
     {
         $this->expectException(ResourceNotFoundException::class);
-
-        $this->createTable();
+        $this->expectExceptionMessage('Cannot do operations on a non-existent table');
 
         $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
             public function up(): void
             {
-                $this->setTableName('Users')->delete();
+                $this
+                    ->setTableName('Users')
+                    ->delete()
+                ;
             }
         };
         $migration->up();

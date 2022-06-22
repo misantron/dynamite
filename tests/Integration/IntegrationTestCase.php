@@ -6,11 +6,10 @@ namespace Dynamite\Tests\Integration;
 
 use AsyncAws\Core\Credentials\Credentials;
 use AsyncAws\DynamoDb\DynamoDbClient;
+use AsyncAws\DynamoDb\Enum\KeyType;
 use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
-use AsyncAws\DynamoDb\Result\TableExistsWaiter;
-use Dynamite\AbstractMigration;
 use Dynamite\Tests\DependencyMockTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -31,6 +30,8 @@ abstract class IntegrationTestCase extends TestCase
         $this->dynamoDbClient = $this->createDynamoDbClient();
         $this->serializer = $this->createSerializer();
         $this->validator = $this->createValidator();
+
+        $this->createTable();
     }
 
     protected function tearDown(): void
@@ -44,30 +45,49 @@ abstract class IntegrationTestCase extends TestCase
         }
     }
 
-    protected function createTable(): TableExistsWaiter
+    private function createTable(): void
     {
-        $migration = new class($this->dynamoDbClient, $this->serializer, $this->validator) extends AbstractMigration {
-            public function up(): void
-            {
-                $this
-                    ->setTableName('Users')
-                    ->addAttribute('Id', ScalarAttributeType::S)
-                    ->addAttribute('Email', ScalarAttributeType::S)
-                    ->addHashKey('Id')
-                    ->setProvisionedThroughput(1, 1)
-                    ->addGlobalSecondaryIndex('Emails', ProjectionType::KEYS_ONLY, 'Email')
-                    ->create()
-                ;
-            }
-        };
-        $migration->up();
-
-        $response = $this->dynamoDbClient->tableExists([
+        $this->dynamoDbClient->createTable([
             'TableName' => 'Users',
-        ]);
-        $response->resolve();
-
-        return $response;
+            'AttributeDefinitions' => [
+                [
+                    'AttributeName' => 'Id',
+                    'AttributeType' => ScalarAttributeType::S,
+                ],
+                [
+                    'AttributeName' => 'Email',
+                    'AttributeType' => ScalarAttributeType::S,
+                ],
+            ],
+            'KeySchema' => [
+                [
+                    'AttributeName' => 'Id',
+                    'KeyType' => KeyType::HASH,
+                ],
+            ],
+            'GlobalSecondaryIndexes' => [
+                [
+                    'IndexName' => 'Emails',
+                    'Projection' => [
+                        'ProjectionType' => ProjectionType::KEYS_ONLY,
+                    ],
+                    'KeySchema' => [
+                        [
+                            'AttributeName' => 'Email',
+                            'KeyType' => KeyType::HASH,
+                        ],
+                    ],
+                    'ProvisionedThroughput' => [
+                        'ReadCapacityUnits' => 1,
+                        'WriteCapacityUnits' => 1,
+                    ],
+                ],
+            ],
+            'ProvisionedThroughput' => [
+                'ReadCapacityUnits' => 1,
+                'WriteCapacityUnits' => 1,
+            ],
+        ])->resolve();
     }
 
     private function createDynamoDbClient(): DynamoDbClient

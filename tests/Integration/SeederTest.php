@@ -13,8 +13,6 @@ class SeederTest extends IntegrationTestCase
 {
     public function testInsertSingleItem(): void
     {
-        $this->createTable();
-
         $seeder = new class($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
             public function seed(): void
             {
@@ -51,8 +49,6 @@ class SeederTest extends IntegrationTestCase
 
     public function testInsertBatchItems(): void
     {
-        $this->createTable();
-
         $seeder = new class($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
             public function seed(): void
             {
