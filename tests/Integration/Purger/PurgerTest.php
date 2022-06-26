@@ -71,8 +71,12 @@ class PurgerTest extends IntegrationTestCase
 
         $purger = new Purger($this->dynamoDbClient);
         $purger->purge(
-            [$fixture::class => $fixture],
-            [$table::class => $table]
+            [
+                $fixture::class => $fixture,
+            ],
+            [
+                $table::class => $table,
+            ]
         );
 
         $response = $this->dynamoDbClient->describeTable([
@@ -113,7 +117,9 @@ class PurgerTest extends IntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $fixtures = [$fixture::class => $fixture];
+        $fixtures = [
+            $fixture::class => $fixture,
+        ];
 
         $executor = new Executor($this->dynamoDbClient);
         $executor->execute($fixtures, []);

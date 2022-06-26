@@ -75,7 +75,7 @@ class FixtureTest extends UnitTestCase
             ->willReturn(new PutItemOutput($this->createMockedResponse()))
         ;
 
-        $fixture = new class() extends AbstractFixture implements FixtureInterface{
+        $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
                 $this
@@ -131,7 +131,7 @@ class FixtureTest extends UnitTestCase
             ->willReturn(new BatchWriteItemOutput($this->createMockedResponse()))
         ;
 
-        $fixture = new class() extends AbstractFixture implements FixtureInterface{
+        $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
                 $this

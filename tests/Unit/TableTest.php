@@ -115,7 +115,7 @@ class TableTest extends UnitTestCase
         $validator = $this->createValidator();
         $serializer = $this->createSerializer();
 
-        $table = new class() extends AbstractTable implements TableInterface{
+        $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
             {
                 $this

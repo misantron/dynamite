@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class Loader
 {
     private array $tables = [];
+
     private array $fixtures = [];
 
     public function __construct(

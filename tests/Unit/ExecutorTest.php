@@ -6,6 +6,7 @@ namespace Dynamite\Tests\Unit;
 
 use AsyncAws\DynamoDb\DynamoDbClient;
 use Dynamite\Executor;
+use Dynamite\Purger\Purger;
 
 class ExecutorTest extends UnitTestCase
 {
@@ -16,6 +17,6 @@ class ExecutorTest extends UnitTestCase
         $executor = new Executor($dynamoDbClient);
         $executor->execute([], []);
 
-        self::assertNotNull($executor->getPurger());
+        self::assertInstanceOf(Purger::class, $executor->getPurger());
     }
 }
