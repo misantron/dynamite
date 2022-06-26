@@ -7,22 +7,21 @@ namespace Dynamite\Tests\Unit;
 use Dynamite\Loader;
 use Dynamite\Tests\Fixtures\Fixtures\Domain\Table2DomainDataLoader;
 use Dynamite\Tests\Fixtures\Tables\Table1;
-use Dynamite\Tests\Integration\IntegrationTestCase;
 
-class LoaderTest extends IntegrationTestCase
+class LoaderTest extends UnitTestCase
 {
     public function testLoadFromDirectoryWithInvalidPath(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid directory path: test');
 
-        $loader = new Loader($this->validator, $this->serializer);
+        $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->loadFromDirectory('test');
     }
 
     public function testLoadFromDirectory(): void
     {
-        $loader = new Loader($this->validator, $this->serializer);
+        $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->loadFromDirectory(realpath(__DIR__ . '/../Fixtures'));
 
         self::assertCount(2, $loader->getTables());
@@ -31,7 +30,7 @@ class LoaderTest extends IntegrationTestCase
 
     public function testAddTableDuplication(): void
     {
-        $loader = new Loader($this->validator, $this->serializer);
+        $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->addTable(new Table1());
         $loader->addTable(new Table1());
 
@@ -41,7 +40,7 @@ class LoaderTest extends IntegrationTestCase
 
     public function testAddTable(): void
     {
-        $loader = new Loader($this->validator, $this->serializer);
+        $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->addTable(new Table1());
 
         self::assertCount(1, $loader->getTables());
@@ -50,7 +49,7 @@ class LoaderTest extends IntegrationTestCase
 
     public function testAddFixtureDuplication(): void
     {
-        $loader = new Loader($this->validator, $this->serializer);
+        $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->addFixture(new Table2DomainDataLoader());
         $loader->addFixture(new Table2DomainDataLoader());
 
@@ -60,7 +59,7 @@ class LoaderTest extends IntegrationTestCase
 
     public function testAddFixture(): void
     {
-        $loader = new Loader($this->validator, $this->serializer);
+        $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->addFixture(new Table2DomainDataLoader());
 
         self::assertCount(0, $loader->getTables());
