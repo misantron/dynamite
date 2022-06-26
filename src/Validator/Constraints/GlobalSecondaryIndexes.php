@@ -25,9 +25,7 @@ final class GlobalSecondaryIndexes extends Assert\Compound
                         new Projection(),
                     ]),
                     'ProvisionedThroughput' => new Assert\Required([
-                        new ProvisionedThroughput([
-                            'groups' => ['create'],
-                        ]),
+                        new ProvisionedThroughput(),
                     ]),
                 ]),
             ]),

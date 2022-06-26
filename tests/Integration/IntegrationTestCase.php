@@ -30,8 +30,6 @@ abstract class IntegrationTestCase extends TestCase
         $this->dynamoDbClient = $this->createDynamoDbClient();
         $this->serializer = $this->createSerializer();
         $this->validator = $this->createValidator();
-
-        $this->createTable();
     }
 
     protected function tearDown(): void
@@ -45,7 +43,7 @@ abstract class IntegrationTestCase extends TestCase
         }
     }
 
-    private function createTable(): void
+    protected function createTable(): void
     {
         $this->dynamoDbClient->createTable([
             'TableName' => 'Users',

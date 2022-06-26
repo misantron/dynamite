@@ -1,11 +1,12 @@
-# Dynamite
+# Dynamite - AWS DynamoDB fixtures
 
 [![Build Status](https://img.shields.io/github/workflow/status/misantron/dynamite/build.svg?style=flat-square)](https://github.com/misantron/dynamite/actions)
 [![Code Coverage](https://img.shields.io/codacy/coverage/14793b443be444dbb19c02ddca1b0118.svg?style=flat-square)](https://app.codacy.com/gh/misantron/dynamite/files)
 [![Code Quality](https://img.shields.io/codacy/grade/14793b443be444dbb19c02ddca1b0118.svg?style=flat-square)](https://app.codacy.com/gh/misantron/dynamite)
 [![Packagist](https://img.shields.io/packagist/v/misantron/dynamite.svg?style=flat-square)](https://packagist.org/packages/misantron/dynamite)
 
-AWS DynamoDB migrations and seeding tool
+Provide a simple way to manage and execute the loading of data fixtures for AWS DynamoDB storage.  
+Library code design is heavily inspired by [doctrine/data-fixtures](https://github.com/doctrine/data-fixtures).
 
 ## Install
 
@@ -16,46 +17,58 @@ Run this command to install the latest stable version:
 composer require --dev misantron/dynamite
 ```
 
-## Examples
+## Loading fixtures
 
-### Create table
+### Create table creation class
+
+This feature is optional.  
+Fixture classes must implement `Dynamite\TableInterface` interface to be visible for a loader.
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace Migrations;
+namespace Fixtures;
 
-final class CreateUsersTable extends \Dynamite\AbstractMigration
+use Dynamite\AbstractTable;
+use Dynamite\TableInterface;
+
+final class UsersTable extends AbstractTable implements TableInterface
 {
-    public function up(): void
+    public function configure(): void
     {
         $this
             ->setTableName('Users')
-            ->addAttribute('Id', 'S')
-            ->addAttribute('Email', 'S')
+            ->addAttributes([
+                ['Id', 'S'],
+                ['Email', 'S'],
+            ])
             ->addHashKey('Id')
             ->addGlobalSecondaryIndex('Emails', 'KEYS_ONLY', 'Email')
             ->setProvisionedThroughput(1, 1)
-            ->create()
         ;
     }
 }
 ```
 
-### Create seeder
+### Create a fixture loading class
+
+Fixture classes must implement `Dynamite\FixtureInterface` interface to be visible for a loader.
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace Seeders;
+namespace Fixtures;
 
-final class UsersTableSeeder extends \Dynamite\AbstractSeeder
+use Dynamite\AbstractFixture;
+use Dynamite\FixtureInterface;
+
+final class UserFixtures extends AbstractFixture implements FixtureInterface
 {
-    public function seed(): void
+    public function configure(): void
     {
         $this
             ->setTableName('Users')
@@ -69,8 +82,67 @@ final class UsersTableSeeder extends \Dynamite\AbstractSeeder
                     'Email' => ['S' => 'robert.smith@example.com'],
                 ],  
             ])
-            ->save()
         ;
     }
 }
 ```
+
+### Tables and fixtures loading
+
+It's possible to provide fixtures loading path:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Dynamite\Loader;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Serializer\Serializer;
+
+$validator = Validation::createValidator();
+$serializer = new Serializer();
+
+$loader = new Loader($validator, $serializer);
+$loader->loadFromDirectory('/path/to/YourFixtures');
+```
+
+or loading each fixture or table class manually:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use App\Fixtures;
+
+$loader->addTable(new UsersTable());
+$loader->addFixture(new UserFixtures());
+```
+
+### Create tables and executing fixtures
+
+To create database schema and load the fixtures in storage you should do the following:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use AsyncAws\DynamoDb\DynamoDbClient;
+use Dynamite\Executor;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Serializer\Serializer;
+
+$validator = Validation::createValidator();
+$serializer = new Serializer();
+$dynamoDbClient = new DynamoDbClient();
+
+$loader = new Loader($validator, $serializer);
+$loader->loadFromDirectory('/path/to/YourFixtures');
+
+$executor = new Executor($dynamoDbClient);
+$executor->execute($loader->getFixtures(), $loader->getTables());
+```
+
+**Important!** Each executor class comes with a purger class which executed before, drop tables and truncate data. 

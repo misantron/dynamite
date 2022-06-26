@@ -12,7 +12,6 @@ final class Records extends Assert\Compound
     protected function getConstraints(array $options): array
     {
         return [
-            new Assert\Type('array'),
             new Assert\Count(
                 min: 1,
                 max: 100,

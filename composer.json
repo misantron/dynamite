@@ -6,7 +6,6 @@
     "require": {
         "php": "^8.1",
         "async-aws/dynamo-db": "^1.2",
-        "symfony/console": "^5.4 || ^6.0",
         "symfony/property-access": "^5.4 || ^6.0",
         "symfony/serializer": "^5.4 || ^6.0",
         "symfony/validator": "^5.4 || ^6.0"
@@ -25,9 +24,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Dynamite\\Tests\\": "tests",
-            "Dynamite\\Tests\\Seeders\\": "tests/resources/seeders",
-            "Dynamite\\Tests\\Migrations\\": "tests/resources/migrations"
+            "Dynamite\\Tests\\": "tests"
         }
     },
     "config": {

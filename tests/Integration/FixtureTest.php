@@ -7,14 +7,17 @@ namespace Dynamite\Tests\Integration;
 use AsyncAws\DynamoDb\Input\QueryInput;
 use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
-use Dynamite\AbstractSeeder;
+use Dynamite\AbstractFixture;
+use Dynamite\FixtureInterface;
 
-class SeederTest extends IntegrationTestCase
+class FixtureTest extends IntegrationTestCase
 {
     public function testInsertSingleItem(): void
     {
-        $seeder = new class($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
-            public function seed(): void
+        $this->createTable();
+
+        $fixture = new class() extends AbstractFixture implements FixtureInterface {
+            public function configure(): void
             {
                 $this
                     ->setTableName('Users')
@@ -26,11 +29,12 @@ class SeederTest extends IntegrationTestCase
                             'S' => 'test@example.com',
                         ],
                     ])
-                    ->save()
                 ;
             }
         };
-        $seeder->seed();
+        $fixture->setValidator($this->validator);
+
+        $fixture->load($this->dynamoDbClient);
 
         $input = [
             'TableName' => 'Users',
@@ -49,8 +53,10 @@ class SeederTest extends IntegrationTestCase
 
     public function testInsertBatchItems(): void
     {
-        $seeder = new class($this->dynamoDbClient, $this->validator) extends AbstractSeeder {
-            public function seed(): void
+        $this->createTable();
+
+        $fixture = new class() extends AbstractFixture implements FixtureInterface {
+            public function configure(): void
             {
                 $this
                     ->setTableName('Users')
@@ -79,16 +85,18 @@ class SeederTest extends IntegrationTestCase
                                 'S' => 'test.three@example.com',
                             ],
                         ],
-                    ])
-                    ->save()
-                ;
+                    ]);
             }
         };
-        $seeder->seed();
+        $fixture->setValidator($this->validator);
 
-        $response = $this->dynamoDbClient->scan(new ScanInput([
-            'TableName' => 'Users',
-        ]));
+        $fixture->load($this->dynamoDbClient);
+
+        $response = $this->dynamoDbClient->scan(
+            new ScanInput([
+                'TableName' => 'Users',
+            ])
+        );
 
         self::assertSame(3, $response->getCount());
     }
