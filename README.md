@@ -145,4 +145,4 @@ $executor = new Executor($dynamoDbClient);
 $executor->execute($loader->getFixtures(), $loader->getTables());
 ```
 
-**Important!** Each executor class comes with a purges class which executed before, drop tables and truncate table data. 
+**Important!** Each executor class comes with a purger class which executed before, drop tables and truncate data. 
