@@ -9,22 +9,30 @@ use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
 use AsyncAws\DynamoDb\Input\PutItemInput;
 use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
-use Dynamite\Exception\TableException;
 use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Records;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Dynamite\Validator\ValidatorAwareTrait;
 
-abstract class AbstractSeeder implements SeederInterface
+abstract class AbstractFixture
 {
     use TableTrait;
+    use ValidatorAwareTrait;
 
     private Records $schema;
 
-    public function __construct(
-        private readonly DynamoDbClient $dynamoDbClient,
-        private readonly ValidatorInterface $validator
-    ) {
+    public function __construct()
+    {
         $this->schema = new Records();
+    }
+
+    /**
+     * @param array<string, array<string, string>> $item
+     */
+    protected function addItem(array $item): self
+    {
+        $this->schema->addRecord($item);
+
+        return $this;
     }
 
     /**
@@ -39,25 +47,13 @@ abstract class AbstractSeeder implements SeederInterface
         return $this;
     }
 
-    /**
-     * @param array<string, array<string, string>> $item
-     */
-    protected function addItem(array $item): self
+    final public function load(DynamoDbClient $client): void
     {
-        $this->schema->addRecord($item);
+        $this->initialize();
 
-        return $this;
-    }
-
-    protected function save(): array
-    {
         $violations = $this->validator->validate($this->schema);
         if ($violations->count() > 0) {
             throw new ValidationException($violations);
-        }
-
-        if (!$this->isTableExists()) {
-            throw TableException::notExists($this->schema->getTableName());
         }
 
         if ($this->schema->isSingleRecord()) {
@@ -66,10 +62,9 @@ abstract class AbstractSeeder implements SeederInterface
                 'Item' => current($this->schema->getRecords()),
             ]);
 
-            $response = $this->dynamoDbClient->putItem($input);
-            $response->resolve();
+            $client->putItem($input)->resolve();
 
-            return $response->info();
+            return;
         }
 
         $input = new BatchWriteItemInput([
@@ -85,9 +80,8 @@ abstract class AbstractSeeder implements SeederInterface
             ],
         ]);
 
-        $response = $this->dynamoDbClient->batchWriteItem($input);
-        $response->resolve();
-
-        return $response->info();
+        $client->batchWriteItem($input)->resolve();
     }
+
+    abstract protected function configure(): void;
 }

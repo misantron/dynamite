@@ -6,43 +6,43 @@ namespace Dynamite\Tests\Unit;
 
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
-use AsyncAws\DynamoDb\Input\DescribeTableInput;
 use AsyncAws\DynamoDb\Input\PutItemInput;
 use AsyncAws\DynamoDb\Result\BatchWriteItemOutput;
-use AsyncAws\DynamoDb\Result\DescribeTableOutput;
 use AsyncAws\DynamoDb\Result\PutItemOutput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
-use Dynamite\AbstractSeeder;
-use Dynamite\Exception\TableException;
+use Dynamite\AbstractFixture;
 use Dynamite\Exception\ValidationException;
+use Dynamite\FixtureInterface;
 
-class SeederTest extends UnitTestCase
+class FixtureTest extends UnitTestCase
 {
-    public function testSeedWithoutTableNameSet(): void
+    public function testLoadWithoutTableNameSet(): void
     {
         $validator = $this->createValidator();
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
 
-        $class = new class($dynamoDbClientMock, $validator) extends AbstractSeeder {
-            public function seed(): void
+        $fixture = new class() extends AbstractFixture implements FixtureInterface {
+            public function configure(): void
             {
-                $this->save();
+                $this->addItem([
+                    'Id' => [
+                        'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
+                    ],
+                ]);
             }
         };
 
         try {
-            $class->seed();
+            $fixture->setValidator($validator);
+            $fixture->load($dynamoDbClientMock);
 
             self::fail('Exception is not thrown');
         } catch (\Throwable $e) {
             $expectedErrors = [
                 'tableName' => [
                     'Table name is not defined',
-                ],
-                'records' => [
-                    'At least 1 record is required',
                 ],
             ];
 
@@ -52,56 +52,12 @@ class SeederTest extends UnitTestCase
         }
     }
 
-    public function testSeedWithNotExistsTable(): void
-    {
-        $this->expectException(TableException::class);
-        $this->expectExceptionMessage('Table `Users` does not exist');
-
-        $validator = $this->createValidator();
-        $dynamoDbClientMock = $this->getMockBuilder(DynamoDbClient::class)
-            ->onlyMethods(['describeTable'])
-            ->getMock()
-        ;
-        $dynamoDbClientMock
-            ->expects(self::once())
-            ->method('describeTable')
-            ->with(new DescribeTableInput([
-                'TableName' => 'Users',
-            ]))
-            ->willThrowException($this->createResourceNotFoundException())
-        ;
-
-        $class = new class($dynamoDbClientMock, $validator) extends AbstractSeeder {
-            public function seed(): void
-            {
-                $this
-                    ->setTableName('Users')
-                    ->addItem([
-                        'Id' => [
-                            'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
-                        ],
-                    ])
-                    ->save()
-                ;
-            }
-        };
-        $class->seed();
-    }
-
-    public function testSeedSingleRecord(): void
+    public function testLoadSingleRecord(): void
     {
         $validator = $this->createValidator();
         $dynamoDbClientMock = $this->getMockBuilder(DynamoDbClient::class)
-            ->onlyMethods(['describeTable', 'putItem'])
+            ->onlyMethods(['putItem'])
             ->getMock()
-        ;
-        $dynamoDbClientMock
-            ->expects(self::once())
-            ->method('describeTable')
-            ->with(new DescribeTableInput([
-                'TableName' => 'Users',
-            ]))
-            ->willReturn(new DescribeTableOutput($this->createMockedResponse()))
         ;
         $dynamoDbClientMock
             ->expects(self::once())
@@ -119,8 +75,8 @@ class SeederTest extends UnitTestCase
             ->willReturn(new PutItemOutput($this->createMockedResponse()))
         ;
 
-        $class = new class($dynamoDbClientMock, $validator) extends AbstractSeeder {
-            public function seed(): void
+        $fixture = new class() extends AbstractFixture implements FixtureInterface{
+            public function configure(): void
             {
                 $this
                     ->setTableName('Users')
@@ -129,27 +85,19 @@ class SeederTest extends UnitTestCase
                             'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
                         ],
                     ])
-                    ->save()
                 ;
             }
         };
-        $class->seed();
+        $fixture->setValidator($validator);
+        $fixture->load($dynamoDbClientMock);
     }
 
-    public function testSeedBatchRecords(): void
+    public function testLoadBatchRecords(): void
     {
         $validator = $this->createValidator();
         $dynamoDbClientMock = $this->getMockBuilder(DynamoDbClient::class)
-            ->onlyMethods(['describeTable', 'batchWriteItem'])
+            ->onlyMethods(['batchWriteItem'])
             ->getMock()
-        ;
-        $dynamoDbClientMock
-            ->expects(self::once())
-            ->method('describeTable')
-            ->with(new DescribeTableInput([
-                'TableName' => 'Users',
-            ]))
-            ->willReturn(new DescribeTableOutput($this->createMockedResponse()))
         ;
         $dynamoDbClientMock
             ->expects(self::once())
@@ -183,8 +131,8 @@ class SeederTest extends UnitTestCase
             ->willReturn(new BatchWriteItemOutput($this->createMockedResponse()))
         ;
 
-        $class = new class($dynamoDbClientMock, $validator) extends AbstractSeeder {
-            public function seed(): void
+        $fixture = new class() extends AbstractFixture implements FixtureInterface{
+            public function configure(): void
             {
                 $this
                     ->setTableName('Users')
@@ -200,10 +148,10 @@ class SeederTest extends UnitTestCase
                             ],
                         ],
                     ])
-                    ->save()
                 ;
             }
         };
-        $class->seed();
+        $fixture->setValidator($validator);
+        $fixture->load($dynamoDbClientMock);
     }
 }
