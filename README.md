@@ -36,7 +36,7 @@ use Dynamite\TableInterface;
 
 final class UsersTable extends AbstractTable implements TableInterface
 {
-    public function configure(): void
+    protected function configure(): void
     {
         $this
             ->setTableName('Users')
@@ -68,7 +68,7 @@ use Dynamite\FixtureInterface;
 
 final class UserFixtures extends AbstractFixture implements FixtureInterface
 {
-    public function configure(): void
+    protected function configure(): void
     {
         $this
             ->setTableName('Users')
@@ -114,10 +114,8 @@ or loading each fixture or table class manually:
 
 declare(strict_types=1);
 
-use App\Fixtures;
-
-$loader->addTable(new UsersTable());
-$loader->addFixture(new UserFixtures());
+$loader->addTable(new \App\Fixtures\UsersTable());
+$loader->addFixture(new \App\Fixtures\UserFixtures());
 ```
 
 ### Create tables and executing fixtures
