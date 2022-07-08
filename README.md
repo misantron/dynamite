@@ -144,3 +144,21 @@ $executor->execute($loader->getFixtures(), $loader->getTables());
 ```
 
 **Important!** Each executor class comes with a purger class which executed before, drop tables and truncate data. 
+
+### Debug logger
+
+Execution process debug logs can be enabled by passing PSR-3 logger into executor:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use AsyncAws\DynamoDb\DynamoDbClient;
+use Dynamite\Executor;
+
+// PSR-3 compatible implementation of Psr\Log\LoggerInterface
+$logger = new Logger();
+
+$executor = new Executor($dynamoDbClient, logger: $logger);
+```
