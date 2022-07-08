@@ -13,6 +13,7 @@ use Dynamite\Exception\SchemaException;
 use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Table;
 use Dynamite\Validator\ValidatorAwareTrait;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 
@@ -101,7 +102,7 @@ abstract class AbstractTable
         return $this;
     }
 
-    final public function create(DynamoDbClient $client): void
+    final public function create(DynamoDbClient $client, LoggerInterface $logger): void
     {
         $this->initialize();
 
@@ -121,10 +122,11 @@ abstract class AbstractTable
             )
         );
 
-        $client
-            ->createTable($input)
-            ->resolve()
-        ;
+        $client->createTable($input)->resolve();
+
+        $logger->debug('Table created', [
+            'table' => $this->schema->getTableName(),
+        ]);
     }
 
     abstract protected function configure(): void;

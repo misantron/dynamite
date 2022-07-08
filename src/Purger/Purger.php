@@ -12,11 +12,15 @@ use AsyncAws\DynamoDb\Input\DeleteTableInput;
 use AsyncAws\DynamoDb\Input\DescribeTableInput;
 use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class Purger implements PurgerInterface
 {
-    public function __construct(private readonly DynamoDbClient $client)
-    {
+    public function __construct(
+        private readonly DynamoDbClient $client,
+        private readonly LoggerInterface $logger = new NullLogger()
+    ) {
     }
 
     public function purge(array $fixtures, array $tables): void
@@ -59,6 +63,10 @@ class Purger implements PurgerInterface
         $response->resolve();
 
         if ($response->getCount() < 1) {
+            $this->logger->debug('Table data truncate skipped - no data', [
+                'table' => $tableName,
+            ]);
+
             return;
         }
 
@@ -70,6 +78,10 @@ class Purger implements PurgerInterface
                 ])
             )->resolve();
         }
+
+        $this->logger->debug('Table data truncated', [
+            'table' => $tableName,
+        ]);
     }
 
     private function getPrimaryKeyAttributes(array $keySchema): array
@@ -111,6 +123,10 @@ class Purger implements PurgerInterface
                 )
                 ->resolve()
             ;
+
+            $this->logger->debug('Table dropped', [
+                'table' => $tableName,
+            ]);
         } catch (ResourceNotFoundException) {
             // ignore a non-existent table exception
         }

@@ -32,4 +32,9 @@ trait DependencyMockTrait
             ->addLoader(new ValidatorAnnotationLoader())
             ->getValidator();
     }
+
+    protected function createTestLogger(): TestLogger
+    {
+        return new TestLogger();
+    }
 }

@@ -15,6 +15,7 @@ use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\AbstractFixture;
 use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
+use Psr\Log\LogLevel;
 
 class FixtureTest extends UnitTestCase
 {
@@ -22,6 +23,7 @@ class FixtureTest extends UnitTestCase
     {
         $validator = $this->createValidator();
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
+        $logger = $this->createTestLogger();
 
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
@@ -36,7 +38,7 @@ class FixtureTest extends UnitTestCase
 
         try {
             $fixture->setValidator($validator);
-            $fixture->load($dynamoDbClientMock);
+            $fixture->load($dynamoDbClientMock, $logger);
 
             self::fail('Exception is not thrown');
         } catch (\Throwable $e) {
@@ -74,6 +76,7 @@ class FixtureTest extends UnitTestCase
             )
             ->willReturn(new PutItemOutput($this->createMockedResponse()))
         ;
+        $logger = $this->createTestLogger();
 
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
@@ -89,7 +92,9 @@ class FixtureTest extends UnitTestCase
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock);
+        $fixture->load($dynamoDbClientMock, $logger);
+
+        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
     }
 
     public function testLoadBatchRecords(): void
@@ -130,6 +135,7 @@ class FixtureTest extends UnitTestCase
             )
             ->willReturn(new BatchWriteItemOutput($this->createMockedResponse()))
         ;
+        $logger = $this->createTestLogger();
 
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
@@ -152,6 +158,8 @@ class FixtureTest extends UnitTestCase
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock);
+        $fixture->load($dynamoDbClientMock, $logger);
+
+        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
     }
 }

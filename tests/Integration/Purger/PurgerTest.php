@@ -69,7 +69,7 @@ class PurgerTest extends IntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $purger = new Purger($this->dynamoDbClient);
+        $purger = new Purger($this->dynamoDbClient, $this->logger);
         $purger->purge(
             [
                 $fixture::class => $fixture,
@@ -131,7 +131,7 @@ class PurgerTest extends IntegrationTestCase
 
         self::assertSame(2, $response->getCount());
 
-        $purger = new Purger($this->dynamoDbClient);
+        $purger = new Purger($this->dynamoDbClient, $this->logger);
         $purger->purge($fixtures, []);
 
         $response = $this->dynamoDbClient->scan([

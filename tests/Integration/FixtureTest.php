@@ -34,7 +34,7 @@ class FixtureTest extends IntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $fixture->load($this->dynamoDbClient);
+        $fixture->load($this->dynamoDbClient, $this->logger);
 
         $input = [
             'TableName' => 'Users',
@@ -90,7 +90,7 @@ class FixtureTest extends IntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $fixture->load($this->dynamoDbClient);
+        $fixture->load($this->dynamoDbClient, $this->logger);
 
         $response = $this->dynamoDbClient->scan(
             new ScanInput([

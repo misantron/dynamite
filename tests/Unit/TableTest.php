@@ -14,6 +14,7 @@ use AsyncAws\DynamoDb\Result\CreateTableOutput;
 use Dynamite\AbstractTable;
 use Dynamite\Exception\SchemaException;
 use Dynamite\TableInterface;
+use Psr\Log\LogLevel;
 
 class TableTest extends UnitTestCase
 {
@@ -25,6 +26,7 @@ class TableTest extends UnitTestCase
         $validator = $this->createValidator();
         $serializer = $this->createSerializer();
         $dynamoDbClient = $this->createMock(DynamoDbClient::class);
+        $logger = $this->createTestLogger();
 
         $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
@@ -38,7 +40,7 @@ class TableTest extends UnitTestCase
         $table->setValidator($validator);
         $table->setNormalizer($serializer);
 
-        $table->create($dynamoDbClient);
+        $table->create($dynamoDbClient, $logger);
     }
 
     public function testAddGlobalSecondaryIndexWithUnexpectedProjectionType(): void
@@ -49,6 +51,7 @@ class TableTest extends UnitTestCase
         $validator = $this->createValidator();
         $serializer = $this->createSerializer();
         $dynamoDbClient = $this->createMock(DynamoDbClient::class);
+        $logger = $this->createTestLogger();
 
         $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
@@ -62,7 +65,7 @@ class TableTest extends UnitTestCase
         $table->setValidator($validator);
         $table->setNormalizer($serializer);
 
-        $table->create($dynamoDbClient);
+        $table->create($dynamoDbClient, $logger);
     }
 
     public function testAddLocalSecondaryIndex(): void
@@ -114,6 +117,7 @@ class TableTest extends UnitTestCase
 
         $validator = $this->createValidator();
         $serializer = $this->createSerializer();
+        $logger = $this->createTestLogger();
 
         $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
@@ -131,7 +135,7 @@ class TableTest extends UnitTestCase
         $table->setValidator($validator);
         $table->setNormalizer($serializer);
 
-        $table->create($dynamoDbClientMock);
+        $table->create($dynamoDbClientMock, $logger);
     }
 
     public function testCreate(): void
@@ -206,6 +210,7 @@ class TableTest extends UnitTestCase
 
         $validator = $this->createValidator();
         $serializer = $this->createSerializer();
+        $logger = $this->createTestLogger();
 
         $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
@@ -233,6 +238,8 @@ class TableTest extends UnitTestCase
         $table->setValidator($validator);
         $table->setNormalizer($serializer);
 
-        $table->create($dynamoDbClientMock);
+        $table->create($dynamoDbClientMock, $logger);
+
+        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
     }
 }
