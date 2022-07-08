@@ -46,9 +46,17 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
       - name: Initialize tests
         run: make initialize
       - name: Get composer cache directory
@@ -58,8 +66,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: phpunit-${{ github.sha }}
-          restore-keys: phpunit-
+          key: ${{ matrix.php-versions }}-phpunit-${{ github.sha }}
+          restore-keys: ${{ matrix.php-versions }}-phpunit-
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
       - name: Run tests
