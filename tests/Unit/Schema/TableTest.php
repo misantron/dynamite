@@ -123,16 +123,4 @@ class TableTest extends UnitTestCase
 
         self::assertSame($expected, $schema->getAttributeDefinitions());
     }
-
-    public function testGetSerializationContext(): void
-    {
-        $schema = new Table();
-
-        $expected = [
-            'groups' => 'create',
-            'skip_null_values' => true,
-        ];
-
-        self::assertSame($expected, $schema->getSerializationContext('create'));
-    }
 }

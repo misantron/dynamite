@@ -8,7 +8,6 @@ use AsyncAws\DynamoDb\Enum\KeyType;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\SerializedName;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 
 final class Table
 {
@@ -121,14 +120,36 @@ final class Table
             $this->globalSecondaryIndexes = [];
         }
 
-        $this->globalSecondaryIndexes[] = $this->buildGlobalSecondaryIndex(
-            $name,
-            $projectionType,
-            $hashAttribute,
-            $rangeAttribute,
-            $writeCapacity,
-            $readCapacity
-        );
+        $keySchema = [
+            [
+                'AttributeName' => $hashAttribute,
+                'KeyType' => KeyType::HASH,
+            ],
+        ];
+
+        if ($rangeAttribute !== null) {
+            $keySchema[] = [
+                'AttributeName' => $rangeAttribute,
+                'KeyType' => KeyType::RANGE,
+            ];
+        }
+
+        $provisionedThroughput = null;
+        if ($readCapacity !== null && $writeCapacity !== null) {
+            $provisionedThroughput = [
+                'ReadCapacityUnits' => $readCapacity,
+                'WriteCapacityUnits' => $writeCapacity,
+            ];
+        }
+
+        $this->globalSecondaryIndexes[] = [
+            'IndexName' => $name,
+            'KeySchema' => $keySchema,
+            'Projection' => [
+                'ProjectionType' => $projectionType,
+            ],
+            'ProvisionedThroughput' => $provisionedThroughput,
+        ];
     }
 
     public function getGlobalSecondaryIndexes(): ?array
@@ -159,46 +180,6 @@ final class Table
             },
             $this->globalSecondaryIndexes
         );
-    }
-
-    private function buildGlobalSecondaryIndex(
-        string $name,
-        string $projectionType,
-        string $hashAttribute,
-        ?string $rangeAttribute,
-        ?int $writeCapacity,
-        ?int $readCapacity
-    ): array {
-        $keySchema = [
-            [
-                'AttributeName' => $hashAttribute,
-                'KeyType' => KeyType::HASH,
-            ],
-        ];
-
-        if ($rangeAttribute !== null) {
-            $keySchema[] = [
-                'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyType::RANGE,
-            ];
-        }
-
-        $provisionedThroughput = null;
-        if ($readCapacity !== null && $writeCapacity !== null) {
-            $provisionedThroughput = [
-                'ReadCapacityUnits' => $readCapacity,
-                'WriteCapacityUnits' => $writeCapacity,
-            ];
-        }
-
-        return [
-            'IndexName' => $name,
-            'KeySchema' => $keySchema,
-            'Projection' => [
-                'ProjectionType' => $projectionType,
-            ],
-            'ProvisionedThroughput' => $provisionedThroughput,
-        ];
     }
 
     public function addLocalSecondaryIndex(string $name, string $hashAttribute, ?string $rangeAttribute): void
@@ -266,13 +247,5 @@ final class Table
         if (\count($hashKeys) < 1) {
             throw SchemaException::hashKeyNotSet();
         }
-    }
-
-    public function getSerializationContext(string $group): array
-    {
-        return [
-            'groups' => $group,
-            AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-        ];
     }
 }

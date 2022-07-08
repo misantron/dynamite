@@ -13,11 +13,48 @@ use AsyncAws\DynamoDb\Input\CreateTableInput;
 use AsyncAws\DynamoDb\Result\CreateTableOutput;
 use Dynamite\AbstractTable;
 use Dynamite\Exception\SchemaException;
+use Dynamite\Exception\ValidationException;
 use Dynamite\TableInterface;
 use Psr\Log\LogLevel;
 
 class TableTest extends UnitTestCase
 {
+    public function testLoadWithoutTableNameSet(): void
+    {
+        $validator = $this->createValidator();
+        $serializer = $this->createSerializer();
+        $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
+        $logger = $this->createTestLogger();
+
+        $table = new class() extends AbstractTable implements TableInterface {
+            public function configure(): void
+            {
+                $this->addAttributes([
+                    ['Id', ScalarAttributeType::S],
+                    ['Email', ScalarAttributeType::S],
+                ]);
+            }
+        };
+
+        try {
+            $table->setValidator($validator);
+            $table->setNormalizer($serializer);
+            $table->create($dynamoDbClientMock, $logger);
+
+            self::fail('Exception is not thrown');
+        } catch (\Throwable $e) {
+            $expectedErrors = [
+                'tableName' => [
+                    'Table name is not defined',
+                ],
+            ];
+
+            self::assertInstanceOf(ValidationException::class, $e);
+            self::assertSame('Validation failed', $e->getMessage());
+            self::assertSame($expectedErrors, $e->getErrors());
+        }
+    }
+
     public function testAddAttributeWithUnexpectedType(): void
     {
         $this->expectException(SchemaException::class);
