@@ -8,6 +8,7 @@ use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use Dynamite\AbstractTable;
 use Dynamite\TableInterface;
+use Psr\Log\LogLevel;
 
 class TableTest extends IntegrationTestCase
 {
@@ -32,6 +33,8 @@ class TableTest extends IntegrationTestCase
         $table->setNormalizer($this->serializer);
 
         $table->create($this->dynamoDbClient, $this->logger);
+
+        self::assertTrue($this->logger->hasRecords(LogLevel::DEBUG));
 
         $response = $this->dynamoDbClient->tableExists([
             'TableName' => 'Users',

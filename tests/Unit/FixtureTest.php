@@ -15,6 +15,7 @@ use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\AbstractFixture;
 use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
+use Psr\Log\LogLevel;
 
 class FixtureTest extends UnitTestCase
 {
@@ -92,6 +93,8 @@ class FixtureTest extends UnitTestCase
         };
         $fixture->setValidator($validator);
         $fixture->load($dynamoDbClientMock, $logger);
+
+        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
     }
 
     public function testLoadBatchRecords(): void
@@ -156,5 +159,7 @@ class FixtureTest extends UnitTestCase
         };
         $fixture->setValidator($validator);
         $fixture->load($dynamoDbClientMock, $logger);
+
+        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
     }
 }

@@ -39,6 +39,11 @@ class Executor
         return $this->purger;
     }
 
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
     protected function purge(array $fixtures, array $tables): void
     {
         $this->getPurger()->purge($fixtures, $tables);

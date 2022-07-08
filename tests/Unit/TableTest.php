@@ -14,6 +14,7 @@ use AsyncAws\DynamoDb\Result\CreateTableOutput;
 use Dynamite\AbstractTable;
 use Dynamite\Exception\SchemaException;
 use Dynamite\TableInterface;
+use Psr\Log\LogLevel;
 
 class TableTest extends UnitTestCase
 {
@@ -238,5 +239,7 @@ class TableTest extends UnitTestCase
         $table->setNormalizer($serializer);
 
         $table->create($dynamoDbClientMock, $logger);
+
+        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
     }
 }

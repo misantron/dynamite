@@ -9,6 +9,7 @@ use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use Dynamite\AbstractFixture;
 use Dynamite\FixtureInterface;
+use Psr\Log\LogLevel;
 
 class FixtureTest extends IntegrationTestCase
 {
@@ -35,6 +36,8 @@ class FixtureTest extends IntegrationTestCase
         $fixture->setValidator($this->validator);
 
         $fixture->load($this->dynamoDbClient, $this->logger);
+
+        self::assertTrue($this->logger->hasRecords(LogLevel::DEBUG));
 
         $input = [
             'TableName' => 'Users',
@@ -91,6 +94,8 @@ class FixtureTest extends IntegrationTestCase
         $fixture->setValidator($this->validator);
 
         $fixture->load($this->dynamoDbClient, $this->logger);
+
+        self::assertTrue($this->logger->hasRecords(LogLevel::DEBUG));
 
         $response = $this->dynamoDbClient->scan(
             new ScanInput([
