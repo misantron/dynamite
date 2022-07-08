@@ -7,6 +7,8 @@ namespace Dynamite;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use Dynamite\Purger\Purger;
 use Dynamite\Purger\PurgerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class Executor
 {
@@ -14,9 +16,10 @@ class Executor
 
     public function __construct(
         private readonly DynamoDbClient $client,
-        PurgerInterface $purger = null
+        PurgerInterface $purger = null,
+        private readonly LoggerInterface $logger = new NullLogger()
     ) {
-        $this->purger = $purger ?? $this->createDefaultPurger();
+        $this->purger = $purger ?? $this->createDefaultPurger($logger);
     }
 
     public function execute(array $fixtures, array $tables): void
@@ -43,16 +46,16 @@ class Executor
 
     protected function createTable(TableInterface $table): void
     {
-        $table->create($this->client);
+        $table->create($this->client, $this->logger);
     }
 
     protected function loadFixture(FixtureInterface $fixture): void
     {
-        $fixture->load($this->client);
+        $fixture->load($this->client, $this->logger);
     }
 
-    private function createDefaultPurger(): PurgerInterface
+    private function createDefaultPurger(LoggerInterface $logger): PurgerInterface
     {
-        return new Purger($this->client);
+        return new Purger($this->client, $logger);
     }
 }

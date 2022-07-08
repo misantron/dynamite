@@ -22,6 +22,7 @@ class FixtureTest extends UnitTestCase
     {
         $validator = $this->createValidator();
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
+        $logger = $this->createTestLogger();
 
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
@@ -36,7 +37,7 @@ class FixtureTest extends UnitTestCase
 
         try {
             $fixture->setValidator($validator);
-            $fixture->load($dynamoDbClientMock);
+            $fixture->load($dynamoDbClientMock, $logger);
 
             self::fail('Exception is not thrown');
         } catch (\Throwable $e) {
@@ -74,6 +75,7 @@ class FixtureTest extends UnitTestCase
             )
             ->willReturn(new PutItemOutput($this->createMockedResponse()))
         ;
+        $logger = $this->createTestLogger();
 
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
@@ -89,7 +91,7 @@ class FixtureTest extends UnitTestCase
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock);
+        $fixture->load($dynamoDbClientMock, $logger);
     }
 
     public function testLoadBatchRecords(): void
@@ -130,6 +132,7 @@ class FixtureTest extends UnitTestCase
             )
             ->willReturn(new BatchWriteItemOutput($this->createMockedResponse()))
         ;
+        $logger = $this->createTestLogger();
 
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
@@ -152,6 +155,6 @@ class FixtureTest extends UnitTestCase
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock);
+        $fixture->load($dynamoDbClientMock, $logger);
     }
 }

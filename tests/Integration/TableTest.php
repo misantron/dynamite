@@ -31,7 +31,7 @@ class TableTest extends IntegrationTestCase
         $table->setValidator($this->validator);
         $table->setNormalizer($this->serializer);
 
-        $table->create($this->dynamoDbClient);
+        $table->create($this->dynamoDbClient, $this->logger);
 
         $response = $this->dynamoDbClient->tableExists([
             'TableName' => 'Users',

@@ -63,7 +63,7 @@ class ExecutorTest extends IntegrationTestCase
         $loader->addTable($table);
         $loader->addFixture($fixture);
 
-        $executor = new Executor($this->dynamoDbClient);
+        $executor = new Executor($this->dynamoDbClient, logger: $this->logger);
         $executor->execute($loader->getFixtures(), $loader->getTables());
 
         $response = $this->dynamoDbClient->describeTable([

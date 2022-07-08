@@ -12,6 +12,7 @@ use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Records;
 use Dynamite\Validator\ValidatorAwareTrait;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractFixture
 {
@@ -47,7 +48,7 @@ abstract class AbstractFixture
         return $this;
     }
 
-    final public function load(DynamoDbClient $client): void
+    final public function load(DynamoDbClient $client, LoggerInterface $logger): void
     {
         $this->initialize();
 
@@ -63,6 +64,10 @@ abstract class AbstractFixture
             ]);
 
             $client->putItem($input)->resolve();
+
+            $logger->debug('Single record loaded', [
+                'table' => $this->schema->getTableName(),
+            ]);
 
             return;
         }
@@ -81,6 +86,10 @@ abstract class AbstractFixture
         ]);
 
         $client->batchWriteItem($input)->resolve();
+
+        $logger->debug('Batch records loaded', [
+            'table' => $this->schema->getTableName(),
+        ]);
     }
 
     abstract protected function configure(): void;

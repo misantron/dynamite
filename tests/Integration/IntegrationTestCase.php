@@ -12,6 +12,7 @@ use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use Dynamite\Tests\DependencyMockTrait;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,11 +26,14 @@ abstract class IntegrationTestCase extends TestCase
 
     protected ValidatorInterface $validator;
 
+    protected LoggerInterface $logger;
+
     protected function setUp(): void
     {
         $this->dynamoDbClient = $this->createDynamoDbClient();
         $this->serializer = $this->createSerializer();
         $this->validator = $this->createValidator();
+        $this->logger = $this->createTestLogger();
     }
 
     protected function tearDown(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader as SerializerAnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
@@ -31,5 +32,10 @@ trait DependencyMockTrait
         return Validation::createValidatorBuilder()
             ->addLoader(new ValidatorAnnotationLoader())
             ->getValidator();
+    }
+
+    protected function createTestLogger(): LoggerInterface
+    {
+        return new TestLogger();
     }
 }
