@@ -44,18 +44,20 @@ jobs:
       - name: PHPStan run
         run: vendor/bin/phpstan analyse
   test:
-    name: Tests
+    name: Tests (${{ matrix.entry.php }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: [ '8.1', '8.2' ]
+        entry:
+          - { php: 8.1, allowed-failure: false }
+          - { php: 8.2, allowed-failure: true }
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.entry.php }}
           coverage: none
       - name: Initialize tests
         run: make initialize
@@ -74,6 +76,7 @@ jobs:
         run: |
           vendor/bin/simple-phpunit install
           vendor/bin/simple-phpunit
+        continue-on-error: ${{ matrix.entry.allowed-failure }}
   coverage:
     name: Tests coverage
     runs-on: ubuntu-latest
