@@ -10,9 +10,11 @@ use Dynamite\AbstractFixture;
 use Dynamite\AbstractTable;
 use Dynamite\Executor;
 use Dynamite\FixtureInterface;
+use Dynamite\Loader;
 use Dynamite\Purger\Purger;
 use Dynamite\TableInterface;
 use Dynamite\Tests\Integration\IntegrationTestCase;
+use Faker\Factory;
 
 class PurgerTest extends IntegrationTestCase
 {
@@ -140,5 +142,88 @@ class PurgerTest extends IntegrationTestCase
         $response->resolve();
 
         self::assertSame(0, $response->getCount());
+    }
+
+    public function testPurgeLargeFixturesBatch(): void
+    {
+        $this->createTable();
+
+        $fixture = new class() extends AbstractFixture implements FixtureInterface {
+            protected function configure(): void
+            {
+                $this->setTableName('Users');
+                $faker = Factory::create();
+
+                for ($i = 0; $i < 70; ++$i) {
+                    $this->addItem([
+                        'Id' => [
+                            ScalarAttributeType::S => $faker->uuid(),
+                        ],
+                        'Email' => [
+                            ScalarAttributeType::S => $faker->email(),
+                        ],
+                    ]);
+                }
+            }
+        };
+
+        $loader = new Loader($this->validator, $this->serializer);
+        $loader->addFixture($fixture);
+
+        $executor = new Executor($this->dynamoDbClient);
+        $executor->execute($loader->getFixtures(), []);
+
+        $response = $this->dynamoDbClient->scan([
+            'TableName' => 'Users',
+        ]);
+        $response->resolve();
+
+        self::assertSame(70, $response->getCount());
+
+        $purger = new Purger($this->dynamoDbClient, $this->logger);
+        $purger->purge($loader->getFixtures(), []);
+
+        $response = $this->dynamoDbClient->scan([
+            'TableName' => 'Users',
+        ]);
+        $response->resolve();
+
+        self::assertSame(0, $response->getCount());
+
+        $expectedLogs = [
+            [
+                'level' => 'debug',
+                'message' => 'Data batch deleted',
+                'context' => [
+                    'table' => 'Users',
+                    'batch' => '#1',
+                ],
+            ],
+            [
+                'level' => 'debug',
+                'message' => 'Data batch deleted',
+                'context' => [
+                    'table' => 'Users',
+                    'batch' => '#2',
+                ],
+            ],
+            [
+                'level' => 'debug',
+                'message' => 'Data batch deleted',
+                'context' => [
+                    'table' => 'Users',
+                    'batch' => '#3',
+                ],
+            ],
+            [
+                'level' => 'debug',
+                'message' => 'Table data truncated',
+                'context' => [
+                    'table' => 'Users',
+                ],
+            ],
+        ];
+
+        self::assertSame($expectedLogs, $this->logger->recordsByLevel['debug'] ?? []);
     }
 }

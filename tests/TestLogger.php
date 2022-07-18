@@ -11,7 +11,7 @@ final class TestLogger implements LoggerInterface
 {
     use LoggerTrait;
 
-    private array $recordsByLevel = [];
+    public array $recordsByLevel = [];
 
     public function hasRecords(string $level): bool
     {

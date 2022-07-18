@@ -14,9 +14,7 @@ final class Records extends Assert\Compound
         return [
             new Assert\Count(
                 min: 1,
-                max: 100,
-                minMessage: 'At least {{ limit }} record is required',
-                maxMessage: 'Max batch size is {{ limit }} records'
+                minMessage: 'At least {{ limit }} record is required'
             ),
         ];
     }
