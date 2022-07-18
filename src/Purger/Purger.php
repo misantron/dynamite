@@ -7,11 +7,11 @@ namespace Dynamite\Purger;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Enum\KeyType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
-use AsyncAws\DynamoDb\Input\DeleteItemInput;
 use AsyncAws\DynamoDb\Input\DeleteTableInput;
 use AsyncAws\DynamoDb\Input\DescribeTableInput;
 use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
+use Dynamite\Query\BatchWrite;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -70,14 +70,13 @@ class Purger implements PurgerInterface
             return;
         }
 
+        $keysToDelete = [];
         foreach ($response->getItems() as $item) {
-            $this->client->deleteItem(
-                new DeleteItemInput([
-                    'TableName' => $tableName,
-                    'Key' => $this->getDeleteKey($primaryKey, $item),
-                ])
-            )->resolve();
+            $keysToDelete[] = $this->getDeleteKey($primaryKey, $item);
         }
+
+        $query = new BatchWrite($this->client, $this->logger);
+        $query->deleteItems($tableName, $keysToDelete);
 
         $this->logger->debug('Table data truncated', [
             'table' => $tableName,
