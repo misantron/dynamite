@@ -11,7 +11,7 @@ use AsyncAws\DynamoDb\Input\DeleteTableInput;
 use AsyncAws\DynamoDb\Input\DescribeTableInput;
 use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
-use Dynamite\Query\BatchWrite;
+use Dynamite\Query\BatchWriteItems;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -75,7 +75,7 @@ class Purger implements PurgerInterface
             $keysToDelete[] = $this->getDeleteKey($primaryKey, $item);
         }
 
-        $query = new BatchWrite($this->client, $this->logger);
+        $query = new BatchWriteItems($this->client, $this->logger);
         $query->deleteItems($tableName, $keysToDelete);
 
         $this->logger->debug('Table data truncated', [

@@ -7,7 +7,7 @@ namespace Dynamite;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\PutItemInput;
 use Dynamite\Exception\ValidationException;
-use Dynamite\Query\BatchWrite;
+use Dynamite\Query\BatchWriteItems;
 use Dynamite\Schema\Records;
 use Dynamite\Validator\ValidatorAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -70,7 +70,7 @@ abstract class AbstractFixture
             return;
         }
 
-        $query = new BatchWrite($client, $logger);
+        $query = new BatchWriteItems($client, $logger);
         $query->putItems($this->schema->getTableName(), $this->schema->getRecords());
 
         $logger->debug('Batch records loaded', [
