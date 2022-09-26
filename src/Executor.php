@@ -19,7 +19,7 @@ class Executor
         PurgerInterface $purger = null,
         private readonly LoggerInterface $logger = new NullLogger()
     ) {
-        $this->purger = $purger ?? $this->createDefaultPurger($logger);
+        $this->purger = $purger ?? new Purger($this->client, $this->logger);
     }
 
     public function execute(array $fixtures, array $tables): void
@@ -57,10 +57,5 @@ class Executor
     protected function loadFixture(FixtureInterface $fixture): void
     {
         $fixture->load($this->client, $this->logger);
-    }
-
-    private function createDefaultPurger(LoggerInterface $logger): PurgerInterface
-    {
-        return new Purger($this->client, $logger);
     }
 }

@@ -24,5 +24,6 @@ return static function (ECSConfig $ecsConfig): void {
         SetList::CLEAN_CODE,
         SetList::STRICT,
         SetList::PSR_12,
+        SetList::PHPUNIT,
     ]);
 };
