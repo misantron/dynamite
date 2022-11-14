@@ -19,11 +19,11 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
-        "phpstan/phpstan": "^1.8",
-        "phpstan/phpstan-phpunit": "^1.1",
+        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan-phpunit": "^1.2",
         "phpstan/phpstan-strict-rules": "^1.4",
         "symfony/phpunit-bridge": "^5.4 || ^6.0",
-        "symplify/easy-coding-standard": "^11.0"
+        "symplify/easy-coding-standard": "^11.1"
     },
     "autoload": {
         "psr-4": {
