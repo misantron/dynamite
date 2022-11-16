@@ -31,7 +31,10 @@ class Purger implements PurgerInterface
         }
 
         foreach ($tables as $table) {
-            $this->dropTable($table->getTableName());
+            $tableName = $table->getTableName();
+            if ($tableName !== null) {
+                $this->dropTable($tableName);
+            }
         }
     }
 
