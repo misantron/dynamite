@@ -9,8 +9,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Loader
 {
+    /**
+     * @var array<string, TableInterface>
+     */
     private array $tables = [];
 
+    /**
+     * @var array<string, FixtureInterface>
+     */
     private array $fixtures = [];
 
     public function __construct(
@@ -88,6 +94,9 @@ class Loader
         return $this->fixtures;
     }
 
+    /**
+     * @param array<int, string> $files
+     */
     private function loadClasses(array $files): void
     {
         $declared = get_declared_classes();
@@ -109,6 +118,9 @@ class Loader
         }
     }
 
+    /**
+     * @return \RecursiveIteratorIterator<\RecursiveDirectoryIterator>
+     */
     private function createDirectoryIterator(string $path): \RecursiveIteratorIterator
     {
         return new \RecursiveIteratorIterator(
@@ -119,6 +131,7 @@ class Loader
 
     private function createTable(string $className): TableInterface
     {
+        /** @var TableInterface $table */
         $table = new $className();
         $table->setValidator($this->validator);
         $table->setNormalizer($this->serializer);
@@ -128,6 +141,7 @@ class Loader
 
     private function createFixture(string $className): FixtureInterface
     {
+        /** @var FixtureInterface $fixture */
         $fixture = new $className();
         $fixture->setValidator($this->validator);
 

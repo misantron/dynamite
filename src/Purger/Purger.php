@@ -11,6 +11,7 @@ use AsyncAws\DynamoDb\Input\DeleteTableInput;
 use AsyncAws\DynamoDb\Input\DescribeTableInput;
 use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
+use AsyncAws\DynamoDb\ValueObject\KeySchemaElement;
 use Dynamite\Query\BatchWriteItems;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -83,6 +84,10 @@ class Purger implements PurgerInterface
         ]);
     }
 
+    /**
+     * @param array<int, KeySchemaElement> $keySchema
+     * @return array<int, string>
+     */
     private function getPrimaryKeyAttributes(array $keySchema): array
     {
         $attributes = [];
@@ -95,6 +100,7 @@ class Purger implements PurgerInterface
     }
 
     /**
+     * @param array<int, string> $primaryKey
      * @param array<string, AttributeValue> $item
      * @return array<string, AttributeValue>
      */

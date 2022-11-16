@@ -23,6 +23,9 @@ class TableOrIndexNameTest extends UnitTestCase
         self::assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
     }
 
+    /**
+     * @return iterable<string, array<int, mixed>>
+     */
     public function validateDataProvider(): iterable
     {
         yield 'null-value' => [

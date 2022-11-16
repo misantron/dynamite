@@ -41,6 +41,9 @@ abstract class AbstractTable
         return $this;
     }
 
+    /**
+     * @param array<int, array{string, string}> $items
+     */
     protected function addAttributes(array $items): self
     {
         foreach ($items as [$name, $type]) {
@@ -114,7 +117,7 @@ abstract class AbstractTable
         $this->schema->assertHashKeySet();
 
         $input = new CreateTableInput(
-            $this->normalizer->normalize(
+            (array) $this->normalizer->normalize(
                 $this->schema,
                 context: [
                     AbstractObjectNormalizer::SKIP_NULL_VALUES => true,

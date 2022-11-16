@@ -35,7 +35,7 @@ abstract class AbstractFixture
     }
 
     /**
-     * @param array<int, array> $items
+     * @param array<int, array<string, array<string, string>>> $items
      */
     protected function addItems(array $items): self
     {
@@ -55,26 +55,29 @@ abstract class AbstractFixture
             throw new ValidationException($violations);
         }
 
+        /** @var string $tableName */
+        $tableName = $this->schema->getTableName();
+
         if ($this->schema->isSingleRecord()) {
             $input = new PutItemInput([
-                'TableName' => $this->schema->getTableName(),
+                'TableName' => $tableName,
                 'Item' => current($this->schema->getRecords()),
             ]);
 
             $client->putItem($input)->resolve();
 
             $logger->debug('Single record loaded', [
-                'table' => $this->schema->getTableName(),
+                'table' => $tableName,
             ]);
 
             return;
         }
 
         $query = new BatchWriteItems($client, $logger);
-        $query->putItems($this->schema->getTableName(), $this->schema->getRecords());
+        $query->putItems($tableName, $this->schema->getRecords());
 
         $logger->debug('Batch records loaded', [
-            'table' => $this->schema->getTableName(),
+            'table' => $tableName,
         ]);
     }
 

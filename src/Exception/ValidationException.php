@@ -8,16 +8,20 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 final class ValidationException extends AbstractException
 {
-    public function __construct(private readonly ConstraintViolationListInterface $violationList)
-    {
+    public function __construct(
+        private readonly ConstraintViolationListInterface $violationList
+    ) {
         parent::__construct('Validation failed');
     }
 
-    public function getErrors(): iterable
+    /**
+     * @return array<string, array<int, string>>
+     */
+    public function getErrors(): array
     {
         $output = [];
         foreach ($this->violationList as $value) {
-            $output[$value->getPropertyPath()][] = $value->getMessage();
+            $output[$value->getPropertyPath()][] = (string) $value->getMessage();
         }
 
         return $output;

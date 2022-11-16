@@ -1,10 +1,16 @@
 parameters:
-  level: 5
+  level: 8
   paths:
     - src
     - tests
   bootstrapFiles:
     - vendor/bin/.phpunit/phpunit/vendor/autoload.php
+  checkGenericClassInNonGenericObjectType: false
+  ignoreErrors:
+    -
+      message: '#should be contravariant with parameter \$options \(array\) of method Symfony\\Component\\Validator\\Constraints\\Compound\:\:getConstraints\(\)$#'
+      paths:
+        - src/Validator/Constraints/*
 includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-phpunit/rules.neon

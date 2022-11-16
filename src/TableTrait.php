@@ -8,7 +8,7 @@ trait TableTrait
 {
     private bool $isConfigured = false;
 
-    final public function getTableName(): string
+    final public function getTableName(): ?string
     {
         $this->initialize();
 

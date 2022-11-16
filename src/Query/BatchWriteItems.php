@@ -26,7 +26,7 @@ final class BatchWriteItems
     }
 
     /**
-     * @param array<int, array<string, AttributeValue>> $items
+     * @param array<int, array<string, array<string, string>|AttributeValue>> $items
      */
     public function putItems(string $tableName, array $items): void
     {
@@ -48,7 +48,7 @@ final class BatchWriteItems
     }
 
     /**
-     * @param array<int, array<string, AttributeValue>> $keys
+     * @param array<int, array<string, array<string, string>|AttributeValue>> $keys
      */
     public function deleteItems(string $tableName, array $keys): void
     {
@@ -69,6 +69,9 @@ final class BatchWriteItems
         );
     }
 
+    /**
+     * @param array<int, array<string, array<string, string>|AttributeValue>> $items
+     */
     private function batchWriteRequest(
         string $tableName,
         array $items,

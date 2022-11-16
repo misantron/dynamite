@@ -17,30 +17,59 @@ final class Table
     ]
     private ?string $tableName = null;
 
+    /**
+     * @var array<int, array{AttributeName: string, AttributeType: string}>|null
+     */
     #[
         SerializedName('AttributeDefinitions'),
         Assert\AttributeDefinitions
     ]
     private ?array $attributeDefinitions = null;
 
+    /**
+     * @var array<int, array{AttributeName: string, KeyType: string}>|null
+     */
     #[
         SerializedName('KeySchema'),
         Assert\KeySchema
     ]
     private ?array $keySchema = null;
 
+    /**
+     * @var array<int, array{
+     *     IndexName: string,
+     *     KeySchema: array<int, array{
+     *          AttributeName: string,
+     *          KeyType: string
+     *     }>
+     * }>|null
+     */
     #[
         SerializedName('LocalSecondaryIndexes'),
         Assert\LocalSecondaryIndexes
     ]
     private ?array $localSecondaryIndexes = null;
 
+    /**
+     * @var array<int, array{
+     *     IndexName: string,
+     *     KeySchema: array<int, array{
+     *          AttributeName: string,
+     *          KeyType: string
+     *     }>,
+     *     Projection: array{ProjectionType: string},
+     *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
+     * }>|null
+     */
     #[
         SerializedName('GlobalSecondaryIndexes'),
         Assert\GlobalSecondaryIndexes
     ]
     private ?array $globalSecondaryIndexes = null;
 
+    /**
+     * @var array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
+     */
     #[
         SerializedName('ProvisionedThroughput'),
         Assert\ProvisionedThroughput
@@ -52,7 +81,7 @@ final class Table
         $this->tableName = $tableName;
     }
 
-    public function getTableName(): string
+    public function getTableName(): ?string
     {
         return $this->tableName;
     }
@@ -69,6 +98,9 @@ final class Table
         ];
     }
 
+    /**
+     * @return array<int, array{AttributeName: string, AttributeType: string}>|null
+     */
     public function getAttributeDefinitions(): ?array
     {
         return $this->attributeDefinitions;
@@ -88,6 +120,9 @@ final class Table
         return $this;
     }
 
+    /**
+     * @return array<int, array{AttributeName: string, KeyType: string}>|null
+     */
     public function getKeySchema(): ?array
     {
         $this->assertKeySchemaAttributesDefined($this->keySchema ?? []);
@@ -95,6 +130,9 @@ final class Table
         return $this->keySchema;
     }
 
+    /**
+     * @param array<int, array{AttributeName: string, KeyType: string}> $keySchema
+     */
     private function assertKeySchemaAttributesDefined(array $keySchema): void
     {
         array_walk($keySchema, function (array $element): void {
@@ -152,6 +190,17 @@ final class Table
         ];
     }
 
+    /**
+     * @return array<int, array{
+     *     IndexName: string,
+     *     KeySchema: array<int, array{
+     *          AttributeName: string,
+     *          KeyType: string
+     *     }>,
+     *     Projection: array{ProjectionType: string},
+     *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
+     * }>|null
+     */
     public function getGlobalSecondaryIndexes(): ?array
     {
         if ($this->globalSecondaryIndexes === null) {
@@ -161,6 +210,17 @@ final class Table
         return $this->normalizeGlobalSecondaryIndexes();
     }
 
+    /**
+     * @return array<int, array{
+     *     IndexName: string,
+     *     KeySchema: array<int, array{
+     *          AttributeName: string,
+     *          KeyType: string
+     *     }>,
+     *     Projection: array{ProjectionType: string},
+     *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
+     * }>
+     */
     private function normalizeGlobalSecondaryIndexes(): array
     {
         return array_map(
@@ -178,7 +238,7 @@ final class Table
 
                 return $index;
             },
-            $this->globalSecondaryIndexes
+            $this->globalSecondaryIndexes ?? []
         );
     }
 
@@ -208,6 +268,15 @@ final class Table
         ];
     }
 
+    /**
+     * @return array<int, array{
+     *     IndexName: string,
+     *     KeySchema: array<int, array{
+     *          AttributeName: string,
+     *          KeyType: string
+     *     }>
+     * }>|null
+     */
     public function getLocalSecondaryIndexes(): ?array
     {
         if ($this->localSecondaryIndexes === null) {
@@ -230,6 +299,9 @@ final class Table
         ];
     }
 
+    /**
+     * @return array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
+     */
     public function getProvisionedThroughput(): ?array
     {
         return $this->provisionedThroughput;

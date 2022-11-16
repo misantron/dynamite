@@ -22,6 +22,10 @@ class Executor
         $this->purger = $purger ?? new Purger($this->client, $this->logger);
     }
 
+    /**
+     * @param array<string, FixtureInterface> $fixtures
+     * @param array<string, TableInterface> $tables
+     */
     public function execute(array $fixtures, array $tables): void
     {
         $this->purge($fixtures, $tables);
@@ -44,6 +48,10 @@ class Executor
         return $this->logger;
     }
 
+    /**
+     * @param array<string, FixtureInterface> $fixtures
+     * @param array<string, TableInterface> $tables
+     */
     protected function purge(array $fixtures, array $tables): void
     {
         $this->getPurger()->purge($fixtures, $tables);
