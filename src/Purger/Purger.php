@@ -27,7 +27,10 @@ class Purger implements PurgerInterface
     public function purge(array $fixtures, array $tables): void
     {
         foreach ($fixtures as $fixture) {
-            $this->truncateData($fixture->getTableName());
+            $tableName = $fixture->getTableName();
+            if ($tableName !== null) {
+                $this->truncateData($tableName);
+            }
         }
 
         foreach ($tables as $table) {
