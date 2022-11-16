@@ -15,6 +15,9 @@ class KeySchemaTest extends UnitTestCase
     public function testValidate(mixed $input, bool $expected): void
     {
         $entity = new class() {
+            /**
+             * @var array<int, mixed>|null
+             */
             #[KeySchema]
             public ?array $keySchema = null;
         };
@@ -23,6 +26,9 @@ class KeySchemaTest extends UnitTestCase
         self::assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
     }
 
+    /**
+     * @return iterable<string, array<int, mixed>>
+     */
     public function validateDataProvider(): iterable
     {
         yield 'null-value' => [

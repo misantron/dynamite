@@ -71,7 +71,7 @@ class ExecutorTest extends IntegrationTestCase
         ]);
         $response->resolve();
 
-        self::assertSame('Users', $response->getTable()->getTableName());
+        self::assertSame('Users', $response->getTable()?->getTableName());
 
         $response = $this->dynamoDbClient->scan([
             'TableName' => 'Users',

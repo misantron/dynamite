@@ -17,6 +17,9 @@ class ProjectionTest extends UnitTestCase
         self::assertSame($expected, $this->createValidator()->validate($input, new Projection())->count() > 0);
     }
 
+    /**
+     * @return iterable<string, array<int, mixed>>
+     */
     public function validateDataProvider(): iterable
     {
         yield 'null-value' => [

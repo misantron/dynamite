@@ -277,6 +277,16 @@ class TableTest extends UnitTestCase
 
         $table->create($dynamoDbClientMock, $logger);
 
-        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
+        self::assertTrue(
+            $logger->hasRecord(
+                [
+                    'message' => 'Table created',
+                    'context' => [
+                        'table' => 'Users',
+                    ],
+                ],
+                LogLevel::DEBUG
+            )
+        );
     }
 }

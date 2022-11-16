@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Dynamite\Validator\Constraints;
 
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[\Attribute]
 final class LocalSecondaryIndexes extends Assert\Compound
 {
+    /**
+     * @param array<int, mixed> $options
+     * @return array<int, Constraint>
+     */
     protected function getConstraints(array $options): array
     {
         return [

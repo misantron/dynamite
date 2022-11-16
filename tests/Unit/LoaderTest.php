@@ -21,8 +21,13 @@ class LoaderTest extends UnitTestCase
 
     public function testLoadFromDirectory(): void
     {
+        $path = realpath(__DIR__ . '/../Fixtures');
+        if ($path === false) {
+            self::fail('Unable to load fixtures');
+        }
+
         $loader = new Loader($this->createValidator(), $this->createSerializer());
-        $loader->loadFromDirectory(realpath(__DIR__ . '/../Fixtures'));
+        $loader->loadFromDirectory($path);
 
         self::assertCount(2, $loader->getTables());
         self::assertCount(3, $loader->getFixtures());

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Dynamite\Schema;
 
-use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use Dynamite\Validator\Constraints as Assert;
 
 final class Records
@@ -12,6 +11,9 @@ final class Records
     #[Assert\TableOrIndexName]
     private ?string $tableName = null;
 
+    /**
+     * @var array<int, array<string, array<string, string>>>
+     */
     #[Assert\Records]
     private array $records = [];
 
@@ -20,18 +22,21 @@ final class Records
         $this->tableName = $tableName;
     }
 
-    public function getTableName(): string
+    public function getTableName(): ?string
     {
         return $this->tableName;
     }
 
+    /**
+     * @param array<string, array<string, string>> $record
+     */
     public function addRecord(array $record): void
     {
         $this->records[] = $record;
     }
 
     /**
-     * @return array<int, array<string, AttributeValue>>
+     * @return array<int, array<string, array<string, string>>>
      */
     public function getRecords(): array
     {

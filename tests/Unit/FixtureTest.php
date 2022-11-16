@@ -94,7 +94,17 @@ class FixtureTest extends UnitTestCase
         $fixture->setValidator($validator);
         $fixture->load($dynamoDbClientMock, $logger);
 
-        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
+        self::assertTrue(
+            $logger->hasRecord(
+                [
+                    'message' => 'Single record loaded',
+                    'context' => [
+                        'table' => 'Users',
+                    ],
+                ],
+                LogLevel::DEBUG
+            )
+        );
     }
 
     public function testLoadBatchRecords(): void
@@ -160,6 +170,16 @@ class FixtureTest extends UnitTestCase
         $fixture->setValidator($validator);
         $fixture->load($dynamoDbClientMock, $logger);
 
-        self::assertTrue($logger->hasRecords(LogLevel::DEBUG));
+        self::assertTrue(
+            $logger->hasRecord(
+                [
+                    'message' => 'Batch records loaded',
+                    'context' => [
+                        'table' => 'Users',
+                    ],
+                ],
+                LogLevel::DEBUG
+            )
+        );
     }
 }
