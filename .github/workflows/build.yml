@@ -3,49 +3,49 @@ name: build
 on: [push]
 
 jobs:
-  ecs:
-    name: Easy Coding Standard
-    runs-on: ubuntu-latest
+  coding-standards:
+    name: Coding Standards Check
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Cache composer dependencies
-        uses: actions/cache@v3
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ecs-${{ github.sha }}
-          restore-keys: ecs-
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist
-      - name: Easy Coding Standard run
+          php-version: 8.1
+          coverage: none
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: locked
+          composer-options: --no-ansi --no-interaction --no-progress
+      - name: Run ecs check
         run: vendor/bin/ecs check
-  phpstan:
-    name: PHPStan
-    runs-on: ubuntu-latest
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Cache composer dependencies
-        uses: actions/cache@v3
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: phpstan-${{ github.sha }}
-          restore-keys: phpstan-
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist
+          php-version: 8.1
+          coverage: none
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: locked
+          composer-options: --no-ansi --no-interaction --no-progress
       - name: Install PHPUnit
         run: vendor/bin/simple-phpunit install
-      - name: PHPStan run
+      - name: Run PHPStan analyse
         run: vendor/bin/phpstan analyse
+      - name: Run Psalm analyse
+        run: vendor/bin/psalm
   test:
     name: Tests (${{ matrix.entry.php }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         entry:
@@ -54,51 +54,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup PHP
+      - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.entry.php }}
           coverage: none
       - name: Initialize tests
         run: make initialize
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Cache composer dependencies
-        uses: actions/cache@v3
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ matrix.php-versions }}-phpunit-${{ github.sha }}
-          restore-keys: ${{ matrix.php-versions }}-phpunit-
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist
+          dependency-versions: locked
+          composer-options: --no-ansi --no-interaction --no-progress
       - name: Run tests
         run: |
           vendor/bin/simple-phpunit install
           vendor/bin/simple-phpunit
         continue-on-error: ${{ matrix.entry.allowed-failure }}
   coverage:
-    name: Tests coverage
-    runs-on: ubuntu-latest
+    name: Tests Coverage
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: PHP setup
+      - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: 8.1
           coverage: pcov
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Cache composer dependencies
-        uses: actions/cache@v3
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: cov-${{ github.sha }}
-          restore-keys: cov-
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist
+          dependency-versions: locked
+          composer-options: --no-ansi --no-interaction --no-progress
       - name: PHPUnit run with coverage
         run: |
           vendor/bin/simple-phpunit install

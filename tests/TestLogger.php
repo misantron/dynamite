@@ -20,11 +20,6 @@ final class TestLogger implements LoggerInterface
      */
     public array $recordsByLevel = [];
 
-    public function hasRecords(string $level): bool
-    {
-        return isset($this->recordsByLevel[$level]);
-    }
-
     /**
      * @param array{
      *     message: string,
