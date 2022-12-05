@@ -17,7 +17,7 @@ test-integration:
 test-unit:
 	vendor/bin/simple-phpunit --testsuite Unit
 
-lint: ecs-fix phpstan
+lint: ecs-fix phpstan psalm
 
 ecs:
 	vendor/bin/ecs check
@@ -25,4 +25,7 @@ ecs-fix:
 	vendor/bin/ecs check --fix
 phpstan:
 	vendor/bin/phpstan analyse
+psalm:
+	vendor/bin/psalm
+
 
