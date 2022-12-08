@@ -44,20 +44,20 @@ jobs:
       - name: Run Psalm analyse
         run: vendor/bin/psalm
   test:
-    name: Tests (${{ matrix.entry.php }})
+    name: Tests (${{ matrix.entry }})
     runs-on: ubuntu-22.04
     strategy:
       matrix:
         entry:
-          - { php: 8.1, allowed-failure: false }
-          - { php: 8.2, allowed-failure: true }
+          - 8.1
+          - 8.2
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.entry.php }}
+          php-version: ${{ matrix.entry }}
           coverage: none
       - name: Initialize tests
         run: make initialize
@@ -70,7 +70,6 @@ jobs:
         run: |
           vendor/bin/simple-phpunit install
           vendor/bin/simple-phpunit
-        continue-on-error: ${{ matrix.entry.allowed-failure }}
   coverage:
     name: Tests Coverage
     runs-on: ubuntu-22.04
