@@ -17,7 +17,4 @@
     <extraFiles>
         <directory name="vendor/bin/.phpunit/phpunit"/>
     </extraFiles>
-    <enableExtensions>
-        <extension name="random"/>
-    </enableExtensions>
 </psalm>
