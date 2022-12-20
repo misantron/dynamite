@@ -13,7 +13,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.1
-          extensions: random
           coverage: none
       - name: Install composer dependencies
         uses: ramsey/composer-install@v2
@@ -32,7 +31,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.1
-          extensions: random
           coverage: none
       - name: Install composer dependencies
         uses: ramsey/composer-install@v2
@@ -60,7 +58,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.entry }}
-          extensions: random
           coverage: none
       - name: Initialize tests
         run: make initialize
@@ -83,7 +80,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.1
-          extensions: random
           coverage: pcov
       - name: Install composer dependencies
         uses: ramsey/composer-install@v2
