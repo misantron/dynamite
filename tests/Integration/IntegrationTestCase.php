@@ -11,8 +11,8 @@ use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use Dynamite\Tests\DependencyMockTrait;
-use Dynamite\Tests\TestLogger;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -26,7 +26,7 @@ abstract class IntegrationTestCase extends TestCase
 
     protected ValidatorInterface $validator;
 
-    protected TestLogger $logger;
+    protected BufferingLogger $logger;
 
     protected function setUp(): void
     {
@@ -45,6 +45,8 @@ abstract class IntegrationTestCase extends TestCase
         } catch (ResourceNotFoundException) {
             // ignore exception
         }
+
+        $this->logger->cleanLogs();
     }
 
     protected function createTable(): void

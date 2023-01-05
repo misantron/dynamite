@@ -15,7 +15,6 @@ use Dynamite\AbstractTable;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Exception\ValidationException;
 use Dynamite\TableInterface;
-use Psr\Log\LogLevel;
 
 class TableTest extends UnitTestCase
 {
@@ -53,6 +52,8 @@ class TableTest extends UnitTestCase
             self::assertSame('Validation failed', $e->getMessage());
             self::assertSame($expectedErrors, $e->getErrors());
         }
+
+        $logger->cleanLogs();
     }
 
     public function testAddAttributeWithUnexpectedType(): void
@@ -78,6 +79,8 @@ class TableTest extends UnitTestCase
         $table->setNormalizer($serializer);
 
         $table->create($dynamoDbClient, $logger);
+
+        $logger->cleanLogs();
     }
 
     public function testAddGlobalSecondaryIndexWithUnexpectedProjectionType(): void
@@ -103,6 +106,8 @@ class TableTest extends UnitTestCase
         $table->setNormalizer($serializer);
 
         $table->create($dynamoDbClient, $logger);
+
+        $logger->cleanLogs();
     }
 
     public function testAddLocalSecondaryIndex(): void
@@ -173,6 +178,8 @@ class TableTest extends UnitTestCase
         $table->setNormalizer($serializer);
 
         $table->create($dynamoDbClientMock, $logger);
+
+        $logger->cleanLogs();
     }
 
     public function testCreate(): void
@@ -277,16 +284,16 @@ class TableTest extends UnitTestCase
 
         $table->create($dynamoDbClientMock, $logger);
 
-        self::assertTrue(
-            $logger->hasRecord(
+        $expectedLogs = [
+            [
+                'debug',
+                'Table created',
                 [
-                    'message' => 'Table created',
-                    'context' => [
-                        'table' => 'Users',
-                    ],
+                    'table' => 'Users',
                 ],
-                LogLevel::DEBUG
-            )
-        );
+            ],
+        ];
+
+        self::assertSame($expectedLogs, $logger->cleanLogs());
     }
 }

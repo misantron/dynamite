@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests;
 
+use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader as SerializerAnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
@@ -33,8 +34,8 @@ trait DependencyMockTrait
             ->getValidator();
     }
 
-    protected function createTestLogger(): TestLogger
+    protected function createTestLogger(): BufferingLogger
     {
-        return new TestLogger();
+        return new BufferingLogger();
     }
 }
