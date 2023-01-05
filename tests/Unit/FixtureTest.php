@@ -15,7 +15,6 @@ use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\AbstractFixture;
 use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
-use Psr\Log\LogLevel;
 
 class FixtureTest extends UnitTestCase
 {
@@ -52,6 +51,8 @@ class FixtureTest extends UnitTestCase
             self::assertSame('Validation failed', $e->getMessage());
             self::assertSame($expectedErrors, $e->getErrors());
         }
+
+        $logger->cleanLogs();
     }
 
     public function testLoadSingleRecord(): void
@@ -94,17 +95,17 @@ class FixtureTest extends UnitTestCase
         $fixture->setValidator($validator);
         $fixture->load($dynamoDbClientMock, $logger);
 
-        self::assertTrue(
-            $logger->hasRecord(
+        $expectedLogs = [
+            [
+                'debug',
+                'Single record loaded',
                 [
-                    'message' => 'Single record loaded',
-                    'context' => [
-                        'table' => 'Users',
-                    ],
+                    'table' => 'Users',
                 ],
-                LogLevel::DEBUG
-            )
-        );
+            ],
+        ];
+
+        self::assertSame($expectedLogs, $logger->cleanLogs());
     }
 
     public function testLoadBatchRecords(): void
@@ -170,16 +171,24 @@ class FixtureTest extends UnitTestCase
         $fixture->setValidator($validator);
         $fixture->load($dynamoDbClientMock, $logger);
 
-        self::assertTrue(
-            $logger->hasRecord(
+        $expectedLogs = [
+            [
+                'debug',
+                'Data batch executed',
                 [
-                    'message' => 'Batch records loaded',
-                    'context' => [
-                        'table' => 'Users',
-                    ],
+                    'table' => 'Users',
+                    'batch' => '#1',
                 ],
-                LogLevel::DEBUG
-            )
-        );
+            ],
+            [
+                'debug',
+                'Batch records loaded',
+                [
+                    'table' => 'Users',
+                ],
+            ],
+        ];
+
+        self::assertSame($expectedLogs, $logger->cleanLogs());
     }
 }

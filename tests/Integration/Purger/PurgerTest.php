@@ -192,38 +192,38 @@ class PurgerTest extends IntegrationTestCase
 
         $expectedLogs = [
             [
-                'level' => 'debug',
-                'message' => 'Data batch deleted',
-                'context' => [
+                'debug',
+                'Data batch deleted',
+                [
                     'table' => 'Users',
                     'batch' => '#1',
                 ],
             ],
             [
-                'level' => 'debug',
-                'message' => 'Data batch deleted',
-                'context' => [
+                'debug',
+                'Data batch deleted',
+                [
                     'table' => 'Users',
                     'batch' => '#2',
                 ],
             ],
             [
-                'level' => 'debug',
-                'message' => 'Data batch deleted',
-                'context' => [
+                'debug',
+                'Data batch deleted',
+                [
                     'table' => 'Users',
                     'batch' => '#3',
                 ],
             ],
             [
-                'level' => 'debug',
-                'message' => 'Table data truncated',
-                'context' => [
+                'debug',
+                'Table data truncated',
+                [
                     'table' => 'Users',
                 ],
             ],
         ];
 
-        self::assertSame($expectedLogs, $this->logger->recordsByLevel['debug'] ?? []);
+        self::assertSame($expectedLogs, $this->logger->cleanLogs());
     }
 }
