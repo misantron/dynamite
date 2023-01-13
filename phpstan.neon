@@ -5,6 +5,7 @@ parameters:
     - tests
   bootstrapFiles:
     - vendor/bin/.phpunit/phpunit/vendor/autoload.php
+  tmpDir: .cache/phpstan
   checkGenericClassInNonGenericObjectType: false
   ignoreErrors:
     -

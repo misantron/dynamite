@@ -14,6 +14,8 @@ return static function (ECSConfig $ecsConfig): void {
         __DIR__ . '/tests',
     ]);
 
+    $ecsConfig->cacheDirectory('.cache/ecs');
+
     $ecsConfig->skip([
         NotOperatorWithSuccessorSpaceFixer::class,
     ]);
