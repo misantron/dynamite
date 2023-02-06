@@ -10,15 +10,19 @@ use AsyncAws\DynamoDb\Enum\KeyType;
 use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
+use Dynamite\Client\AsyncAws\AsyncAwsClient;
+use Dynamite\ClientInterface;
 use Dynamite\Tests\DependencyMockTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-abstract class IntegrationTestCase extends TestCase
+abstract class AsyncAwsIntegrationTestCase extends TestCase
 {
     use DependencyMockTrait;
+
+    protected ClientInterface $asyncAwsClient;
 
     protected DynamoDbClient $dynamoDbClient;
 
@@ -34,6 +38,7 @@ abstract class IntegrationTestCase extends TestCase
         $this->serializer = $this->createSerializer();
         $this->validator = $this->createValidator();
         $this->logger = $this->createTestLogger();
+        $this->asyncAwsClient = $this->createAsyncAwsClient();
     }
 
     protected function tearDown(): void
@@ -92,6 +97,15 @@ abstract class IntegrationTestCase extends TestCase
                 'WriteCapacityUnits' => 1,
             ],
         ])->resolve();
+    }
+
+    private function createAsyncAwsClient(): ClientInterface
+    {
+        return new AsyncAwsClient(
+            $this->dynamoDbClient,
+            $this->serializer,
+            $this->logger
+        );
     }
 
     private function createDynamoDbClient(): DynamoDbClient

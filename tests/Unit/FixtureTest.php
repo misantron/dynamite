@@ -13,6 +13,7 @@ use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\AbstractFixture;
+use Dynamite\Client\AsyncAws\AsyncAwsClient;
 use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
 
@@ -23,6 +24,12 @@ class FixtureTest extends UnitTestCase
         $validator = $this->createValidator();
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $logger = $this->createTestLogger();
+
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $this->createSerializer(),
+            $logger
+        );
 
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
@@ -37,7 +44,7 @@ class FixtureTest extends UnitTestCase
 
         try {
             $fixture->setValidator($validator);
-            $fixture->load($dynamoDbClientMock, $logger);
+            $fixture->load($client, $logger);
 
             self::fail('Exception is not thrown');
         } catch (\Throwable $e) {
@@ -79,6 +86,12 @@ class FixtureTest extends UnitTestCase
         ;
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $this->createSerializer(),
+            $logger
+        );
+
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
@@ -93,7 +106,7 @@ class FixtureTest extends UnitTestCase
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock, $logger);
+        $fixture->load($client, $logger);
 
         $expectedLogs = [
             [
@@ -148,6 +161,12 @@ class FixtureTest extends UnitTestCase
         ;
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $this->createSerializer(),
+            $logger
+        );
+
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
@@ -169,7 +188,7 @@ class FixtureTest extends UnitTestCase
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock, $logger);
+        $fixture->load($client, $logger);
 
         $expectedLogs = [
             [

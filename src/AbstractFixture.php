@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
-use AsyncAws\DynamoDb\DynamoDbClient;
-use AsyncAws\DynamoDb\Input\PutItemInput;
 use Dynamite\Exception\ValidationException;
-use Dynamite\Query\BatchWriteItems;
 use Dynamite\Schema\Records;
 use Dynamite\Validator\ValidatorAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -46,7 +43,7 @@ abstract class AbstractFixture
         return $this;
     }
 
-    final public function load(DynamoDbClient $client, LoggerInterface $logger): void
+    final public function load(ClientInterface $client, LoggerInterface $logger): void
     {
         $this->initialize();
 
@@ -58,13 +55,9 @@ abstract class AbstractFixture
         /** @var string $tableName */
         $tableName = $this->schema->getTableName();
 
-        if ($this->schema->isSingleRecord()) {
-            $input = new PutItemInput([
-                'TableName' => $tableName,
-                'Item' => current($this->schema->getRecords()),
-            ]);
-
-            $client->putItem($input)->resolve();
+        if ($this->schema->getCount() === 1) {
+            $records = $this->schema->getRecords();
+            $client->createRecord($tableName, $records[0]);
 
             $logger->debug('Single record loaded', [
                 'table' => $tableName,
@@ -73,8 +66,7 @@ abstract class AbstractFixture
             return;
         }
 
-        $query = new BatchWriteItems($client, $logger);
-        $query->putItems($tableName, $this->schema->getRecords());
+        $client->creatBatchRecords($tableName, $this->schema->getRecords());
 
         $logger->debug('Batch records loaded', [
             'table' => $tableName,

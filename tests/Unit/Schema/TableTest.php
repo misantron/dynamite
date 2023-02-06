@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Schema;
 
-use AsyncAws\DynamoDb\Enum\KeyType;
-use AsyncAws\DynamoDb\Enum\ProjectionType;
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Schema\Table;
 use Dynamite\Tests\Unit\UnitTestCase;
@@ -21,7 +21,7 @@ class TableTest extends UnitTestCase
         $schema = new Table();
         $schema->addGlobalSecondaryIndex(
             'Index',
-            ProjectionType::KEYS_ONLY,
+            ProjectionTypeEnum::KeysOnly,
             'Id',
             null,
             null,
@@ -37,10 +37,10 @@ class TableTest extends UnitTestCase
 
         $schema = new Table();
         $schema->setProvisionedThroughput(1, 1);
-        $schema->addAttribute('Id', ScalarAttributeType::S);
+        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String);
         $schema->addGlobalSecondaryIndex(
             'Index',
-            ProjectionType::KEYS_ONLY,
+            ProjectionTypeEnum::KeysOnly,
             'Email',
             null,
             null,
@@ -56,21 +56,9 @@ class TableTest extends UnitTestCase
 
         $schema = new Table();
         $schema->setProvisionedThroughput(1, 1);
-        $schema->addAttribute('Id', ScalarAttributeType::S);
+        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String);
         $schema->addLocalSecondaryIndex('Index', 'Email', null);
         $schema->getLocalSecondaryIndexes();
-    }
-
-    public function testAddKeyElementWithInvalidAttribute(): void
-    {
-        $this->expectException(SchemaException::class);
-        $this->expectExceptionMessage('Attribute `Email` is not defined');
-
-        $schema = new Table();
-        $schema->setProvisionedThroughput(1, 1);
-        $schema->addAttribute('Id', ScalarAttributeType::S);
-        $schema->addKeyElement('Email', KeyType::HASH);
-        $schema->getKeySchema();
     }
 
     public function testAssertHashKeySetWithoutHashKeyDefinition(): void
@@ -86,41 +74,38 @@ class TableTest extends UnitTestCase
     public function testAssertHashKeySet(): void
     {
         $schema = new Table();
-        $schema->addAttribute('Id', ScalarAttributeType::S);
-        $schema->addKeyElement('Id', KeyType::HASH);
+        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash);
         $schema->assertHashKeySet();
 
         $this->expectNotToPerformAssertions();
     }
 
-    public function testGetKeySchemaWithNotDefinedAttribute(): void
-    {
-        $this->expectException(SchemaException::class);
-        $this->expectErrorMessage('Attribute `Email` is not defined');
-
-        $schema = new Table();
-        $schema->addAttribute('Id', ScalarAttributeType::S);
-        $schema->addKeyElement('Email', KeyType::HASH);
-        $schema->getKeySchema();
-    }
-
     public function testAddAttribute(): void
     {
         $schema = new Table();
-        $schema->addAttribute('Id', ScalarAttributeType::S);
-        $schema->addAttribute('Active', ScalarAttributeType::B);
+        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash);
+        $schema->addAttribute('Active', ScalarAttributeTypeEnum::Binary);
 
         $expected = [
             [
                 'AttributeName' => 'Id',
-                'AttributeType' => ScalarAttributeType::S,
+                'AttributeType' => ScalarAttributeTypeEnum::String->value,
             ],
             [
                 'AttributeName' => 'Active',
-                'AttributeType' => ScalarAttributeType::B,
+                'AttributeType' => ScalarAttributeTypeEnum::Binary->value,
             ],
         ];
 
         self::assertSame($expected, $schema->getAttributeDefinitions());
+
+        $expected = [
+            [
+                'AttributeName' => 'Id',
+                'KeyType' => KeyTypeEnum::Hash->value,
+            ],
+        ];
+
+        self::assertSame($expected, $schema->getKeySchema());
     }
 }

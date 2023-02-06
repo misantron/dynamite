@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Integration;
+namespace Dynamite\Tests\Integration\AsyncAws;
 
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use Dynamite\AbstractFixture;
 use Dynamite\AbstractTable;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Executor;
 use Dynamite\FixtureInterface;
 use Dynamite\Loader;
+use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
+use Dynamite\Tests\Integration\AsyncAwsIntegrationTestCase;
 
-class ExecutorTest extends IntegrationTestCase
+class ExecutorTest extends AsyncAwsIntegrationTestCase
 {
     public function testExecute(): void
     {
@@ -22,11 +25,9 @@ class ExecutorTest extends IntegrationTestCase
                 $this
                     ->setTableName('Users')
                     ->addAttributes([
-                        ['Id', ScalarAttributeType::S],
-                        ['Email', ScalarAttributeType::S],
+                        new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                        new Attribute('Email', ScalarAttributeTypeEnum::String, KeyTypeEnum::Range),
                     ])
-                    ->addHashKey('Id')
-                    ->addRangeKey('Email')
                     ->setProvisionedThroughput(1, 1)
                 ;
             }
@@ -63,7 +64,7 @@ class ExecutorTest extends IntegrationTestCase
         $loader->addTable($table);
         $loader->addFixture($fixture);
 
-        $executor = new Executor($this->dynamoDbClient, logger: $this->logger);
+        $executor = new Executor($this->asyncAwsClient, logger: $this->logger);
         $executor->execute($loader->getFixtures(), $loader->getTables());
 
         $response = $this->dynamoDbClient->describeTable([

@@ -37,18 +37,20 @@ jobs:
         with:
           dependency-versions: locked
           composer-options: --no-ansi --no-interaction --no-progress
-      - name: Install PHPUnit
-        run: vendor/bin/simple-phpunit install
       - name: Run PHPStan analyse
         run: vendor/bin/phpstan analyse
       - name: Run Psalm analyse
         run: vendor/bin/psalm
   test:
-    name: Tests (${{ matrix.entry }})
+    name: Tests
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        entry:
+        dependencies:
+          - lowest
+          - highest
+          - locked
+        php-version:
           - 8.1
           - 8.2
     steps:
@@ -57,19 +59,17 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.entry }}
+          php-version: ${{ matrix.php-version }}
           coverage: none
       - name: Initialize tests
         run: make initialize
       - name: Install composer dependencies
         uses: ramsey/composer-install@v2
         with:
-          dependency-versions: locked
+          dependency-versions: ${{ matrix.dependencies }}
           composer-options: --no-ansi --no-interaction --no-progress
       - name: Run tests
-        run: |
-          vendor/bin/simple-phpunit install
-          vendor/bin/simple-phpunit
+        run: vendor/bin/phpunit
   coverage:
     name: Tests Coverage
     runs-on: ubuntu-22.04
@@ -87,9 +87,7 @@ jobs:
           dependency-versions: locked
           composer-options: --no-ansi --no-interaction --no-progress
       - name: PHPUnit run with coverage
-        run: |
-          vendor/bin/simple-phpunit install
-          vendor/bin/simple-phpunit --testsuite=Unit --coverage-clover=clover.xml
+        run: vendor/bin/phpunit --testsuite=Unit --coverage-clover=clover.xml
       - name: Upload coverage report
         uses: codacy/codacy-coverage-reporter-action@v1
         with:

@@ -8,6 +8,7 @@ use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader as SerializerAnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
+use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -23,6 +24,7 @@ trait DependencyMockTrait
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
 
         return new Serializer([
+            new BackedEnumNormalizer(),
             new ObjectNormalizer($classMetadataFactory, $nameConverter),
         ]);
     }

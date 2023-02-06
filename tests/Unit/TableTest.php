@@ -6,14 +6,15 @@ namespace Dynamite\Tests\Unit;
 
 use AsyncAws\Core\Test\ResultMockFactory;
 use AsyncAws\DynamoDb\DynamoDbClient;
-use AsyncAws\DynamoDb\Enum\KeyType;
-use AsyncAws\DynamoDb\Enum\ProjectionType;
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Input\CreateTableInput;
 use AsyncAws\DynamoDb\Result\CreateTableOutput;
 use Dynamite\AbstractTable;
-use Dynamite\Exception\SchemaException;
+use Dynamite\Client\AsyncAws\AsyncAwsClient;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Exception\ValidationException;
+use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
 
 class TableTest extends UnitTestCase
@@ -25,12 +26,18 @@ class TableTest extends UnitTestCase
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $serializer,
+            $logger
+        );
+
         $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
             {
                 $this->addAttributes([
-                    ['Id', ScalarAttributeType::S],
-                    ['Email', ScalarAttributeType::S],
+                    new Attribute('Id', ScalarAttributeTypeEnum::String),
+                    new Attribute('Email', ScalarAttributeTypeEnum::String),
                 ]);
             }
         };
@@ -38,7 +45,8 @@ class TableTest extends UnitTestCase
         try {
             $table->setValidator($validator);
             $table->setNormalizer($serializer);
-            $table->create($dynamoDbClientMock, $logger);
+
+            $table->create($client, $logger);
 
             self::fail('Exception is not thrown');
         } catch (\Throwable $e) {
@@ -56,60 +64,6 @@ class TableTest extends UnitTestCase
         $logger->cleanLogs();
     }
 
-    public function testAddAttributeWithUnexpectedType(): void
-    {
-        $this->expectException(SchemaException::class);
-        $this->expectExceptionMessage('Unexpected attribute type `U` provided');
-
-        $validator = $this->createValidator();
-        $serializer = $this->createSerializer();
-        $dynamoDbClient = $this->createMock(DynamoDbClient::class);
-        $logger = $this->createTestLogger();
-
-        $table = new class() extends AbstractTable implements TableInterface {
-            public function configure(): void
-            {
-                $this
-                    ->setTableName('Users')
-                    ->addAttribute('Id', 'U')
-                ;
-            }
-        };
-        $table->setValidator($validator);
-        $table->setNormalizer($serializer);
-
-        $table->create($dynamoDbClient, $logger);
-
-        $logger->cleanLogs();
-    }
-
-    public function testAddGlobalSecondaryIndexWithUnexpectedProjectionType(): void
-    {
-        $this->expectException(SchemaException::class);
-        $this->expectExceptionMessage('Unexpected projection type `EXCLUDE` provided');
-
-        $validator = $this->createValidator();
-        $serializer = $this->createSerializer();
-        $dynamoDbClient = $this->createMock(DynamoDbClient::class);
-        $logger = $this->createTestLogger();
-
-        $table = new class() extends AbstractTable implements TableInterface {
-            public function configure(): void
-            {
-                $this
-                    ->setTableName('Users')
-                    ->addGlobalSecondaryIndex('Index', 'EXCLUDE', 'Id')
-                ;
-            }
-        };
-        $table->setValidator($validator);
-        $table->setNormalizer($serializer);
-
-        $table->create($dynamoDbClient, $logger);
-
-        $logger->cleanLogs();
-    }
-
     public function testAddLocalSecondaryIndex(): void
     {
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
@@ -122,21 +76,21 @@ class TableTest extends UnitTestCase
                     'AttributeDefinitions' => [
                         [
                             'AttributeName' => 'Id',
-                            'AttributeType' => ScalarAttributeType::S,
+                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
                         ],
                         [
                             'AttributeName' => 'Email',
-                            'AttributeType' => ScalarAttributeType::S,
+                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
                         ],
                     ],
                     'KeySchema' => [
                         [
                             'AttributeName' => 'Id',
-                            'KeyType' => KeyType::HASH,
+                            'KeyType' => KeyTypeEnum::Hash->value,
                         ],
                         [
                             'AttributeName' => 'Email',
-                            'KeyType' => KeyType::RANGE,
+                            'KeyType' => KeyTypeEnum::Range->value,
                         ],
                     ],
                     'LocalSecondaryIndexes' => [
@@ -145,7 +99,7 @@ class TableTest extends UnitTestCase
                             'KeySchema' => [
                                 [
                                     'AttributeName' => 'Email',
-                                    'KeyType' => KeyType::HASH,
+                                    'KeyType' => KeyTypeEnum::Hash->value,
                                 ],
                             ],
                         ],
@@ -161,15 +115,19 @@ class TableTest extends UnitTestCase
         $serializer = $this->createSerializer();
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $serializer,
+            $logger
+        );
+
         $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
             {
                 $this
                     ->setTableName('Users')
-                    ->addAttribute('Id', ScalarAttributeType::S)
-                    ->addAttribute('Email', ScalarAttributeType::S)
-                    ->addHashKey('Id')
-                    ->addRangeKey('Email')
+                    ->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash)
+                    ->addAttribute('Email', ScalarAttributeTypeEnum::String, KeyTypeEnum::Range)
                     ->addLocalSecondaryIndex('Emails', 'Email')
                 ;
             }
@@ -177,7 +135,7 @@ class TableTest extends UnitTestCase
         $table->setValidator($validator);
         $table->setNormalizer($serializer);
 
-        $table->create($dynamoDbClientMock, $logger);
+        $table->create($client, $logger);
 
         $logger->cleanLogs();
     }
@@ -194,29 +152,29 @@ class TableTest extends UnitTestCase
                     'AttributeDefinitions' => [
                         [
                             'AttributeName' => 'Id',
-                            'AttributeType' => ScalarAttributeType::S,
+                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
                         ],
                         [
                             'AttributeName' => 'Email',
-                            'AttributeType' => ScalarAttributeType::S,
+                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
                         ],
                         [
                             'AttributeName' => 'Active',
-                            'AttributeType' => ScalarAttributeType::B,
+                            'AttributeType' => ScalarAttributeTypeEnum::Binary->value,
                         ],
                         [
                             'AttributeName' => 'CreatedAt',
-                            'AttributeType' => ScalarAttributeType::N,
+                            'AttributeType' => ScalarAttributeTypeEnum::Numeric->value,
                         ],
                     ],
                     'KeySchema' => [
                         [
                             'AttributeName' => 'Id',
-                            'KeyType' => KeyType::HASH,
+                            'KeyType' => KeyTypeEnum::Hash->value,
                         ],
                         [
                             'AttributeName' => 'CreatedAt',
-                            'KeyType' => KeyType::RANGE,
+                            'KeyType' => KeyTypeEnum::Range->value,
                         ],
                     ],
                     'GlobalSecondaryIndexes' => [
@@ -225,15 +183,15 @@ class TableTest extends UnitTestCase
                             'KeySchema' => [
                                 [
                                     'AttributeName' => 'Email',
-                                    'KeyType' => KeyType::HASH,
+                                    'KeyType' => KeyTypeEnum::Hash->value,
                                 ],
                                 [
                                     'AttributeName' => 'Id',
-                                    'KeyType' => KeyType::RANGE,
+                                    'KeyType' => KeyTypeEnum::Range->value,
                                 ],
                             ],
                             'Projection' => [
-                                'ProjectionType' => ProjectionType::KEYS_ONLY,
+                                'ProjectionType' => ProjectionTypeEnum::KeysOnly->value,
                             ],
                             'ProvisionedThroughput' => [
                                 'ReadCapacityUnits' => 1,
@@ -256,22 +214,26 @@ class TableTest extends UnitTestCase
         $serializer = $this->createSerializer();
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $serializer,
+            $logger
+        );
+
         $table = new class() extends AbstractTable implements TableInterface {
             public function configure(): void
             {
                 $this
                     ->setTableName('Users')
                     ->addAttributes([
-                        ['Id', ScalarAttributeType::S],
-                        ['Email', ScalarAttributeType::S],
-                        ['Active', ScalarAttributeType::B],
-                        ['CreatedAt', ScalarAttributeType::N],
+                        new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                        new Attribute('Email', ScalarAttributeTypeEnum::String),
+                        new Attribute('Active', ScalarAttributeTypeEnum::Binary),
+                        new Attribute('CreatedAt', ScalarAttributeTypeEnum::Numeric, KeyTypeEnum::Range),
                     ])
-                    ->addHashKey('Id')
-                    ->addRangeKey('CreatedAt')
                     ->addGlobalSecondaryIndex(
                         'Emails',
-                        ProjectionType::KEYS_ONLY,
+                        ProjectionTypeEnum::KeysOnly,
                         'Email',
                         'Id'
                     )
@@ -282,7 +244,7 @@ class TableTest extends UnitTestCase
         $table->setValidator($validator);
         $table->setNormalizer($serializer);
 
-        $table->create($dynamoDbClientMock, $logger);
+        $table->create($client, $logger);
 
         $expectedLogs = [
             [

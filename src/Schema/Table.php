@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Dynamite\Schema;
 
-use AsyncAws\DynamoDb\Enum\KeyType;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\SerializedName;
@@ -86,7 +88,7 @@ final class Table
         return $this->tableName;
     }
 
-    public function addAttribute(string $name, string $type): void
+    public function addAttribute(string $name, ScalarAttributeTypeEnum $type, ?KeyTypeEnum $keyType = null): void
     {
         if ($this->attributeDefinitions === null) {
             $this->attributeDefinitions = [];
@@ -94,8 +96,14 @@ final class Table
 
         $this->attributeDefinitions[] = [
             'AttributeName' => $name,
-            'AttributeType' => $type,
+            'AttributeType' => $type->value,
         ];
+
+        if ($keyType === null) {
+            return;
+        }
+
+        $this->addKeyElement($name, $keyType);
     }
 
     /**
@@ -106,7 +114,7 @@ final class Table
         return $this->attributeDefinitions;
     }
 
-    public function addKeyElement(string $name, string $type): self
+    private function addKeyElement(string $name, KeyTypeEnum $type): void
     {
         if ($this->keySchema === null) {
             $this->keySchema = [];
@@ -114,10 +122,8 @@ final class Table
 
         $this->keySchema[] = [
             'AttributeName' => $name,
-            'KeyType' => $type,
+            'KeyType' => $type->value,
         ];
-
-        return $this;
     }
 
     /**
@@ -148,7 +154,7 @@ final class Table
 
     public function addGlobalSecondaryIndex(
         string $name,
-        string $projectionType,
+        ProjectionTypeEnum $projectionType,
         string $hashAttribute,
         ?string $rangeAttribute,
         ?int $writeCapacity,
@@ -161,14 +167,14 @@ final class Table
         $keySchema = [
             [
                 'AttributeName' => $hashAttribute,
-                'KeyType' => KeyType::HASH,
+                'KeyType' => KeyTypeEnum::Hash->value,
             ],
         ];
 
         if ($rangeAttribute !== null) {
             $keySchema[] = [
                 'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyType::RANGE,
+                'KeyType' => KeyTypeEnum::Range->value,
             ];
         }
 
@@ -184,7 +190,7 @@ final class Table
             'IndexName' => $name,
             'KeySchema' => $keySchema,
             'Projection' => [
-                'ProjectionType' => $projectionType,
+                'ProjectionType' => $projectionType->value,
             ],
             'ProvisionedThroughput' => $provisionedThroughput,
         ];
@@ -251,14 +257,14 @@ final class Table
         $keySchema = [
             [
                 'AttributeName' => $hashAttribute,
-                'KeyType' => KeyType::HASH,
+                'KeyType' => KeyTypeEnum::Hash->value,
             ],
         ];
 
         if ($rangeAttribute !== null) {
             $keySchema[] = [
                 'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyType::RANGE,
+                'KeyType' => KeyTypeEnum::Range->value,
             ];
         }
 
@@ -311,7 +317,7 @@ final class Table
     {
         $hashKeys = [];
         foreach ($this->keySchema ?? [] as $key) {
-            if ($key['KeyType'] === KeyType::HASH) {
+            if ($key['KeyType'] === KeyTypeEnum::Hash->value) {
                 $hashKeys[] = $key;
             }
         }

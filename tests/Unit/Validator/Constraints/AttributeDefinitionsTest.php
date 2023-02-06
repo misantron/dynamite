@@ -6,12 +6,11 @@ namespace Dynamite\Tests\Unit\Validator\Constraints;
 
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\AttributeDefinitions;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AttributeDefinitionsTest extends UnitTestCase
 {
-    /**
-     * @dataProvider validateDataProvider
-     */
+    #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
         $entity = new class() {
@@ -29,7 +28,7 @@ class AttributeDefinitionsTest extends UnitTestCase
     /**
      * @return iterable<string, array<int, mixed>>
      */
-    public function validateDataProvider(): iterable
+    public static function validateDataProvider(): iterable
     {
         yield 'null-value' => [
             null,

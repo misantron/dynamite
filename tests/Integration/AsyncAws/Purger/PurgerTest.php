@@ -2,21 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Integration\Purger;
+namespace Dynamite\Tests\Integration\AsyncAws\Purger;
 
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use Dynamite\AbstractFixture;
 use Dynamite\AbstractTable;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Executor;
 use Dynamite\FixtureInterface;
 use Dynamite\Loader;
 use Dynamite\Purger\Purger;
+use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
-use Dynamite\Tests\Integration\IntegrationTestCase;
+use Dynamite\Tests\Integration\AsyncAwsIntegrationTestCase;
 use Faker\Factory;
 
-class PurgerTest extends IntegrationTestCase
+class PurgerTest extends AsyncAwsIntegrationTestCase
 {
     public function testPurge(): void
     {
@@ -31,11 +33,9 @@ class PurgerTest extends IntegrationTestCase
                 $this
                     ->setTableName('Users')
                     ->addAttributes([
-                        ['Id', ScalarAttributeType::S],
-                        ['Email', ScalarAttributeType::S],
+                        new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                        new Attribute('Email', ScalarAttributeTypeEnum::String, KeyTypeEnum::Range),
                     ])
-                    ->addHashKey('Id')
-                    ->addRangeKey('Email')
                     ->setProvisionedThroughput(1, 1)
                 ;
             }
@@ -71,7 +71,7 @@ class PurgerTest extends IntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $purger = new Purger($this->dynamoDbClient, $this->logger);
+        $purger = new Purger($this->asyncAwsClient);
         $purger->purge(
             [
                 $fixture::class => $fixture,
@@ -85,6 +85,8 @@ class PurgerTest extends IntegrationTestCase
             'TableName' => 'Users',
         ]);
         $response->resolve();
+
+        $this->logger->cleanLogs();
     }
 
     public function testPurgeOnlyFixtures(): void
@@ -123,7 +125,7 @@ class PurgerTest extends IntegrationTestCase
             $fixture::class => $fixture,
         ];
 
-        $executor = new Executor($this->dynamoDbClient);
+        $executor = new Executor($this->asyncAwsClient);
         $executor->execute($fixtures, []);
 
         $response = $this->dynamoDbClient->scan([
@@ -133,7 +135,7 @@ class PurgerTest extends IntegrationTestCase
 
         self::assertSame(2, $response->getCount());
 
-        $purger = new Purger($this->dynamoDbClient, $this->logger);
+        $purger = new Purger($this->asyncAwsClient);
         $purger->purge($fixtures, []);
 
         $response = $this->dynamoDbClient->scan([
@@ -142,6 +144,8 @@ class PurgerTest extends IntegrationTestCase
         $response->resolve();
 
         self::assertSame(0, $response->getCount());
+
+        $this->logger->cleanLogs();
     }
 
     public function testPurgeLargeFixturesBatch(): void
@@ -157,10 +161,10 @@ class PurgerTest extends IntegrationTestCase
                 for ($i = 0; $i < 70; ++$i) {
                     $this->addItem([
                         'Id' => [
-                            ScalarAttributeType::S => $faker->uuid(),
+                            'S' => $faker->uuid(),
                         ],
                         'Email' => [
-                            ScalarAttributeType::S => $faker->email(),
+                            'S' => $faker->email(),
                         ],
                     ]);
                 }
@@ -170,7 +174,7 @@ class PurgerTest extends IntegrationTestCase
         $loader = new Loader($this->validator, $this->serializer);
         $loader->addFixture($fixture);
 
-        $executor = new Executor($this->dynamoDbClient);
+        $executor = new Executor($this->asyncAwsClient);
         $executor->execute($loader->getFixtures(), []);
 
         $response = $this->dynamoDbClient->scan([
@@ -180,7 +184,7 @@ class PurgerTest extends IntegrationTestCase
 
         self::assertSame(70, $response->getCount());
 
-        $purger = new Purger($this->dynamoDbClient, $this->logger);
+        $purger = new Purger($this->asyncAwsClient);
         $purger->purge($loader->getFixtures(), []);
 
         $response = $this->dynamoDbClient->scan([
@@ -191,6 +195,37 @@ class PurgerTest extends IntegrationTestCase
         self::assertSame(0, $response->getCount());
 
         $expectedLogs = [
+            [
+                'debug',
+                'Table data truncate skipped - no data',
+                [
+                    'table' => 'Users',
+                ],
+            ],
+            [
+                'debug',
+                'Data batch executed',
+                [
+                    'table' => 'Users',
+                    'batch' => '#1',
+                ],
+            ],
+            [
+                'debug',
+                'Data batch executed',
+                [
+                    'table' => 'Users',
+                    'batch' => '#2',
+                ],
+            ],
+            [
+                'debug',
+                'Data batch executed',
+                [
+                    'table' => 'Users',
+                    'batch' => '#3',
+                ],
+            ],
             [
                 'debug',
                 'Data batch deleted',

@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Integration;
+namespace Dynamite\Tests\Integration\AsyncAws;
 
-use AsyncAws\DynamoDb\Enum\ProjectionType;
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
 use Dynamite\AbstractTable;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
+use Dynamite\Tests\Integration\AsyncAwsIntegrationTestCase;
 
-class TableTest extends IntegrationTestCase
+class TableTest extends AsyncAwsIntegrationTestCase
 {
     public function testCreate(): void
     {
@@ -19,11 +22,10 @@ class TableTest extends IntegrationTestCase
                 $this
                     ->setTableName('Users')
                     ->addAttributes([
-                        ['Id', ScalarAttributeType::S],
-                        ['Email', ScalarAttributeType::S],
+                        new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                        new Attribute('Email', ScalarAttributeTypeEnum::String),
                     ])
-                    ->addHashKey('Id')
-                    ->addGlobalSecondaryIndex('Emails', ProjectionType::KEYS_ONLY, 'Email')
+                    ->addGlobalSecondaryIndex('Emails', ProjectionTypeEnum::KeysOnly, 'Email')
                     ->setProvisionedThroughput(1, 1)
                 ;
             }
@@ -31,7 +33,7 @@ class TableTest extends IntegrationTestCase
         $table->setValidator($this->validator);
         $table->setNormalizer($this->serializer);
 
-        $table->create($this->dynamoDbClient, $this->logger);
+        $table->create($this->asyncAwsClient, $this->logger);
 
         $response = $this->dynamoDbClient->tableExists([
             'TableName' => 'Users',

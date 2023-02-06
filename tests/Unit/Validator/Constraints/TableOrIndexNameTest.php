@@ -6,12 +6,11 @@ namespace Dynamite\Tests\Unit\Validator\Constraints;
 
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\TableOrIndexName;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TableOrIndexNameTest extends UnitTestCase
 {
-    /**
-     * @dataProvider validateDataProvider
-     */
+    #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
         $entity = new class() {
@@ -26,7 +25,7 @@ class TableOrIndexNameTest extends UnitTestCase
     /**
      * @return iterable<string, array<int, mixed>>
      */
-    public function validateDataProvider(): iterable
+    public static function validateDataProvider(): iterable
     {
         yield 'null-value' => [
             null,

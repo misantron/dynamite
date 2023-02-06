@@ -32,7 +32,11 @@ declare(strict_types=1);
 namespace Fixtures;
 
 use Dynamite\AbstractTable;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\TableInterface;
+use Dynamite\Schema\Attribute;
 
 final class UsersTable extends AbstractTable implements TableInterface
 {
@@ -41,11 +45,14 @@ final class UsersTable extends AbstractTable implements TableInterface
         $this
             ->setTableName('Users')
             ->addAttributes([
-                ['Id', 'S'],
-                ['Email', 'S'],
+                new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                new Attribute('Email', ScalarAttributeTypeEnum::String),
             ])
-            ->addHashKey('Id')
-            ->addGlobalSecondaryIndex('Emails', 'KEYS_ONLY', 'Email')
+            ->addGlobalSecondaryIndex(
+                'Emails',
+                ProjectionTypeEnum::KeysOnly,
+                'Email'
+            )
             ->setProvisionedThroughput(1, 1)
         ;
     }
@@ -127,19 +134,19 @@ To create database schema and load the fixtures in storage you should do the fol
 
 declare(strict_types=1);
 
-use AsyncAws\DynamoDb\DynamoDbClient;
+use Dynamite\Client;
 use Dynamite\Executor;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Serializer\Serializer;
 
 $validator = Validation::createValidator();
 $serializer = new Serializer();
-$dynamoDbClient = new DynamoDbClient();
+$clientFactory = new ClientFactory($serializer);
 
 $loader = new Loader($validator, $serializer);
 $loader->loadFromDirectory('/path/to/YourFixtures');
 
-$executor = new Executor($dynamoDbClient);
+$executor = new Executor($clientFactory->createAsyncAwsClient());
 $executor->execute($loader->getFixtures(), $loader->getTables());
 ```
 
@@ -154,11 +161,10 @@ Execution process debug logs can be enabled by passing PSR-3 logger into executo
 
 declare(strict_types=1);
 
-use AsyncAws\DynamoDb\DynamoDbClient;
 use Dynamite\Executor;
 
 // PSR-3 compatible implementation of Psr\Log\LoggerInterface
 $logger = new Logger();
 
-$executor = new Executor($dynamoDbClient, logger: $logger);
+$executor = new Executor($client, logger: $logger);
 ```

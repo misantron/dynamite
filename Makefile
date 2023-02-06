@@ -13,19 +13,20 @@ stop-docker:
 test: start-docker test-unit test-integration
 
 test-integration:
-	vendor/bin/simple-phpunit --testsuite Integration
+	vendor/bin/phpunit --testsuite Integration
 test-unit:
-	vendor/bin/simple-phpunit --testsuite Unit
+	vendor/bin/phpunit --testsuite Unit
 
-lint: ecs-fix phpstan psalm
+lint: ecs-fix
 
 ecs:
 	vendor/bin/ecs check
 ecs-fix:
 	vendor/bin/ecs check --fix
+
+static-analyze: phpstan psalm
+
 phpstan:
 	vendor/bin/phpstan analyse
 psalm:
 	vendor/bin/psalm
-
-

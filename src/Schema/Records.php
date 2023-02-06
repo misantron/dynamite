@@ -43,8 +43,8 @@ final class Records
         return $this->records;
     }
 
-    public function isSingleRecord(): bool
+    public function getCount(): int
     {
-        return \count($this->records) === 1;
+        return \count($this->records);
     }
 }
