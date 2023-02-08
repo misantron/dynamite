@@ -25,7 +25,8 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->dynamoDbClient = $this->createDynamoDbClient();
+        $this->onSetUp();
+
         $this->serializer = $this->createSerializer();
         $this->validator = $this->createValidator();
         $this->logger = $this->createTestLogger();
@@ -34,16 +35,18 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        $this->dropTable();
+        $this->onTearDown();
 
         $this->logger->cleanLogs();
     }
+
+    abstract protected function onSetUp(): void;
+
+    abstract protected function onTearDown(): void;
 
     abstract protected function createDynamoDbClient(): mixed;
 
     abstract protected function createClient(): ClientInterface;
 
     abstract protected function createTable(): void;
-
-    abstract protected function dropTable(): void;
 }

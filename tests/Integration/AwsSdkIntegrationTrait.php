@@ -15,7 +15,12 @@ trait AwsSdkIntegrationTrait
 {
     protected DynamoDbClient $dynamoDbClient;
 
-    protected function dropTable(): void
+    protected function onSetUp(): void
+    {
+        $this->dynamoDbClient = $this->createDynamoDbClient();
+    }
+
+    protected function onTearDown(): void
     {
         $this->client->dropTable('Users');
     }
