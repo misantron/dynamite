@@ -10,10 +10,13 @@ use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
-use Dynamite\Tests\Integration\AsyncAwsIntegrationTestCase;
+use Dynamite\Tests\Integration\IntegrationTestCase;
+use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
 
-class TableTest extends AsyncAwsIntegrationTestCase
+class TableTest extends IntegrationTestCase
 {
+    use AsyncAwsIntegrationTrait;
+
     public function testCreate(): void
     {
         $table = new class() extends AbstractTable implements TableInterface {
@@ -33,7 +36,7 @@ class TableTest extends AsyncAwsIntegrationTestCase
         $table->setValidator($this->validator);
         $table->setNormalizer($this->serializer);
 
-        $table->create($this->asyncAwsClient, $this->logger);
+        $table->create($this->client, $this->logger);
 
         $response = $this->dynamoDbClient->tableExists([
             'TableName' => 'Users',

@@ -45,7 +45,10 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.1.99"
+        }
     },
     "extra": {
         "branch-alias": {

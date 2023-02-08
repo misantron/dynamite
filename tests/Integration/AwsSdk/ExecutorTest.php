@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Integration\AsyncAws;
+namespace Dynamite\Tests\Integration\AwsSdk;
 
 use Dynamite\AbstractFixture;
 use Dynamite\AbstractTable;
@@ -14,13 +14,13 @@ use Dynamite\Loader;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
 use Dynamite\Tests\Integration\IntegrationTestCase;
-use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Dynamite\Tests\Integration\AwsSdkIntegrationTrait;
 use PHPUnit\Framework\Attributes\Group;
 
-#[Group('AsyncAws')]
+#[Group('AwsSdk')]
 class ExecutorTest extends IntegrationTestCase
 {
-    use AsyncAwsIntegrationTrait;
+    use AwsSdkIntegrationTrait;
 
     public function testExecute(): void
     {
@@ -75,15 +75,13 @@ class ExecutorTest extends IntegrationTestCase
         $response = $this->dynamoDbClient->describeTable([
             'TableName' => 'Users',
         ]);
-        $response->resolve();
 
-        self::assertSame('Users', $response->getTable()?->getTableName());
+        self::assertSame('Users', $response['Table']['TableName']);
 
         $response = $this->dynamoDbClient->scan([
             'TableName' => 'Users',
         ]);
-        $response->resolve();
 
-        self::assertSame(2, $response->getCount());
+        self::assertSame(2, $response['Count']);
     }
 }

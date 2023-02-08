@@ -9,49 +9,16 @@ use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Enum\KeyType;
 use AsyncAws\DynamoDb\Enum\ProjectionType;
 use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
-use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
 use Dynamite\Client\AsyncAwsClient;
 use Dynamite\Client\ClientInterface;
-use Dynamite\Tests\DependencyMockTrait;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\ErrorHandler\BufferingLogger;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-abstract class AsyncAwsIntegrationTestCase extends TestCase
+trait AsyncAwsIntegrationTrait
 {
-    use DependencyMockTrait;
-
-    protected ClientInterface $asyncAwsClient;
-
     protected DynamoDbClient $dynamoDbClient;
 
-    protected NormalizerInterface $serializer;
-
-    protected ValidatorInterface $validator;
-
-    protected BufferingLogger $logger;
-
-    protected function setUp(): void
+    protected function dropTable(): void
     {
-        $this->dynamoDbClient = $this->createDynamoDbClient();
-        $this->serializer = $this->createSerializer();
-        $this->validator = $this->createValidator();
-        $this->logger = $this->createTestLogger();
-        $this->asyncAwsClient = $this->createAsyncAwsClient();
-    }
-
-    protected function tearDown(): void
-    {
-        try {
-            $this->dynamoDbClient->deleteTable([
-                'TableName' => 'Users',
-            ])->resolve();
-        } catch (ResourceNotFoundException) {
-            // ignore exception
-        }
-
-        $this->logger->cleanLogs();
+        $this->client->dropTable('Users');
     }
 
     protected function createTable(): void
@@ -99,7 +66,7 @@ abstract class AsyncAwsIntegrationTestCase extends TestCase
         ])->resolve();
     }
 
-    private function createAsyncAwsClient(): ClientInterface
+    protected function createClient(): ClientInterface
     {
         return new AsyncAwsClient(
             $this->dynamoDbClient,
@@ -108,7 +75,7 @@ abstract class AsyncAwsIntegrationTestCase extends TestCase
         );
     }
 
-    private function createDynamoDbClient(): DynamoDbClient
+    protected function createDynamoDbClient(): DynamoDbClient
     {
         return new DynamoDbClient(
             [

@@ -15,11 +15,14 @@ use Dynamite\Loader;
 use Dynamite\Purger\Purger;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
-use Dynamite\Tests\Integration\AsyncAwsIntegrationTestCase;
+use Dynamite\Tests\Integration\IntegrationTestCase;
+use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
 use Faker\Factory;
 
-class PurgerTest extends AsyncAwsIntegrationTestCase
+class PurgerTest extends IntegrationTestCase
 {
+    use AsyncAwsIntegrationTrait;
+
     public function testPurge(): void
     {
         $this->expectException(ResourceNotFoundException::class);
@@ -71,7 +74,7 @@ class PurgerTest extends AsyncAwsIntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $purger = new Purger($this->asyncAwsClient);
+        $purger = new Purger($this->client);
         $purger->purge(
             [
                 $fixture::class => $fixture,
@@ -125,7 +128,7 @@ class PurgerTest extends AsyncAwsIntegrationTestCase
             $fixture::class => $fixture,
         ];
 
-        $executor = new Executor($this->asyncAwsClient);
+        $executor = new Executor($this->client);
         $executor->execute($fixtures, []);
 
         $response = $this->dynamoDbClient->scan([
@@ -135,7 +138,7 @@ class PurgerTest extends AsyncAwsIntegrationTestCase
 
         self::assertSame(2, $response->getCount());
 
-        $purger = new Purger($this->asyncAwsClient);
+        $purger = new Purger($this->client);
         $purger->purge($fixtures, []);
 
         $response = $this->dynamoDbClient->scan([
@@ -174,7 +177,7 @@ class PurgerTest extends AsyncAwsIntegrationTestCase
         $loader = new Loader($this->validator, $this->serializer);
         $loader->addFixture($fixture);
 
-        $executor = new Executor($this->asyncAwsClient);
+        $executor = new Executor($this->client);
         $executor->execute($loader->getFixtures(), []);
 
         $response = $this->dynamoDbClient->scan([
@@ -184,7 +187,7 @@ class PurgerTest extends AsyncAwsIntegrationTestCase
 
         self::assertSame(70, $response->getCount());
 
-        $purger = new Purger($this->asyncAwsClient);
+        $purger = new Purger($this->client);
         $purger->purge($loader->getFixtures(), []);
 
         $response = $this->dynamoDbClient->scan([

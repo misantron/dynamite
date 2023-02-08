@@ -9,10 +9,13 @@ use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use Dynamite\AbstractFixture;
 use Dynamite\FixtureInterface;
-use Dynamite\Tests\Integration\AsyncAwsIntegrationTestCase;
+use Dynamite\Tests\Integration\IntegrationTestCase;
+use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
 
-class FixtureTest extends AsyncAwsIntegrationTestCase
+class FixtureTest extends IntegrationTestCase
 {
+    use AsyncAwsIntegrationTrait;
+
     public function testInsertSingleItem(): void
     {
         $this->createTable();
@@ -35,7 +38,7 @@ class FixtureTest extends AsyncAwsIntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $fixture->load($this->asyncAwsClient, $this->logger);
+        $fixture->load($this->client, $this->logger);
 
         $input = [
             'TableName' => 'Users',
@@ -91,7 +94,7 @@ class FixtureTest extends AsyncAwsIntegrationTestCase
         };
         $fixture->setValidator($this->validator);
 
-        $fixture->load($this->asyncAwsClient, $this->logger);
+        $fixture->load($this->client, $this->logger);
 
         $response = $this->dynamoDbClient->scan(
             new ScanInput([
