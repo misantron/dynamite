@@ -32,7 +32,7 @@
     },
     "suggest": {
         "async-aws/dynamo-db": "Async first DynamoDb client from Symfony Core developers",
-        "aws/aws-sdk-php": "Official PHP AWS SDK"
+        "aws/aws-sdk-php": "Official PHP AWS SDK library"
     },
     "autoload": {
         "psr-4": {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
+use Dynamite\Client\ClientInterface;
 use Dynamite\Purger\Purger;
 use Dynamite\Purger\PurgerInterface;
 use Psr\Log\LoggerInterface;

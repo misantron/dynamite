@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
+use Dynamite\Client\ClientInterface;
 use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Records;
 use Dynamite\Validator\ValidatorAwareTrait;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @phpstan-import-type AttributeValue from ClientInterface
+ */
 abstract class AbstractFixture
 {
     use TableTrait;
@@ -22,7 +26,7 @@ abstract class AbstractFixture
     }
 
     /**
-     * @param array<string, array<string, string>> $item
+     * @param array<string, AttributeValue> $item
      */
     protected function addItem(array $item): self
     {
@@ -32,7 +36,7 @@ abstract class AbstractFixture
     }
 
     /**
-     * @param array<int, array<string, array<string, string>>> $items
+     * @param array<int, array<string, AttributeValue>> $items
      */
     protected function addItems(array $items): self
     {

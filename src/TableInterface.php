@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
+use Dynamite\Client\ClientInterface;
 use Dynamite\Validator\ValidatorAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;

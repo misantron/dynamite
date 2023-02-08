@@ -4,7 +4,7 @@
         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
         colors="true"
         bootstrap="vendor/autoload.php"
-        cacheDirectory=".phpunit.cache">
+        cacheDirectory=".cache/phpunit">
     <php>
         <ini name="error_reporting" value="-1"/>
         <ini name="display_errors" value="On"/>

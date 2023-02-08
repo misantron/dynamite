@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Client\AwsSdk;
+namespace Dynamite\Client;
 
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Exception\DynamoDbException;
-use Dynamite\ClientInterface;
 use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Schema\Table;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+/**
+ * @phpstan-import-type AttributeValue from ClientInterface
+ */
 final class AwsSdkClient implements ClientInterface
 {
     public function __construct(
@@ -32,6 +34,7 @@ final class AwsSdkClient implements ClientInterface
         );
 
         $this->client->createTable($input);
+
         $this->client->waitUntil('TableExists', [
             'TableName' => $schema->getTableName(),
         ]);
@@ -55,6 +58,9 @@ final class AwsSdkClient implements ClientInterface
         ]);
     }
 
+    /**
+     * @param array<string, AttributeValue> $record
+     */
     public function createRecord(string $tableName, array $record): void
     {
         $this->client->putItem([
@@ -63,11 +69,12 @@ final class AwsSdkClient implements ClientInterface
         ]);
     }
 
+    /**
+     * @param array<int, array<string, AttributeValue>> $records
+     */
     public function creatBatchRecords(string $tableName, array $records): void
     {
-        BatchCommand::createPutCommand($this->client, $this->logger)
-            ->execute($tableName, $records)
-        ;
+        $this->executeBatchPut($tableName, $records);
     }
 
     public function truncateRecords(string $tableName): void
@@ -103,9 +110,7 @@ final class AwsSdkClient implements ClientInterface
             $keysToDelete[] = $this->getDeleteKey($primaryKey, $item);
         }
 
-        BatchCommand::createDeleteCommand($this->client, $this->logger)
-            ->execute($tableName, $keysToDelete)
-        ;
+        $this->executeBatchDelete($tableName, $keysToDelete);
 
         $this->logger->debug('Table data truncated', [
             'table' => $tableName,
@@ -113,9 +118,70 @@ final class AwsSdkClient implements ClientInterface
     }
 
     /**
+     * @param array<int, array<string, AttributeValue>> $items
+     */
+    private function executeBatchPut(string $tableName, array $items): void
+    {
+        $this->batchWriteRequest(
+            $tableName,
+            $items,
+            static fn (array $item): array => [
+                'PutRequest' => [
+                    'Item' => $item,
+                ],
+            ],
+            'Data batch executed'
+        );
+    }
+
+    /**
+     * @param array<int, array<string, AttributeValue>> $keys
+     */
+    private function executeBatchDelete(string $tableName, array $keys): void
+    {
+        $this->batchWriteRequest(
+            $tableName,
+            $keys,
+            static fn (array $key): array => [
+                'DeleteRequest' => [
+                    'Key' => $key,
+                ],
+            ],
+            'Data batch deleted'
+        );
+    }
+
+    /**
+     * @param array<int, array<string, AttributeValue>> $items
+     */
+    private function batchWriteRequest(
+        string $tableName,
+        array $items,
+        callable $mappingCallback,
+        string $logMessage
+    ): void {
+        $chunks = array_chunk($items, self::BATCH_MAX_SIZE);
+
+        foreach ($chunks as $number => $chunk) {
+            $input = [
+                'RequestItems' => [
+                    $tableName => array_map($mappingCallback, $chunk),
+                ],
+            ];
+
+            $this->client->batchWriteItem($input);
+
+            $this->logger->debug($logMessage, [
+                'table' => $tableName,
+                'batch' => '#' . ($number + 1),
+            ]);
+        }
+    }
+
+    /**
      * @param array<int, string> $primaryKey
-     * @param array<string, mixed> $item
-     * @return array<string, mixed>
+     * @param array<string, AttributeValue> $item
+     * @return array<string, AttributeValue>
      */
     private function getDeleteKey(array $primaryKey, array $item): array
     {

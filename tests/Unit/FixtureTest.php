@@ -13,7 +13,7 @@ use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\AbstractFixture;
-use Dynamite\Client\AsyncAws\AsyncAwsClient;
+use Dynamite\Client\AsyncAwsClient;
 use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
 

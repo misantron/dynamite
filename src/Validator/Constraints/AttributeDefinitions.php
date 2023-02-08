@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Validator\Constraints;
 
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,11 +26,7 @@ final class AttributeDefinitions extends Assert\Compound
                     ]),
                     'AttributeType' => new Assert\Required([
                         new Assert\NotBlank(),
-                        new Assert\Choice(choices: [
-                            ScalarAttributeType::S,
-                            ScalarAttributeType::B,
-                            ScalarAttributeType::N,
-                        ]),
+                        new Assert\Choice(choices: ScalarAttributeTypeEnum::values()),
                     ]),
                 ]),
             ]),

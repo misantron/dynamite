@@ -9,7 +9,7 @@ use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\CreateTableInput;
 use AsyncAws\DynamoDb\Result\CreateTableOutput;
 use Dynamite\AbstractTable;
-use Dynamite\Client\AsyncAws\AsyncAwsClient;
+use Dynamite\Client\AsyncAwsClient;
 use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;

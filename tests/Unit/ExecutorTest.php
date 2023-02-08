@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit;
 
-use Dynamite\ClientInterface;
+use Dynamite\Client\ClientInterface;
 use Dynamite\Executor;
 use Dynamite\Purger\Purger;
 use Psr\Log\NullLogger;

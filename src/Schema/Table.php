@@ -131,8 +131,6 @@ final class Table
      */
     public function getKeySchema(): ?array
     {
-        $this->assertKeySchemaAttributesDefined($this->keySchema ?? []);
-
         return $this->keySchema;
     }
 

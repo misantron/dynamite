@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
+use Dynamite\Client\ClientInterface;
 use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;

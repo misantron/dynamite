@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Validator\Constraints;
 
-use AsyncAws\DynamoDb\Enum\KeyType;
+use Dynamite\Enum\KeyTypeEnum;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,10 +26,7 @@ final class KeySchema extends Assert\Compound
                     ]),
                     'KeyType' => new Assert\Required([
                         new Assert\NotBlank(),
-                        new Assert\Choice(choices: [
-                            KeyType::HASH,
-                            KeyType::RANGE,
-                        ]),
+                        new Assert\Choice(choices: KeyTypeEnum::values()),
                     ]),
                 ]),
             ]),

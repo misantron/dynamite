@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Purger;
 
-use Dynamite\ClientInterface;
+use Dynamite\Client\ClientInterface;
 
 class Purger implements PurgerInterface
 {

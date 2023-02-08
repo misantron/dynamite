@@ -6,9 +6,6 @@ namespace Dynamite\Client;
 
 use AsyncAws\Core\Configuration;
 use AsyncAws\Core\Credentials\CredentialProvider;
-use Dynamite\Client\AsyncAws\AsyncAwsClient;
-use Dynamite\Client\AwsSdk\AwsSdkClient;
-use Dynamite\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
