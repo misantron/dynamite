@@ -10,8 +10,8 @@ use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
-use Dynamite\Tests\Integration\IntegrationTestCase;
 use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Dynamite\Tests\Integration\IntegrationTestCase;
 
 class TableTest extends IntegrationTestCase
 {

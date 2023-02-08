@@ -15,8 +15,8 @@ use Dynamite\Loader;
 use Dynamite\Purger\Purger;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
-use Dynamite\Tests\Integration\IntegrationTestCase;
 use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Dynamite\Tests\Integration\IntegrationTestCase;
 use Faker\Factory;
 
 class PurgerTest extends IntegrationTestCase

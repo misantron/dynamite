@@ -13,8 +13,8 @@ use Dynamite\FixtureInterface;
 use Dynamite\Loader;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
-use Dynamite\Tests\Integration\IntegrationTestCase;
 use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('AsyncAws')]

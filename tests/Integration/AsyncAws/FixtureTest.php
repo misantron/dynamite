@@ -9,8 +9,8 @@ use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use Dynamite\AbstractFixture;
 use Dynamite\FixtureInterface;
-use Dynamite\Tests\Integration\IntegrationTestCase;
 use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Dynamite\Tests\Integration\IntegrationTestCase;
 
 class FixtureTest extends IntegrationTestCase
 {

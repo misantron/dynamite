@@ -82,6 +82,8 @@ jobs:
         with:
           php-version: 8.2
           coverage: pcov
+      - name: Initialize tests
+        run: make initialize
       - name: Install composer dependencies
         uses: ramsey/composer-install@v2
         with:
