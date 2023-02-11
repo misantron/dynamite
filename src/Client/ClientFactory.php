@@ -19,6 +19,13 @@ final class ClientFactory
     ) {
     }
 
+    public static function create(
+        NormalizerInterface $normalizer,
+        LoggerInterface $logger = new NullLogger()
+    ): self {
+        return new self($normalizer, $logger);
+    }
+
     /**
      * @see \AsyncAws\Core\Configuration
      * @param array<string, mixed>|Configuration $configuration
