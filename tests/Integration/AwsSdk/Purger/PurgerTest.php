@@ -2,26 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Integration\AsyncAws\Purger;
+namespace Dynamite\Tests\Integration\AwsSdk\Purger;
 
-use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
+use Aws\DynamoDb\Exception\DynamoDbException;
+use Dynamite\Client\AwsSdkClient;
 use Dynamite\Executor;
 use Dynamite\Loader;
 use Dynamite\Purger\Purger;
-use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Dynamite\Tests\Integration\AwsSdkIntegrationTrait;
 use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
-#[Group('AsyncAws')]
+#[Group('AwsSdk')]
 class PurgerTest extends IntegrationTestCase
 {
-    use AsyncAwsIntegrationTrait;
+    use AwsSdkIntegrationTrait;
 
     public function testPurge(): void
     {
-        $this->expectException(ResourceNotFoundException::class);
-        $this->expectExceptionMessage('Cannot do operations on a non-existent table');
-
         $this->createTable();
 
         $table = $this->createFixtureTable();
@@ -58,10 +56,18 @@ class PurgerTest extends IntegrationTestCase
             ]
         );
 
-        $response = $this->dynamoDbClient->describeTable([
-            'TableName' => self::TABLE_NAME,
-        ]);
-        $response->resolve();
+        try {
+            $this->dynamoDbClient->describeTable([
+                'TableName' => self::TABLE_NAME,
+            ]);
+        } catch (DynamoDbException $e) {
+            self::assertSame(AwsSdkClient::RESOURCE_NOT_FOUND_ERROR_CODE, $e->getAwsErrorCode());
+            self::assertSame('Cannot do operations on a non-existent table', $e->getAwsErrorMessage());
+
+            return;
+        }
+
+        self::fail('Exception is not thrown');
     }
 
     public function testPurgeOnlyFixtures(): void
@@ -98,9 +104,8 @@ class PurgerTest extends IntegrationTestCase
         $response = $this->dynamoDbClient->scan([
             'TableName' => self::TABLE_NAME,
         ]);
-        $response->resolve();
 
-        self::assertSame(2, $response->getCount());
+        self::assertSame(2, $response['Count']);
 
         $purger = new Purger($this->client);
         $purger->purge($fixtures, []);
@@ -108,9 +113,8 @@ class PurgerTest extends IntegrationTestCase
         $response = $this->dynamoDbClient->scan([
             'TableName' => self::TABLE_NAME,
         ]);
-        $response->resolve();
 
-        self::assertSame(0, $response->getCount());
+        self::assertSame(0, $response['Count']);
     }
 
     public function testPurgeLargeFixturesBatch(): void
@@ -143,9 +147,8 @@ class PurgerTest extends IntegrationTestCase
         $response = $this->dynamoDbClient->scan([
             'TableName' => self::TABLE_NAME,
         ]);
-        $response->resolve();
 
-        self::assertSame(70, $response->getCount());
+        self::assertSame(70, $response['Count']);
 
         $purger = new Purger($this->client);
         $purger->purge($loader->getFixtures(), []);
@@ -153,9 +156,8 @@ class PurgerTest extends IntegrationTestCase
         $response = $this->dynamoDbClient->scan([
             'TableName' => self::TABLE_NAME,
         ]);
-        $response->resolve();
 
-        self::assertSame(0, $response->getCount());
+        self::assertSame(0, $response['Count']);
 
         $expectedLogs = [
             [

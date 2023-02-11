@@ -2,18 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Integration\AsyncAws;
+namespace Dynamite\Tests\Integration\AwsSdk;
 
-use AsyncAws\DynamoDb\Input\QueryInput;
-use AsyncAws\DynamoDb\ValueObject\AttributeValue;
-use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Dynamite\Tests\Integration\AwsSdkIntegrationTrait;
 use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
-#[Group('AsyncAws')]
+#[Group('AwsSdk')]
 class FixtureTest extends IntegrationTestCase
 {
-    use AsyncAwsIntegrationTrait;
+    use AwsSdkIntegrationTrait;
 
     public function testInsertSingleItem(): void
     {
@@ -37,15 +35,15 @@ class FixtureTest extends IntegrationTestCase
             'TableName' => self::TABLE_NAME,
             'KeyConditionExpression' => 'Id = :Id',
             'ExpressionAttributeValues' => [
-                ':Id' => new AttributeValue([
+                ':Id' => [
                     'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
-                ]),
+                ],
             ],
         ];
 
-        $response = $this->dynamoDbClient->query(new QueryInput($input));
+        $response = $this->dynamoDbClient->query($input);
 
-        self::assertSame(1, $response->getCount());
+        self::assertSame(1, $response['Count']);
     }
 
     public function testInsertBatchItems(): void
@@ -85,8 +83,7 @@ class FixtureTest extends IntegrationTestCase
         $response = $this->dynamoDbClient->scan([
             'TableName' => self::TABLE_NAME,
         ]);
-        $response->resolve();
 
-        self::assertSame(3, $response->getCount());
+        self::assertSame(3, $response['Count']);
     }
 }

@@ -7,9 +7,6 @@ namespace Dynamite\Tests\Integration;
 use Aws\DynamoDb\DynamoDbClient;
 use Dynamite\Client\AwsSdkClient;
 use Dynamite\Client\ClientInterface;
-use Dynamite\Enum\KeyTypeEnum;
-use Dynamite\Enum\ProjectionTypeEnum;
-use Dynamite\Enum\ScalarAttributeTypeEnum;
 
 trait AwsSdkIntegrationTrait
 {
@@ -20,54 +17,9 @@ trait AwsSdkIntegrationTrait
         $this->dynamoDbClient = $this->createDynamoDbClient();
     }
 
-    protected function onTearDown(): void
-    {
-        $this->client->dropTable('Users');
-    }
-
     protected function createTable(): void
     {
-        $this->dynamoDbClient->createTable([
-            'TableName' => 'Users',
-            'AttributeDefinitions' => [
-                [
-                    'AttributeName' => 'Id',
-                    'AttributeType' => ScalarAttributeTypeEnum::String->value,
-                ],
-                [
-                    'AttributeName' => 'Email',
-                    'AttributeType' => ScalarAttributeTypeEnum::String->value,
-                ],
-            ],
-            'KeySchema' => [
-                [
-                    'AttributeName' => 'Id',
-                    'KeyType' => KeyTypeEnum::Hash->value,
-                ],
-            ],
-            'GlobalSecondaryIndexes' => [
-                [
-                    'IndexName' => 'Emails',
-                    'Projection' => [
-                        'ProjectionType' => ProjectionTypeEnum::KeysOnly->value,
-                    ],
-                    'KeySchema' => [
-                        [
-                            'AttributeName' => 'Email',
-                            'KeyType' => KeyTypeEnum::Hash->value,
-                        ],
-                    ],
-                    'ProvisionedThroughput' => [
-                        'ReadCapacityUnits' => 1,
-                        'WriteCapacityUnits' => 1,
-                    ],
-                ],
-            ],
-            'ProvisionedThroughput' => [
-                'ReadCapacityUnits' => 1,
-                'WriteCapacityUnits' => 1,
-            ],
-        ]);
+        $this->dynamoDbClient->createTable($this->getFixtureTableSchema());
     }
 
     protected function createDynamoDbClient(): DynamoDbClient

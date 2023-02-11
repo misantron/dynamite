@@ -3,6 +3,8 @@ IMAGE_NAME := amazon/dynamodb-local:1.20.0
 .PHONY: initialize
 initialize: start-docker
 
+pipeline: test lint static-analyze
+
 start-docker:
 	docker pull $(IMAGE_NAME)
 	docker start dynamite_dynamodb && exit 0 || \

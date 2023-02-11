@@ -20,9 +20,16 @@ abstract class AbstractFixture
 
     private Records $schema;
 
-    public function __construct()
+    /**
+     * @param ?array<int, array<string, AttributeValue>> $items
+     */
+    public function __construct(array $items = null)
     {
         $this->schema = new Records();
+
+        if ($items !== null) {
+            $this->addItems($items);
+        }
     }
 
     /**

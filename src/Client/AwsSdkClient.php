@@ -17,6 +17,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  */
 final class AwsSdkClient implements ClientInterface
 {
+    public const RESOURCE_NOT_FOUND_ERROR_CODE = 'ResourceNotFoundException';
+
     public function __construct(
         private readonly DynamoDbClient $client,
         private readonly NormalizerInterface $normalizer,
@@ -47,7 +49,7 @@ final class AwsSdkClient implements ClientInterface
                 'TableName' => $tableName,
             ]);
         } catch (DynamoDbException $e) {
-            if ($e->getAwsErrorCode() === 'ResourceNotFoundException') {
+            if ($e->getAwsErrorCode() === self::RESOURCE_NOT_FOUND_ERROR_CODE) {
                 return;
             }
             throw $e;
@@ -84,7 +86,7 @@ final class AwsSdkClient implements ClientInterface
                 'TableName' => $tableName,
             ]);
         } catch (DynamoDbException $e) {
-            if ($e->getAwsErrorCode() === 'ResourceNotFoundException') {
+            if ($e->getAwsErrorCode() === self::RESOURCE_NOT_FOUND_ERROR_CODE) {
                 return;
             }
             throw $e;

@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Integration\AsyncAws;
+namespace Dynamite\Tests\Integration\AwsSdk;
 
-use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
-use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
+use Aws\DynamoDb\Exception\DynamoDbException;
+use Dynamite\Client\AwsSdkClient;
+use Dynamite\Tests\Integration\AwsSdkIntegrationTrait;
 use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
-#[Group('AsyncAws')]
+#[Group('AwsSdk')]
 class TableTest extends IntegrationTestCase
 {
-    use AsyncAwsIntegrationTrait;
+    use AwsSdkIntegrationTrait;
 
     public function testCreate(): void
     {
@@ -25,22 +26,17 @@ class TableTest extends IntegrationTestCase
 
         $table->create($this->client, $this->logger);
 
-        $response = $this->dynamoDbClient->tableExists([
-            'TableName' => self::TABLE_NAME,
-        ]);
-        $response->resolve();
-
-        self::assertTrue($response->isSuccess());
-
         try {
             $response = $this->dynamoDbClient->describeTable([
                 'TableName' => self::TABLE_NAME,
             ]);
-            $response->resolve();
-        } catch (ResourceNotFoundException) {
-            self::fail('Table does not exists: ' . self::TABLE_NAME);
+        } catch (DynamoDbException $e) {
+            if ($e->getAwsErrorCode() === AwsSdkClient::RESOURCE_NOT_FOUND_ERROR_CODE) {
+                self::fail('Table does not exists: ' . self::TABLE_NAME);
+            }
+            throw $e;
         }
 
-        self::assertSame(self::TABLE_NAME, $response->getTable()?->getTableName());
+        self::assertSame(self::TABLE_NAME, $response['Table']['TableName']);
     }
 }
