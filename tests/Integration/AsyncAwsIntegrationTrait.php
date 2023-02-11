@@ -46,7 +46,7 @@ trait AsyncAwsIntegrationTrait
             Configuration::create([
                 'endpoint' => 'http://localhost:8000',
             ]),
-            new Credentials('AccessKey', 'SecretKey')
+            new Credentials('AccessKey', 'SecretKey'),
         ];
     }
 }

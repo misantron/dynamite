@@ -90,7 +90,7 @@ class TableTest extends UnitTestCase
                     'ReadCapacityUnits' => 1,
                     'WriteCapacityUnits' => 1,
                 ],
-            ]
+            ],
         ], $indexes);
     }
 
@@ -132,7 +132,7 @@ class TableTest extends UnitTestCase
                         'KeyType' => KeyTypeEnum::Range->value,
                     ],
                 ],
-            ]
+            ],
         ], $schema->getLocalSecondaryIndexes());
     }
 
