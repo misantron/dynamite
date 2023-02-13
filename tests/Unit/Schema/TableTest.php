@@ -76,15 +76,15 @@ class TableTest extends UnitTestCase
                 'KeySchema' => [
                     [
                         'AttributeName' => 'Type',
-                        'KeyType' => KeyTypeEnum::Hash->value,
+                        'KeyType' => KeyTypeEnum::Hash,
                     ],
                     [
                         'AttributeName' => 'Email',
-                        'KeyType' => KeyTypeEnum::Range->value,
+                        'KeyType' => KeyTypeEnum::Range,
                     ],
                 ],
                 'Projection' => [
-                    'ProjectionType' => ProjectionTypeEnum::KeysOnly->value,
+                    'ProjectionType' => ProjectionTypeEnum::KeysOnly,
                 ],
                 'ProvisionedThroughput' => [
                     'ReadCapacityUnits' => 1,
@@ -125,11 +125,11 @@ class TableTest extends UnitTestCase
                 'KeySchema' => [
                     [
                         'AttributeName' => 'Type',
-                        'KeyType' => KeyTypeEnum::Hash->value,
+                        'KeyType' => KeyTypeEnum::Hash,
                     ],
                     [
                         'AttributeName' => 'Email',
-                        'KeyType' => KeyTypeEnum::Range->value,
+                        'KeyType' => KeyTypeEnum::Range,
                     ],
                 ],
             ],
@@ -164,11 +164,11 @@ class TableTest extends UnitTestCase
         $expected = [
             [
                 'AttributeName' => 'Id',
-                'AttributeType' => ScalarAttributeTypeEnum::String->value,
+                'AttributeType' => ScalarAttributeTypeEnum::String,
             ],
             [
                 'AttributeName' => 'Active',
-                'AttributeType' => ScalarAttributeTypeEnum::Binary->value,
+                'AttributeType' => ScalarAttributeTypeEnum::Binary,
             ],
         ];
 
@@ -177,7 +177,7 @@ class TableTest extends UnitTestCase
         $expected = [
             [
                 'AttributeName' => 'Id',
-                'KeyType' => KeyTypeEnum::Hash->value,
+                'KeyType' => KeyTypeEnum::Hash,
             ],
         ];
 

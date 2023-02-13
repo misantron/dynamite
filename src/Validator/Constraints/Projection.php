@@ -20,7 +20,7 @@ final class Projection extends Assert\Compound
             new Assert\Collection([
                 'ProjectionType' => new Assert\Required([
                     new Assert\NotBlank(),
-                    new Assert\Choice(choices: ProjectionTypeEnum::values()),
+                    new Assert\Type(ProjectionTypeEnum::class),
                 ]),
             ]),
         ];

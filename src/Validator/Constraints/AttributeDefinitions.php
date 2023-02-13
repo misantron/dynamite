@@ -26,7 +26,7 @@ final class AttributeDefinitions extends Assert\Compound
                     ]),
                     'AttributeType' => new Assert\Required([
                         new Assert\NotBlank(),
-                        new Assert\Choice(choices: ScalarAttributeTypeEnum::values()),
+                        new Assert\Type(ScalarAttributeTypeEnum::class),
                     ]),
                 ]),
             ]),

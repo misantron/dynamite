@@ -26,7 +26,7 @@ final class KeySchema extends Assert\Compound
                     ]),
                     'KeyType' => new Assert\Required([
                         new Assert\NotBlank(),
-                        new Assert\Choice(choices: KeyTypeEnum::values()),
+                        new Assert\Type(KeyTypeEnum::class),
                     ]),
                 ]),
             ]),

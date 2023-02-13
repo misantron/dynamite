@@ -16,13 +16,13 @@ final class Table
     private ?string $tableName = null;
 
     /**
-     * @var array<int, array{AttributeName: string, AttributeType: string}>|null
+     * @var array<int, array{AttributeName: string, AttributeType: ScalarAttributeTypeEnum}>|null
      */
     #[Assert\AttributeDefinitions]
     private ?array $attributeDefinitions = null;
 
     /**
-     * @var array<int, array{AttributeName: string, KeyType: string}>|null
+     * @var array<int, array{AttributeName: string, KeyType: KeyTypeEnum}>|null
      */
     #[Assert\KeySchema]
     private ?array $keySchema = null;
@@ -32,7 +32,7 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>
      * }>|null
      */
@@ -44,9 +44,9 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>,
-     *     Projection: array{ProjectionType: string},
+     *     Projection: array{ProjectionType: ProjectionTypeEnum},
      *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
      * }>|null
      */
@@ -77,7 +77,7 @@ final class Table
 
         $this->attributeDefinitions[] = [
             'AttributeName' => $name,
-            'AttributeType' => $type->value,
+            'AttributeType' => $type,
         ];
 
         if ($keyType === null) {
@@ -88,7 +88,7 @@ final class Table
     }
 
     /**
-     * @return array<int, array{AttributeName: string, AttributeType: string}>|null
+     * @return array<int, array{AttributeName: string, AttributeType: ScalarAttributeTypeEnum}>|null
      */
     public function getAttributeDefinitions(): ?array
     {
@@ -103,12 +103,12 @@ final class Table
 
         $this->keySchema[] = [
             'AttributeName' => $name,
-            'KeyType' => $type->value,
+            'KeyType' => $type,
         ];
     }
 
     /**
-     * @return array<int, array{AttributeName: string, KeyType: string}>|null
+     * @return array<int, array{AttributeName: string, KeyType: KeyTypeEnum}>|null
      */
     public function getKeySchema(): ?array
     {
@@ -116,7 +116,7 @@ final class Table
     }
 
     /**
-     * @param array<int, array{AttributeName: string, KeyType: string}> $keySchema
+     * @param array<int, array{AttributeName: string, KeyType: KeyTypeEnum}> $keySchema
      */
     private function assertKeySchemaAttributesDefined(array $keySchema): void
     {
@@ -146,14 +146,14 @@ final class Table
         $keySchema = [
             [
                 'AttributeName' => $hashAttribute,
-                'KeyType' => KeyTypeEnum::Hash->value,
+                'KeyType' => KeyTypeEnum::Hash,
             ],
         ];
 
         if ($rangeAttribute !== null) {
             $keySchema[] = [
                 'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyTypeEnum::Range->value,
+                'KeyType' => KeyTypeEnum::Range,
             ];
         }
 
@@ -169,7 +169,7 @@ final class Table
             'IndexName' => $name,
             'KeySchema' => $keySchema,
             'Projection' => [
-                'ProjectionType' => $projectionType->value,
+                'ProjectionType' => $projectionType,
             ],
             'ProvisionedThroughput' => $provisionedThroughput,
         ];
@@ -180,9 +180,9 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>,
-     *     Projection: array{ProjectionType: string},
+     *     Projection: array{ProjectionType: ProjectionTypeEnum},
      *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
      * }>|null
      */
@@ -200,9 +200,9 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>,
-     *     Projection: array{ProjectionType: string},
+     *     Projection: array{ProjectionType: ProjectionTypeEnum},
      *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
      * }>
      */
@@ -236,14 +236,14 @@ final class Table
         $keySchema = [
             [
                 'AttributeName' => $hashAttribute,
-                'KeyType' => KeyTypeEnum::Hash->value,
+                'KeyType' => KeyTypeEnum::Hash,
             ],
         ];
 
         if ($rangeAttribute !== null) {
             $keySchema[] = [
                 'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyTypeEnum::Range->value,
+                'KeyType' => KeyTypeEnum::Range,
             ];
         }
 
@@ -258,7 +258,7 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>
      * }>|null
      */
@@ -296,7 +296,7 @@ final class Table
     {
         $hashKeys = [];
         foreach ($this->keySchema ?? [] as $key) {
-            if ($key['KeyType'] === KeyTypeEnum::Hash->value) {
+            if ($key['KeyType'] === KeyTypeEnum::Hash) {
                 $hashKeys[] = $key;
             }
         }

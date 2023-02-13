@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Validator\Constraints;
 
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\AttributeDefinitions;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -15,7 +16,7 @@ class AttributeDefinitionsTest extends UnitTestCase
     {
         $entity = new class() {
             /**
-             * @var array<int, array{AttributeName: string, AttributeType: string}>|null
+             * @var array<int, array{AttributeName: string, AttributeType: ScalarAttributeTypeEnum}>|null
              */
             #[AttributeDefinitions]
             public ?array $attributeDefinitions = null;
@@ -58,7 +59,7 @@ class AttributeDefinitionsTest extends UnitTestCase
             [
                 [
                     'AttributeName' => 'Id',
-                    'AttributeType' => 'S',
+                    'AttributeType' => ScalarAttributeTypeEnum::String,
                 ],
             ],
             false,

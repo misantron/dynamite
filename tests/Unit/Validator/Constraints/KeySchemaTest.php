@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Validator\Constraints;
 
+use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\KeySchema;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -58,7 +59,7 @@ class KeySchemaTest extends UnitTestCase
             [
                 [
                     'AttributeName' => 'Id',
-                    'KeyType' => 'HASH',
+                    'KeyType' => KeyTypeEnum::Hash,
                 ],
             ],
             false,
