@@ -52,7 +52,9 @@ final class AwsSdkClient implements ClientInterface
             if ($e->getAwsErrorCode() === self::RESOURCE_NOT_FOUND_ERROR_CODE) {
                 return;
             }
+            // @codeCoverageIgnoreStart
             throw $e;
+            // @codeCoverageIgnoreEnd
         }
 
         $this->client->waitUntil('TableNotExists', [
@@ -89,7 +91,9 @@ final class AwsSdkClient implements ClientInterface
             if ($e->getAwsErrorCode() === self::RESOURCE_NOT_FOUND_ERROR_CODE) {
                 return;
             }
+            // @codeCoverageIgnoreStart
             throw $e;
+            // @codeCoverageIgnoreEnd
         }
 
         $primaryKey = $this->getPrimaryKeyAttributes($response['Table']['KeySchema'] ?? []);

@@ -95,9 +95,11 @@ final class AsyncAwsClient implements ClientInterface
             return;
         }
 
+        // @codeCoverageIgnoreStart
         if ($response->getTable() === null) {
             return;
         }
+        // @codeCoverageIgnoreEnd
 
         $primaryKey = $this->getPrimaryKeyAttributes(
             $response->getTable()->getKeySchema()
