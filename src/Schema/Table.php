@@ -9,32 +9,22 @@ use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 
 final class Table
 {
-    #[
-        SerializedName('TableName'),
-        Assert\TableOrIndexName
-    ]
+    #[Assert\TableOrIndexName]
     private ?string $tableName = null;
 
     /**
      * @var array<int, array{AttributeName: string, AttributeType: string}>|null
      */
-    #[
-        SerializedName('AttributeDefinitions'),
-        Assert\AttributeDefinitions
-    ]
+    #[Assert\AttributeDefinitions]
     private ?array $attributeDefinitions = null;
 
     /**
      * @var array<int, array{AttributeName: string, KeyType: string}>|null
      */
-    #[
-        SerializedName('KeySchema'),
-        Assert\KeySchema
-    ]
+    #[Assert\KeySchema]
     private ?array $keySchema = null;
 
     /**
@@ -46,10 +36,7 @@ final class Table
      *     }>
      * }>|null
      */
-    #[
-        SerializedName('LocalSecondaryIndexes'),
-        Assert\LocalSecondaryIndexes
-    ]
+    #[Assert\LocalSecondaryIndexes]
     private ?array $localSecondaryIndexes = null;
 
     /**
@@ -63,19 +50,13 @@ final class Table
      *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
      * }>|null
      */
-    #[
-        SerializedName('GlobalSecondaryIndexes'),
-        Assert\GlobalSecondaryIndexes
-    ]
+    #[Assert\GlobalSecondaryIndexes]
     private ?array $globalSecondaryIndexes = null;
 
     /**
      * @var array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
      */
-    #[
-        SerializedName('ProvisionedThroughput'),
-        Assert\ProvisionedThroughput
-    ]
+    #[Assert\ProvisionedThroughput]
     private ?array $provisionedThroughput = null;
 
     public function setTableName(string $tableName): void

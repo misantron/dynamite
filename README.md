@@ -104,11 +104,21 @@ It's possible to provide fixtures loading path:
 declare(strict_types=1);
 
 use Dynamite\Loader;
-use Symfony\Component\Validator\Validation;
+use Dynamite\Serializer\PropertyNameConverter;
+use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Validator\Validation;
 
-$validator = Validation::createValidator();
-$serializer = new Serializer();
+$validator = Validation::createValidatorBuilder()
+    ->addLoader(new AnnotationLoader())
+    ->getValidator()
+;
+$serializer = new Serializer([
+    new BackedEnumNormalizer(),
+    new ObjectNormalizer(null, new PropertyNameConverter()),
+]);
 
 $loader = new Loader($validator, $serializer);
 $loader->loadFromDirectory('/path/to/YourFixtures');
@@ -136,11 +146,21 @@ declare(strict_types=1);
 
 use Dynamite\Client;
 use Dynamite\Executor;
-use Symfony\Component\Validator\Validation;
+use Dynamite\Serializer\PropertyNameConverter;
+use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Validator\Validation;
 
-$validator = Validation::createValidator();
-$serializer = new Serializer();
+$validator = Validation::createValidatorBuilder()
+    ->addLoader(new AnnotationLoader())
+    ->getValidator()
+;
+$serializer = new Serializer([
+    new BackedEnumNormalizer(),
+    new ObjectNormalizer(null, new PropertyNameConverter()),
+]);
 $clientFactory = new ClientFactory($serializer);
 
 $loader = new Loader($validator, $serializer);

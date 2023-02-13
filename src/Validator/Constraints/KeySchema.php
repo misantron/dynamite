@@ -8,7 +8,7 @@ use Dynamite\Enum\KeyTypeEnum;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[\Attribute]
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 final class KeySchema extends Assert\Compound
 {
     /**
