@@ -12,6 +12,7 @@ use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\FixtureInterface;
 use Dynamite\Schema\Attribute;
+use Dynamite\Schema\Record;
 use Dynamite\TableInterface;
 use Dynamite\Tests\DependencyMockTrait;
 use Faker\Factory;
@@ -82,7 +83,7 @@ abstract class IntegrationTestCase extends TestCase
     }
 
     /**
-     * @param array<int, array<string, AttributeValue>> $items
+     * @param array<int, Record> $items
      */
     protected function createFixture(array $items): FixtureInterface
     {

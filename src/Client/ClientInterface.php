@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Client;
 
+use Dynamite\Schema\Record;
 use Dynamite\Schema\Table;
 
 /**
@@ -26,13 +27,10 @@ interface ClientInterface
 
     public function dropTable(string $tableName): void;
 
-    /**
-     * @param array<string, AttributeValue> $record
-     */
-    public function createRecord(string $tableName, array $record): void;
+    public function createRecord(string $tableName, Record $record): void;
 
     /**
-     * @param array<int, array<string, AttributeValue>> $records
+     * @param array<int, Record> $records
      */
     public function creatBatchRecords(string $tableName, array $records): void;
 

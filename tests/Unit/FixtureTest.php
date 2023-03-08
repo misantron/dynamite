@@ -16,6 +16,8 @@ use Dynamite\AbstractFixture;
 use Dynamite\Client\AsyncAwsClient;
 use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
+use Dynamite\Schema\Record;
+use Dynamite\Schema\Value;
 
 class FixtureTest extends UnitTestCase
 {
@@ -34,11 +36,11 @@ class FixtureTest extends UnitTestCase
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
-                $this->addItem([
-                    'Id' => [
-                        'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
-                    ],
-                ]);
+                $this->addRecord(
+                    new Record([
+                        Value::stringValue('Id', '5957ddc9-6039-4e76-85e7-3d759a9d819c'),
+                    ])
+                );
             }
         };
 
@@ -97,11 +99,11 @@ class FixtureTest extends UnitTestCase
             {
                 $this
                     ->setTableName('Users')
-                    ->addItem([
-                        'Id' => [
-                            'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
-                        ],
-                    ])
+                    ->addRecord(
+                        new Record([
+                            Value::stringValue('Id', '5957ddc9-6039-4e76-85e7-3d759a9d819c'),
+                        ])
+                    )
                 ;
             }
         };
@@ -172,17 +174,13 @@ class FixtureTest extends UnitTestCase
             {
                 $this
                     ->setTableName('Users')
-                    ->addItems([
-                        [
-                            'Id' => [
-                                'S' => 'dbd4b1c9-4b63-4660-a99c-37cfaf4d98ca',
-                            ],
-                        ],
-                        [
-                            'Id' => [
-                                'S' => '4a830c9f-1d8c-4e6f-aa89-ba67c06360f2',
-                            ],
-                        ],
+                    ->addRecords([
+                        new Record([
+                            Value::stringValue('Id', 'dbd4b1c9-4b63-4660-a99c-37cfaf4d98ca'),
+                        ]),
+                        new Record([
+                            Value::stringValue('Id', '4a830c9f-1d8c-4e6f-aa89-ba67c06360f2'),
+                        ]),
                     ])
                 ;
             }

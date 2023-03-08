@@ -72,6 +72,8 @@ namespace Fixtures;
 
 use Dynamite\AbstractFixture;
 use Dynamite\FixtureInterface;
+use Dynamite\Schema\Record;
+use Dynamite\Schema\Value;
 
 final class UserFixtures extends AbstractFixture implements FixtureInterface
 {
@@ -79,15 +81,17 @@ final class UserFixtures extends AbstractFixture implements FixtureInterface
     {
         $this
             ->setTableName('Users')
-            ->addItems([
-                [
-                    'Id' => ['S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e'],
-                    'Email' => ['S' => 'john.doe@example.com'],
-                ],
-                [
-                    'Id' => ['S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'],
-                    'Email' => ['S' => 'robert.smith@example.com'],
-                ],  
+            ->addRecords([
+                new Record([
+                    Value::stringValue('Id', 'e5502ec2-42a7-408b-9f03-f8e162b6257e'),
+                    Value::stringValue('Email', 'john.doe@example.com'),
+                    Value::boolValue('Active', true),
+                ]),
+                new Record([
+                    Value::stringValue('Id', 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'),
+                    Value::stringValue('Email', 'robert.smith@example.com'),
+                    Value::boolValue('Active', true),
+                ]),
             ])
         ;
     }

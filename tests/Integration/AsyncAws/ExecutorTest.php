@@ -6,6 +6,8 @@ namespace Dynamite\Tests\Integration\AsyncAws;
 
 use Dynamite\Executor;
 use Dynamite\Loader;
+use Dynamite\Schema\Record;
+use Dynamite\Schema\Value;
 use Dynamite\Tests\Integration\AsyncAwsIntegrationTrait;
 use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -19,22 +21,14 @@ class ExecutorTest extends IntegrationTestCase
     {
         $table = $this->createFixtureTable();
         $fixture = $this->createFixture([
-            [
-                'Id' => [
-                    'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
-                ],
-                'Email' => [
-                    'S' => 'test.one@example.com',
-                ],
-            ],
-            [
-                'Id' => [
-                    'S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63',
-                ],
-                'Email' => [
-                    'S' => 'test.two@example.com',
-                ],
-            ],
+            new Record([
+                Value::stringValue('Id', 'e5502ec2-42a7-408b-9f03-f8e162b6257e'),
+                Value::stringValue('Email', 'test.one@example.com'),
+            ]),
+            new Record([
+                Value::stringValue('Id', 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'),
+                Value::stringValue('Email', 'test.two@example.com'),
+            ]),
         ]);
 
         $loader = new Loader($this->validator, $this->serializer);

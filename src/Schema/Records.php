@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace Dynamite\Schema;
 
-use Dynamite\Client\ClientInterface;
 use Dynamite\Validator\Constraints as Assert;
 
-/**
- * @phpstan-import-type AttributeValue from ClientInterface
- */
 final class Records
 {
     #[Assert\TableOrIndexName]
     private ?string $tableName = null;
 
     /**
-     * @var array<int, array<string, AttributeValue>>
+     * @var array<int, Record>
      */
     #[Assert\Records]
     private array $records = [];
@@ -31,16 +27,13 @@ final class Records
         return $this->tableName;
     }
 
-    /**
-     * @param array<string, AttributeValue> $record
-     */
-    public function addRecord(array $record): void
+    public function addRecord(Record $record): void
     {
         $this->records[] = $record;
     }
 
     /**
-     * @return array<int, array<string, AttributeValue>>
+     * @return array<int, Record>
      */
     public function getRecords(): array
     {

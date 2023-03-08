@@ -9,6 +9,7 @@ use AsyncAws\DynamoDb\Enum;
 use AsyncAws\DynamoDb\Exception;
 use AsyncAws\DynamoDb\Input;
 use AsyncAws\DynamoDb\ValueObject;
+use Dynamite\Schema\Record;
 use Dynamite\Schema\Table;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer;
@@ -54,27 +55,24 @@ final class AsyncAwsClient implements ClientInterface
         }
     }
 
-    /**
-     * @param array<string, AttributeValue> $record
-     */
-    public function createRecord(string $tableName, array $record): void
+    public function createRecord(string $tableName, Record $record): void
     {
         $input = new Input\PutItemInput([
             'TableName' => $tableName,
-            'Item' => $record,
+            'Item' => $record->getValues(),
         ]);
 
         $this->client->putItem($input)->resolve();
     }
 
     /**
-     * @param array<int, array<string, AttributeValue>> $records
+     * @param array<int, Record> $records
      */
     public function creatBatchRecords(string $tableName, array $records): void
     {
         $mapped = [];
         foreach ($records as $k => $record) {
-            foreach ($record as $name => $value) {
+            foreach ($record->getValues() as $name => $value) {
                 $mapped[$k][$name] = new ValueObject\AttributeValue($value);
             }
         }

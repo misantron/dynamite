@@ -9,6 +9,8 @@ use Dynamite\Client\AwsSdkClient;
 use Dynamite\Executor;
 use Dynamite\Loader;
 use Dynamite\Purger\Purger;
+use Dynamite\Schema\Record;
+use Dynamite\Schema\Value;
 use Dynamite\Tests\Integration\AwsSdkIntegrationTrait;
 use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -27,22 +29,14 @@ class PurgerTest extends IntegrationTestCase
         $table->setNormalizer($this->serializer);
 
         $fixture = $this->createFixture([
-            [
-                'Id' => [
-                    'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
-                ],
-                'Email' => [
-                    'S' => 'test.one@example.com',
-                ],
-            ],
-            [
-                'Id' => [
-                    'S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63',
-                ],
-                'Email' => [
-                    'S' => 'test.two@example.com',
-                ],
-            ],
+            new Record([
+                Value::stringValue('Id', 'e5502ec2-42a7-408b-9f03-f8e162b6257e'),
+                Value::stringValue('Email', 'test.one@example.com'),
+            ]),
+            new Record([
+                Value::stringValue('Id', 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'),
+                Value::stringValue('Email', 'test.two@example.com'),
+            ]),
         ]);
         $fixture->setValidator($this->validator);
 
@@ -75,22 +69,14 @@ class PurgerTest extends IntegrationTestCase
         $this->createTable();
 
         $fixture = $this->createFixture([
-            [
-                'Id' => [
-                    'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
-                ],
-                'Email' => [
-                    'S' => 'test.one@example.com',
-                ],
-            ],
-            [
-                'Id' => [
-                    'S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63',
-                ],
-                'Email' => [
-                    'S' => 'test.two@example.com',
-                ],
-            ],
+            new Record([
+                Value::stringValue('Id', 'e5502ec2-42a7-408b-9f03-f8e162b6257e'),
+                Value::stringValue('Email', 'test.one@example.com'),
+            ]),
+            new Record([
+                Value::stringValue('Id', 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'),
+                Value::stringValue('Email', 'test.two@example.com'),
+            ]),
         ]);
         $fixture->setValidator($this->validator);
 
@@ -126,14 +112,10 @@ class PurgerTest extends IntegrationTestCase
         $rows = [];
         $i = 0;
         do {
-            $rows[] = [
-                'Id' => [
-                    'S' => $faker->uuid(),
-                ],
-                'Email' => [
-                    'S' => $faker->email(),
-                ],
-            ];
+            $rows[] = new Record([
+                Value::stringValue('Id', $faker->uuid()),
+                Value::stringValue('Email', $faker->email()),
+            ]);
         } while (++$i < 70);
 
         $fixture = $this->createFixture($rows);

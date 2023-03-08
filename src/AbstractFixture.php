@@ -6,13 +6,11 @@ namespace Dynamite;
 
 use Dynamite\Client\ClientInterface;
 use Dynamite\Exception\ValidationException;
+use Dynamite\Schema\Record;
 use Dynamite\Schema\Records;
 use Dynamite\Validator\ValidatorAwareTrait;
 use Psr\Log\LoggerInterface;
 
-/**
- * @phpstan-import-type AttributeValue from ClientInterface
- */
 abstract class AbstractFixture
 {
     use TableTrait;
@@ -21,34 +19,31 @@ abstract class AbstractFixture
     private Records $schema;
 
     /**
-     * @param ?array<int, array<string, AttributeValue>> $items
+     * @param ?array<int, Record> $records
      */
-    public function __construct(array $items = null)
+    public function __construct(array $records = null)
     {
         $this->schema = new Records();
 
-        if ($items !== null) {
-            $this->addItems($items);
+        if ($records !== null) {
+            $this->addRecords($records);
         }
     }
 
-    /**
-     * @param array<string, AttributeValue> $item
-     */
-    protected function addItem(array $item): self
+    protected function addRecord(Record $record): self
     {
-        $this->schema->addRecord($item);
+        $this->schema->addRecord($record);
 
         return $this;
     }
 
     /**
-     * @param array<int, array<string, AttributeValue>> $items
+     * @param array<int, Record> $records
      */
-    protected function addItems(array $items): self
+    protected function addRecords(array $records): self
     {
-        foreach ($items as $item) {
-            $this->schema->addRecord($item);
+        foreach ($records as $record) {
+            $this->schema->addRecord($record);
         }
 
         return $this;

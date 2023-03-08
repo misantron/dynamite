@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Integration\AwsSdk;
 
+use Dynamite\Schema\Record;
+use Dynamite\Schema\Value;
 use Dynamite\Tests\Integration\AwsSdkIntegrationTrait;
 use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -18,14 +20,10 @@ class FixtureTest extends IntegrationTestCase
         $this->createTable();
 
         $fixture = $this->createFixture([
-            [
-                'Id' => [
-                    'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
-                ],
-                'Email' => [
-                    'S' => 'test@example.com',
-                ],
-            ],
+            new Record([
+                Value::stringValue('Id', 'e5502ec2-42a7-408b-9f03-f8e162b6257e'),
+                Value::stringValue('Email', 'test@example.com'),
+            ]),
         ]);
         $fixture->setValidator($this->validator);
 
@@ -51,30 +49,18 @@ class FixtureTest extends IntegrationTestCase
         $this->createTable();
 
         $fixture = $this->createFixture([
-            [
-                'Id' => [
-                    'S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e',
-                ],
-                'Email' => [
-                    'S' => 'test.one@example.com',
-                ],
-            ],
-            [
-                'Id' => [
-                    'S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63',
-                ],
-                'Email' => [
-                    'S' => 'test.two@example.com',
-                ],
-            ],
-            [
-                'Id' => [
-                    'S' => '41757ca6-9b51-4bd8-adc4-22e0ba2902f8',
-                ],
-                'Email' => [
-                    'S' => 'test.three@example.com',
-                ],
-            ],
+            new Record([
+                Value::stringValue('Id', 'e5502ec2-42a7-408b-9f03-f8e162b6257e'),
+                Value::stringValue('Email', 'test.one@example.com'),
+            ]),
+            new Record([
+                Value::stringValue('Id', 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'),
+                Value::stringValue('Email', 'test.two@example.com'),
+            ]),
+            new Record([
+                Value::stringValue('Id', '41757ca6-9b51-4bd8-adc4-22e0ba2902f8'),
+                Value::stringValue('Email', 'test.three@example.com'),
+            ]),
         ]);
         $fixture->setValidator($this->validator);
 

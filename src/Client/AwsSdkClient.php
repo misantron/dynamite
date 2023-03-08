@@ -7,6 +7,7 @@ namespace Dynamite\Client;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Exception\DynamoDbException;
 use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Schema\Record;
 use Dynamite\Schema\Table;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -62,23 +63,25 @@ final class AwsSdkClient implements ClientInterface
         ]);
     }
 
-    /**
-     * @param array<string, AttributeValue> $record
-     */
-    public function createRecord(string $tableName, array $record): void
+    public function createRecord(string $tableName, Record $record): void
     {
         $this->client->putItem([
             'TableName' => $tableName,
-            'Item' => $record,
+            'Item' => $record->getValues(),
         ]);
     }
 
     /**
-     * @param array<int, array<string, AttributeValue>> $records
+     * @param array<int, Record> $records
      */
     public function creatBatchRecords(string $tableName, array $records): void
     {
-        $this->executeBatchPut($tableName, $records);
+        $mapped = array_map(
+            static fn (Record $record) => $record->getValues(),
+            $records
+        );
+
+        $this->executeBatchPut($tableName, $mapped);
     }
 
     public function truncateRecords(string $tableName): void
