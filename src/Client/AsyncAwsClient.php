@@ -14,9 +14,6 @@ use Dynamite\Schema\Table;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer;
 
-/**
- * @phpstan-import-type AttributeValue from ClientInterface
- */
 final class AsyncAwsClient implements ClientInterface
 {
     public function __construct(

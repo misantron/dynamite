@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Unit;
+namespace Dynamite\Tests\Unit\AsyncAws;
 
 use AsyncAws\Core\Test\ResultMockFactory;
 use AsyncAws\DynamoDb\DynamoDbClient;
@@ -16,6 +16,7 @@ use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
+use Dynamite\Tests\Unit\UnitTestCase;
 
 class TableTest extends UnitTestCase
 {

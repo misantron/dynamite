@@ -159,7 +159,7 @@ class TableTest extends UnitTestCase
     {
         $schema = new Table();
         $schema->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash);
-        $schema->addAttribute('Active', ScalarAttributeTypeEnum::Binary);
+        $schema->addAttribute('Active', ScalarAttributeTypeEnum::Bool);
 
         $expected = [
             [
@@ -168,7 +168,7 @@ class TableTest extends UnitTestCase
             ],
             [
                 'AttributeName' => 'Active',
-                'AttributeType' => ScalarAttributeTypeEnum::Binary,
+                'AttributeType' => ScalarAttributeTypeEnum::Bool,
             ],
         ];
 

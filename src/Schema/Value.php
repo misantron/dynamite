@@ -20,7 +20,7 @@ final class Value
         return new self($name, ScalarAttributeTypeEnum::String, $value);
     }
 
-    public static function numericValue(string $name, int $value): self
+    public static function numericValue(string $name, int|float $value): self
     {
         return new self($name, ScalarAttributeTypeEnum::Numeric, $value);
     }

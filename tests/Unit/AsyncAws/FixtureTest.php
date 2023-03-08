@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Unit;
+namespace Dynamite\Tests\Unit\AsyncAws;
 
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
@@ -18,6 +18,7 @@ use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
 use Dynamite\Schema\Record;
 use Dynamite\Schema\Value;
+use Dynamite\Tests\Unit\UnitTestCase;
 
 class FixtureTest extends UnitTestCase
 {
@@ -39,6 +40,9 @@ class FixtureTest extends UnitTestCase
                 $this->addRecord(
                     new Record([
                         Value::stringValue('Id', '5957ddc9-6039-4e76-85e7-3d759a9d819c'),
+                        Value::numericValue('Balance', 11.35),
+                        Value::boolValue('Active', true),
+                        Value::binaryValue('Avatar', 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='),
                     ])
                 );
             }
