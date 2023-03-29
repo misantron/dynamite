@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\AsyncAws;
 
+use AsyncAws\Core\Response;
+use AsyncAws\Core\Test\Http\SimpleMockedResponse;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
 use AsyncAws\DynamoDb\Input\PutItemInput;
@@ -19,6 +21,8 @@ use Dynamite\FixtureInterface;
 use Dynamite\Schema\Record;
 use Dynamite\Schema\Value;
 use Dynamite\Tests\Unit\UnitTestCase;
+use Psr\Log\NullLogger;
+use Symfony\Component\HttpClient\MockHttpClient;
 
 class FixtureTest extends UnitTestCase
 {
@@ -211,5 +215,16 @@ class FixtureTest extends UnitTestCase
         ];
 
         self::assertSame($expectedLogs, $logger->cleanLogs());
+    }
+
+    private function createMockedResponse(): Response
+    {
+        $client = new MockHttpClient(new SimpleMockedResponse('{}', [], 200));
+
+        return new Response(
+            $client->request('POST', 'http://localhost'),
+            $client,
+            new NullLogger()
+        );
     }
 }
