@@ -6,6 +6,7 @@
 [![Packagist](https://img.shields.io/packagist/v/misantron/dynamite.svg?style=flat-square)](https://packagist.org/packages/misantron/dynamite)
 
 Provide a simple way to manage and execute the loading of data fixtures for AWS DynamoDB storage.  
+Can use client from [AWS PHP SDK](https://aws.amazon.com/sdk-for-php/) or [Async AWS](https://async-aws.com/) under the hood.  
 Library code design is heavily inspired by [doctrine/data-fixtures](https://github.com/doctrine/data-fixtures).
 
 ## Install
