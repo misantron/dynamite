@@ -6,6 +6,7 @@ namespace Dynamite;
 
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Webmozart\Assert\Assert;
 
 class Loader
 {
@@ -41,11 +42,8 @@ class Loader
             }
 
             $filepath = $info->getRealPath();
-            // @codeCoverageIgnoreStart
-            if ($filepath === false) {
-                continue;
-            }
-            // @codeCoverageIgnoreEnd
+
+            Assert::notFalse($filepath, 'Filepath is not valid');
 
             self::requireOnce($filepath);
 

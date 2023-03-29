@@ -1,7 +1,9 @@
-IMAGE_NAME := amazon/dynamodb-local:1.20.0
+IMAGE_NAME := amazon/dynamodb-local:1.21.0
 
 .PHONY: initialize
 initialize: start-docker
+
+pipeline: test lint static-analyze
 
 start-docker:
 	docker pull $(IMAGE_NAME)
@@ -13,19 +15,20 @@ stop-docker:
 test: start-docker test-unit test-integration
 
 test-integration:
-	vendor/bin/simple-phpunit --testsuite Integration
+	vendor/bin/phpunit --testsuite Integration
 test-unit:
-	vendor/bin/simple-phpunit --testsuite Unit
+	vendor/bin/phpunit --testsuite Unit
 
-lint: ecs-fix phpstan psalm
+lint: ecs-fix
 
 ecs:
 	vendor/bin/ecs check
 ecs-fix:
 	vendor/bin/ecs check --fix
+
+static-analyze: phpstan psalm
+
 phpstan:
 	vendor/bin/phpstan analyse
 psalm:
 	vendor/bin/psalm
-
-

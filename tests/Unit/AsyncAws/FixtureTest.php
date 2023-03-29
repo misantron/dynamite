@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dynamite\Tests\Unit;
+namespace Dynamite\Tests\Unit\AsyncAws;
 
+use AsyncAws\Core\Response;
+use AsyncAws\Core\Test\Http\SimpleMockedResponse;
 use AsyncAws\DynamoDb\DynamoDbClient;
 use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
 use AsyncAws\DynamoDb\Input\PutItemInput;
@@ -13,8 +15,14 @@ use AsyncAws\DynamoDb\ValueObject\AttributeValue;
 use AsyncAws\DynamoDb\ValueObject\PutRequest;
 use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\AbstractFixture;
+use Dynamite\Client\AsyncAwsClient;
 use Dynamite\Exception\ValidationException;
 use Dynamite\FixtureInterface;
+use Dynamite\Schema\Record;
+use Dynamite\Schema\Value;
+use Dynamite\Tests\Unit\UnitTestCase;
+use Psr\Log\NullLogger;
+use Symfony\Component\HttpClient\MockHttpClient;
 
 class FixtureTest extends UnitTestCase
 {
@@ -24,20 +32,29 @@ class FixtureTest extends UnitTestCase
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $this->createSerializer(),
+            $logger
+        );
+
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
-                $this->addItem([
-                    'Id' => [
-                        'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
-                    ],
-                ]);
+                $this->addRecord(
+                    new Record([
+                        Value::stringValue('Id', '5957ddc9-6039-4e76-85e7-3d759a9d819c'),
+                        Value::numericValue('Balance', 11.35),
+                        Value::boolValue('Active', true),
+                        Value::binaryValue('Avatar', 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='),
+                    ])
+                );
             }
         };
 
         try {
             $fixture->setValidator($validator);
-            $fixture->load($dynamoDbClientMock, $logger);
+            $fixture->load($client, $logger);
 
             self::fail('Exception is not thrown');
         } catch (\Throwable $e) {
@@ -79,21 +96,27 @@ class FixtureTest extends UnitTestCase
         ;
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $this->createSerializer(),
+            $logger
+        );
+
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
                 $this
                     ->setTableName('Users')
-                    ->addItem([
-                        'Id' => [
-                            'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
-                        ],
-                    ])
+                    ->addRecord(
+                        new Record([
+                            Value::stringValue('Id', '5957ddc9-6039-4e76-85e7-3d759a9d819c'),
+                        ])
+                    )
                 ;
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock, $logger);
+        $fixture->load($client, $logger);
 
         $expectedLogs = [
             [
@@ -148,28 +171,30 @@ class FixtureTest extends UnitTestCase
         ;
         $logger = $this->createTestLogger();
 
+        $client = new AsyncAwsClient(
+            $dynamoDbClientMock,
+            $this->createSerializer(),
+            $logger
+        );
+
         $fixture = new class() extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
                 $this
                     ->setTableName('Users')
-                    ->addItems([
-                        [
-                            'Id' => [
-                                'S' => 'dbd4b1c9-4b63-4660-a99c-37cfaf4d98ca',
-                            ],
-                        ],
-                        [
-                            'Id' => [
-                                'S' => '4a830c9f-1d8c-4e6f-aa89-ba67c06360f2',
-                            ],
-                        ],
+                    ->addRecords([
+                        new Record([
+                            Value::stringValue('Id', 'dbd4b1c9-4b63-4660-a99c-37cfaf4d98ca'),
+                        ]),
+                        new Record([
+                            Value::stringValue('Id', '4a830c9f-1d8c-4e6f-aa89-ba67c06360f2'),
+                        ]),
                     ])
                 ;
             }
         };
         $fixture->setValidator($validator);
-        $fixture->load($dynamoDbClientMock, $logger);
+        $fixture->load($client, $logger);
 
         $expectedLogs = [
             [
@@ -190,5 +215,16 @@ class FixtureTest extends UnitTestCase
         ];
 
         self::assertSame($expectedLogs, $logger->cleanLogs());
+    }
+
+    private function createMockedResponse(): Response
+    {
+        $client = new MockHttpClient(new SimpleMockedResponse('{}', [], 200));
+
+        return new Response(
+            $client->request('POST', 'http://localhost'),
+            $client,
+            new NullLogger()
+        );
     }
 }

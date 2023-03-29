@@ -4,35 +4,27 @@ declare(strict_types=1);
 
 namespace Dynamite\Schema;
 
-use AsyncAws\DynamoDb\Enum\KeyType;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 
 final class Table
 {
-    #[
-        SerializedName('TableName'),
-        Assert\TableOrIndexName
-    ]
+    #[Assert\TableOrIndexName]
     private ?string $tableName = null;
 
     /**
-     * @var array<int, array{AttributeName: string, AttributeType: string}>|null
+     * @var array<int, array{AttributeName: string, AttributeType: ScalarAttributeTypeEnum}>|null
      */
-    #[
-        SerializedName('AttributeDefinitions'),
-        Assert\AttributeDefinitions
-    ]
+    #[Assert\AttributeDefinitions]
     private ?array $attributeDefinitions = null;
 
     /**
-     * @var array<int, array{AttributeName: string, KeyType: string}>|null
+     * @var array<int, array{AttributeName: string, KeyType: KeyTypeEnum}>|null
      */
-    #[
-        SerializedName('KeySchema'),
-        Assert\KeySchema
-    ]
+    #[Assert\KeySchema]
     private ?array $keySchema = null;
 
     /**
@@ -40,14 +32,11 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>
      * }>|null
      */
-    #[
-        SerializedName('LocalSecondaryIndexes'),
-        Assert\LocalSecondaryIndexes
-    ]
+    #[Assert\LocalSecondaryIndexes]
     private ?array $localSecondaryIndexes = null;
 
     /**
@@ -55,25 +44,19 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>,
-     *     Projection: array{ProjectionType: string},
+     *     Projection: array{ProjectionType: ProjectionTypeEnum},
      *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
      * }>|null
      */
-    #[
-        SerializedName('GlobalSecondaryIndexes'),
-        Assert\GlobalSecondaryIndexes
-    ]
+    #[Assert\GlobalSecondaryIndexes]
     private ?array $globalSecondaryIndexes = null;
 
     /**
      * @var array{ReadCapacityUnits: int, WriteCapacityUnits: int}|null
      */
-    #[
-        SerializedName('ProvisionedThroughput'),
-        Assert\ProvisionedThroughput
-    ]
+    #[Assert\ProvisionedThroughput]
     private ?array $provisionedThroughput = null;
 
     public function setTableName(string $tableName): void
@@ -86,7 +69,7 @@ final class Table
         return $this->tableName;
     }
 
-    public function addAttribute(string $name, string $type): void
+    public function addAttribute(string $name, ScalarAttributeTypeEnum $type, ?KeyTypeEnum $keyType = null): void
     {
         if ($this->attributeDefinitions === null) {
             $this->attributeDefinitions = [];
@@ -96,17 +79,23 @@ final class Table
             'AttributeName' => $name,
             'AttributeType' => $type,
         ];
+
+        if ($keyType === null) {
+            return;
+        }
+
+        $this->addKeyElement($name, $keyType);
     }
 
     /**
-     * @return array<int, array{AttributeName: string, AttributeType: string}>|null
+     * @return array<int, array{AttributeName: string, AttributeType: ScalarAttributeTypeEnum}>|null
      */
     public function getAttributeDefinitions(): ?array
     {
         return $this->attributeDefinitions;
     }
 
-    public function addKeyElement(string $name, string $type): self
+    private function addKeyElement(string $name, KeyTypeEnum $type): void
     {
         if ($this->keySchema === null) {
             $this->keySchema = [];
@@ -116,22 +105,18 @@ final class Table
             'AttributeName' => $name,
             'KeyType' => $type,
         ];
-
-        return $this;
     }
 
     /**
-     * @return array<int, array{AttributeName: string, KeyType: string}>|null
+     * @return array<int, array{AttributeName: string, KeyType: KeyTypeEnum}>|null
      */
     public function getKeySchema(): ?array
     {
-        $this->assertKeySchemaAttributesDefined($this->keySchema ?? []);
-
         return $this->keySchema;
     }
 
     /**
-     * @param array<int, array{AttributeName: string, KeyType: string}> $keySchema
+     * @param array<int, array{AttributeName: string, KeyType: KeyTypeEnum}> $keySchema
      */
     private function assertKeySchemaAttributesDefined(array $keySchema): void
     {
@@ -148,7 +133,7 @@ final class Table
 
     public function addGlobalSecondaryIndex(
         string $name,
-        string $projectionType,
+        ProjectionTypeEnum $projectionType,
         string $hashAttribute,
         ?string $rangeAttribute,
         ?int $writeCapacity,
@@ -161,14 +146,14 @@ final class Table
         $keySchema = [
             [
                 'AttributeName' => $hashAttribute,
-                'KeyType' => KeyType::HASH,
+                'KeyType' => KeyTypeEnum::Hash,
             ],
         ];
 
         if ($rangeAttribute !== null) {
             $keySchema[] = [
                 'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyType::RANGE,
+                'KeyType' => KeyTypeEnum::Range,
             ];
         }
 
@@ -195,9 +180,9 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>,
-     *     Projection: array{ProjectionType: string},
+     *     Projection: array{ProjectionType: ProjectionTypeEnum},
      *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
      * }>|null
      */
@@ -215,9 +200,9 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>,
-     *     Projection: array{ProjectionType: string},
+     *     Projection: array{ProjectionType: ProjectionTypeEnum},
      *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
      * }>
      */
@@ -251,14 +236,14 @@ final class Table
         $keySchema = [
             [
                 'AttributeName' => $hashAttribute,
-                'KeyType' => KeyType::HASH,
+                'KeyType' => KeyTypeEnum::Hash,
             ],
         ];
 
         if ($rangeAttribute !== null) {
             $keySchema[] = [
                 'AttributeName' => $rangeAttribute,
-                'KeyType' => KeyType::RANGE,
+                'KeyType' => KeyTypeEnum::Range,
             ];
         }
 
@@ -273,7 +258,7 @@ final class Table
      *     IndexName: string,
      *     KeySchema: array<int, array{
      *          AttributeName: string,
-     *          KeyType: string
+     *          KeyType: KeyTypeEnum
      *     }>
      * }>|null
      */
@@ -311,7 +296,7 @@ final class Table
     {
         $hashKeys = [];
         foreach ($this->keySchema ?? [] as $key) {
-            if ($key['KeyType'] === KeyType::HASH) {
+            if ($key['KeyType'] === KeyTypeEnum::Hash) {
                 $hashKeys[] = $key;
             }
         }

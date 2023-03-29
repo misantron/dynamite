@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Validator\Constraints;
 
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\AttributeDefinitions;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AttributeDefinitionsTest extends UnitTestCase
 {
-    /**
-     * @dataProvider validateDataProvider
-     */
+    #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
         $entity = new class() {
             /**
-             * @var array<int, array{AttributeName: string, AttributeType: string}>|null
+             * @var array<int, array{AttributeName: string, AttributeType: ScalarAttributeTypeEnum}>|null
              */
             #[AttributeDefinitions]
             public ?array $attributeDefinitions = null;
@@ -29,7 +29,7 @@ class AttributeDefinitionsTest extends UnitTestCase
     /**
      * @return iterable<string, array<int, mixed>>
      */
-    public function validateDataProvider(): iterable
+    public static function validateDataProvider(): iterable
     {
         yield 'null-value' => [
             null,
@@ -59,7 +59,7 @@ class AttributeDefinitionsTest extends UnitTestCase
             [
                 [
                     'AttributeName' => 'Id',
-                    'AttributeType' => 'S',
+                    'AttributeType' => ScalarAttributeTypeEnum::String,
                 ],
             ],
             false,

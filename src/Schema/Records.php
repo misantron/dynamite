@@ -12,7 +12,7 @@ final class Records
     private ?string $tableName = null;
 
     /**
-     * @var array<int, array<string, array<string, string>>>
+     * @var array<int, Record>
      */
     #[Assert\Records]
     private array $records = [];
@@ -27,24 +27,21 @@ final class Records
         return $this->tableName;
     }
 
-    /**
-     * @param array<string, array<string, string>> $record
-     */
-    public function addRecord(array $record): void
+    public function addRecord(Record $record): void
     {
         $this->records[] = $record;
     }
 
     /**
-     * @return array<int, array<string, array<string, string>>>
+     * @return array<int, Record>
      */
     public function getRecords(): array
     {
         return $this->records;
     }
 
-    public function isSingleRecord(): bool
+    public function getCount(): int
     {
-        return \count($this->records) === 1;
+        return \count($this->records);
     }
 }

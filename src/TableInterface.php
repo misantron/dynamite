@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
-use AsyncAws\DynamoDb\DynamoDbClient;
+use Dynamite\Client\ClientInterface;
 use Dynamite\Validator\ValidatorAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
@@ -13,5 +13,5 @@ interface TableInterface extends ValidatorAwareInterface, NormalizerAwareInterfa
 {
     public function getTableName(): ?string;
 
-    public function create(DynamoDbClient $client, LoggerInterface $logger): void;
+    public function create(ClientInterface $client, LoggerInterface $logger): void;
 }

@@ -7,7 +7,7 @@ namespace Dynamite\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[\Attribute]
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 final class TableOrIndexName extends Assert\Compound
 {
     /**

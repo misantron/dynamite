@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Validator\Constraints;
 
-use AsyncAws\DynamoDb\Enum\ProjectionType;
+use Dynamite\Enum\ProjectionTypeEnum;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,11 +20,7 @@ final class Projection extends Assert\Compound
             new Assert\Collection([
                 'ProjectionType' => new Assert\Required([
                     new Assert\NotBlank(),
-                    new Assert\Choice(choices: [
-                        ProjectionType::KEYS_ONLY,
-                        ProjectionType::INCLUDE,
-                        ProjectionType::ALL,
-                    ]),
+                    new Assert\Type(ProjectionTypeEnum::class),
                 ]),
             ]),
         ];

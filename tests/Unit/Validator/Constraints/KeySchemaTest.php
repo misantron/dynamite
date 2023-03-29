@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Validator\Constraints;
 
+use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\KeySchema;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class KeySchemaTest extends UnitTestCase
 {
-    /**
-     * @dataProvider validateDataProvider
-     */
+    #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
         $entity = new class() {
@@ -29,7 +29,7 @@ class KeySchemaTest extends UnitTestCase
     /**
      * @return iterable<string, array<int, mixed>>
      */
-    public function validateDataProvider(): iterable
+    public static function validateDataProvider(): iterable
     {
         yield 'null-value' => [
             null,
@@ -59,7 +59,7 @@ class KeySchemaTest extends UnitTestCase
             [
                 [
                     'AttributeName' => 'Id',
-                    'KeyType' => 'HASH',
+                    'KeyType' => KeyTypeEnum::Hash,
                 ],
             ],
             false,

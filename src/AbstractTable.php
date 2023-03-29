@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
-use AsyncAws\DynamoDb\DynamoDbClient;
-use AsyncAws\DynamoDb\Enum\KeyType;
-use AsyncAws\DynamoDb\Enum\ProjectionType;
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
-use AsyncAws\DynamoDb\Input\CreateTableInput;
-use Dynamite\Exception\SchemaException;
+use Dynamite\Client\ClientInterface;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Exception\ValidationException;
+use Dynamite\Schema\Attribute;
 use Dynamite\Schema\Table;
 use Dynamite\Validator\ValidatorAwareTrait;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 
 abstract class AbstractTable
@@ -30,55 +28,33 @@ abstract class AbstractTable
         $this->schema = new Table();
     }
 
-    protected function addAttribute(string $name, string $type): self
+    protected function addAttribute(string $name, ScalarAttributeTypeEnum $type, KeyTypeEnum $keyType = null): self
     {
-        if (!ScalarAttributeType::exists($type)) {
-            throw SchemaException::unexpectedAttributeType($type);
-        }
-
-        $this->schema->addAttribute($name, $type);
+        $this->schema->addAttribute($name, $type, $keyType);
 
         return $this;
     }
 
     /**
-     * @param array<int, array{string, string}> $items
+     * @param array<int, Attribute> $items
      */
     protected function addAttributes(array $items): self
     {
-        foreach ($items as [$name, $type]) {
-            $this->addAttribute($name, $type);
+        foreach ($items as $item) {
+            $this->addAttribute($item->getName(), $item->getType(), $item->getKeyType());
         }
-
-        return $this;
-    }
-
-    protected function addHashKey(string $name): self
-    {
-        $this->schema->addKeyElement($name, KeyType::HASH);
-
-        return $this;
-    }
-
-    protected function addRangeKey(string $name): self
-    {
-        $this->schema->addKeyElement($name, KeyType::RANGE);
 
         return $this;
     }
 
     protected function addGlobalSecondaryIndex(
         string $name,
-        string $projectionType,
+        ProjectionTypeEnum $projectionType,
         string $hashAttribute,
         string $rangeAttribute = null,
         int $writeCapacity = null,
         int $readCapacity = null
     ): self {
-        if (!ProjectionType::exists($projectionType)) {
-            throw SchemaException::unexpectedProjectionType($projectionType);
-        }
-
         $this->schema->addGlobalSecondaryIndex(
             $name,
             $projectionType,
@@ -105,7 +81,7 @@ abstract class AbstractTable
         return $this;
     }
 
-    final public function create(DynamoDbClient $client, LoggerInterface $logger): void
+    final public function create(ClientInterface $client, LoggerInterface $logger): void
     {
         $this->initialize();
 
@@ -116,16 +92,7 @@ abstract class AbstractTable
 
         $this->schema->assertHashKeySet();
 
-        $input = new CreateTableInput(
-            (array) $this->normalizer->normalize(
-                $this->schema,
-                context: [
-                    AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-                ]
-            )
-        );
-
-        $client->createTable($input)->resolve();
+        $client->createTable($this->schema);
 
         $logger->debug('Table created', [
             'table' => $this->schema->getTableName(),

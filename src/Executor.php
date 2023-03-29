@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
-use AsyncAws\DynamoDb\DynamoDbClient;
+use Dynamite\Client\ClientInterface;
 use Dynamite\Purger\Purger;
 use Dynamite\Purger\PurgerInterface;
 use Psr\Log\LoggerInterface;
@@ -15,11 +15,11 @@ class Executor
     private readonly PurgerInterface $purger;
 
     public function __construct(
-        private readonly DynamoDbClient $client,
+        private readonly ClientInterface $client,
         PurgerInterface $purger = null,
         private readonly LoggerInterface $logger = new NullLogger()
     ) {
-        $this->purger = $purger ?? new Purger($this->client, $this->logger);
+        $this->purger = $purger ?? new Purger($this->client);
     }
 
     /**

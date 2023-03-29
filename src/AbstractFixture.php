@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
-use AsyncAws\DynamoDb\DynamoDbClient;
-use AsyncAws\DynamoDb\Input\PutItemInput;
+use Dynamite\Client\ClientInterface;
 use Dynamite\Exception\ValidationException;
-use Dynamite\Query\BatchWriteItems;
+use Dynamite\Schema\Record;
 use Dynamite\Schema\Records;
 use Dynamite\Validator\ValidatorAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -19,34 +18,38 @@ abstract class AbstractFixture
 
     private Records $schema;
 
-    public function __construct()
+    /**
+     * @param ?array<int, Record> $records
+     */
+    public function __construct(array $records = null)
     {
         $this->schema = new Records();
+
+        if ($records !== null) {
+            $this->addRecords($records);
+        }
     }
 
-    /**
-     * @param array<string, array<string, string>> $item
-     */
-    protected function addItem(array $item): self
+    protected function addRecord(Record $record): self
     {
-        $this->schema->addRecord($item);
+        $this->schema->addRecord($record);
 
         return $this;
     }
 
     /**
-     * @param array<int, array<string, array<string, string>>> $items
+     * @param array<int, Record> $records
      */
-    protected function addItems(array $items): self
+    protected function addRecords(array $records): self
     {
-        foreach ($items as $item) {
-            $this->schema->addRecord($item);
+        foreach ($records as $record) {
+            $this->schema->addRecord($record);
         }
 
         return $this;
     }
 
-    final public function load(DynamoDbClient $client, LoggerInterface $logger): void
+    final public function load(ClientInterface $client, LoggerInterface $logger): void
     {
         $this->initialize();
 
@@ -58,13 +61,9 @@ abstract class AbstractFixture
         /** @var string $tableName */
         $tableName = $this->schema->getTableName();
 
-        if ($this->schema->isSingleRecord()) {
-            $input = new PutItemInput([
-                'TableName' => $tableName,
-                'Item' => current($this->schema->getRecords()),
-            ]);
-
-            $client->putItem($input)->resolve();
+        if ($this->schema->getCount() === 1) {
+            $records = $this->schema->getRecords();
+            $client->createRecord($tableName, $records[0]);
 
             $logger->debug('Single record loaded', [
                 'table' => $tableName,
@@ -73,8 +72,7 @@ abstract class AbstractFixture
             return;
         }
 
-        $query = new BatchWriteItems($client, $logger);
-        $query->putItems($tableName, $this->schema->getRecords());
+        $client->creatBatchRecords($tableName, $this->schema->getRecords());
 
         $logger->debug('Batch records loaded', [
             'table' => $tableName,

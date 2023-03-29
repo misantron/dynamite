@@ -1,6 +1,6 @@
 # Dynamite - AWS DynamoDB fixtures
 
-[![Build Status](https://img.shields.io/github/workflow/status/misantron/dynamite/build.svg?style=flat-square)](https://github.com/misantron/dynamite/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/misantron/dynamite/build.yml?style=flat-square)](https://github.com/misantron/dynamite/actions)
 [![Code Coverage](https://img.shields.io/codacy/coverage/14793b443be444dbb19c02ddca1b0118.svg?style=flat-square)](https://app.codacy.com/gh/misantron/dynamite/files)
 [![Code Quality](https://img.shields.io/codacy/grade/14793b443be444dbb19c02ddca1b0118.svg?style=flat-square)](https://app.codacy.com/gh/misantron/dynamite)
 [![Packagist](https://img.shields.io/packagist/v/misantron/dynamite.svg?style=flat-square)](https://packagist.org/packages/misantron/dynamite)
@@ -32,7 +32,11 @@ declare(strict_types=1);
 namespace Fixtures;
 
 use Dynamite\AbstractTable;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\TableInterface;
+use Dynamite\Schema\Attribute;
 
 final class UsersTable extends AbstractTable implements TableInterface
 {
@@ -41,11 +45,14 @@ final class UsersTable extends AbstractTable implements TableInterface
         $this
             ->setTableName('Users')
             ->addAttributes([
-                ['Id', 'S'],
-                ['Email', 'S'],
+                new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                new Attribute('Email', ScalarAttributeTypeEnum::String),
             ])
-            ->addHashKey('Id')
-            ->addGlobalSecondaryIndex('Emails', 'KEYS_ONLY', 'Email')
+            ->addGlobalSecondaryIndex(
+                'Emails',
+                ProjectionTypeEnum::KeysOnly,
+                'Email'
+            )
             ->setProvisionedThroughput(1, 1)
         ;
     }
@@ -65,6 +72,8 @@ namespace Fixtures;
 
 use Dynamite\AbstractFixture;
 use Dynamite\FixtureInterface;
+use Dynamite\Schema\Record;
+use Dynamite\Schema\Value;
 
 final class UserFixtures extends AbstractFixture implements FixtureInterface
 {
@@ -72,15 +81,17 @@ final class UserFixtures extends AbstractFixture implements FixtureInterface
     {
         $this
             ->setTableName('Users')
-            ->addItems([
-                [
-                    'Id' => ['S' => 'e5502ec2-42a7-408b-9f03-f8e162b6257e'],
-                    'Email' => ['S' => 'john.doe@example.com'],
-                ],
-                [
-                    'Id' => ['S' => 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'],
-                    'Email' => ['S' => 'robert.smith@example.com'],
-                ],  
+            ->addRecords([
+                new Record([
+                    Value::stringValue('Id', 'e5502ec2-42a7-408b-9f03-f8e162b6257e'),
+                    Value::stringValue('Email', 'john.doe@example.com'),
+                    Value::boolValue('Active', true),
+                ]),
+                new Record([
+                    Value::stringValue('Id', 'f0cf458c-4fc0-4dd8-ba5b-eca6dba9be63'),
+                    Value::stringValue('Email', 'robert.smith@example.com'),
+                    Value::boolValue('Active', true),
+                ]),
             ])
         ;
     }
@@ -97,11 +108,21 @@ It's possible to provide fixtures loading path:
 declare(strict_types=1);
 
 use Dynamite\Loader;
-use Symfony\Component\Validator\Validation;
+use Dynamite\Serializer\PropertyNameConverter;
+use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Validator\Validation;
 
-$validator = Validation::createValidator();
-$serializer = new Serializer();
+$validator = Validation::createValidatorBuilder()
+    ->addLoader(new AnnotationLoader())
+    ->getValidator()
+;
+$serializer = new Serializer([
+    new BackedEnumNormalizer(),
+    new ObjectNormalizer(null, new PropertyNameConverter()),
+]);
 
 $loader = new Loader($validator, $serializer);
 $loader->loadFromDirectory('/path/to/YourFixtures');
@@ -127,19 +148,29 @@ To create database schema and load the fixtures in storage you should do the fol
 
 declare(strict_types=1);
 
-use AsyncAws\DynamoDb\DynamoDbClient;
+use Dynamite\Client;
 use Dynamite\Executor;
-use Symfony\Component\Validator\Validation;
+use Dynamite\Serializer\PropertyNameConverter;
+use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Validator\Validation;
 
-$validator = Validation::createValidator();
-$serializer = new Serializer();
-$dynamoDbClient = new DynamoDbClient();
+$validator = Validation::createValidatorBuilder()
+    ->addLoader(new AnnotationLoader())
+    ->getValidator()
+;
+$serializer = new Serializer([
+    new BackedEnumNormalizer(),
+    new ObjectNormalizer(null, new PropertyNameConverter()),
+]);
+$clientFactory = new ClientFactory($serializer);
 
 $loader = new Loader($validator, $serializer);
 $loader->loadFromDirectory('/path/to/YourFixtures');
 
-$executor = new Executor($dynamoDbClient);
+$executor = new Executor($clientFactory->createAsyncAwsClient());
 $executor->execute($loader->getFixtures(), $loader->getTables());
 ```
 
@@ -154,11 +185,10 @@ Execution process debug logs can be enabled by passing PSR-3 logger into executo
 
 declare(strict_types=1);
 
-use AsyncAws\DynamoDb\DynamoDbClient;
 use Dynamite\Executor;
 
 // PSR-3 compatible implementation of Psr\Log\LoggerInterface
 $logger = new Logger();
 
-$executor = new Executor($dynamoDbClient, logger: $logger);
+$executor = new Executor($client, logger: $logger);
 ```

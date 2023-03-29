@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Validator\Constraints;
 
+use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\Projection;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ProjectionTest extends UnitTestCase
 {
-    /**
-     * @dataProvider validateDataProvider
-     */
+    #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
         self::assertSame($expected, $this->createValidator()->validate($input, new Projection())->count() > 0);
@@ -20,7 +20,7 @@ class ProjectionTest extends UnitTestCase
     /**
      * @return iterable<string, array<int, mixed>>
      */
-    public function validateDataProvider(): iterable
+    public static function validateDataProvider(): iterable
     {
         yield 'null-value' => [
             null,
@@ -38,7 +38,7 @@ class ProjectionTest extends UnitTestCase
         ];
         yield 'valid-value' => [
             [
-                'ProjectionType' => 'KEYS_ONLY',
+                'ProjectionType' => ProjectionTypeEnum::KeysOnly,
             ],
             false,
         ];

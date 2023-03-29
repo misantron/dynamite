@@ -4,23 +4,34 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Integration;
 
-use AsyncAws\Core\Credentials\Credentials;
-use AsyncAws\DynamoDb\DynamoDbClient;
-use AsyncAws\DynamoDb\Enum\KeyType;
-use AsyncAws\DynamoDb\Enum\ProjectionType;
-use AsyncAws\DynamoDb\Enum\ScalarAttributeType;
-use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
+use Dynamite\AbstractFixture;
+use Dynamite\AbstractTable;
+use Dynamite\Client\ClientInterface;
+use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\FixtureInterface;
+use Dynamite\Schema\Attribute;
+use Dynamite\Schema\Record;
+use Dynamite\TableInterface;
 use Dynamite\Tests\DependencyMockTrait;
+use Faker\Factory;
+use Faker\Generator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * @phpstan-import-type AttributeValue from ClientInterface
+ */
 abstract class IntegrationTestCase extends TestCase
 {
+    public const TABLE_NAME = 'Users';
+
     use DependencyMockTrait;
 
-    protected DynamoDbClient $dynamoDbClient;
+    protected ClientInterface $client;
 
     protected NormalizerInterface $serializer;
 
@@ -30,55 +41,99 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->dynamoDbClient = $this->createDynamoDbClient();
+        $this->onSetUp();
+
         $this->serializer = $this->createSerializer();
         $this->validator = $this->createValidator();
         $this->logger = $this->createTestLogger();
+        $this->client = $this->createClient();
     }
 
     protected function tearDown(): void
     {
-        try {
-            $this->dynamoDbClient->deleteTable([
-                'TableName' => 'Users',
-            ])->resolve();
-        } catch (ResourceNotFoundException) {
-            // ignore exception
-        }
+        $this->client->dropTable(self::TABLE_NAME);
 
         $this->logger->cleanLogs();
     }
 
-    protected function createTable(): void
+    abstract protected function onSetUp(): void;
+
+    abstract protected function createDynamoDbClient(): mixed;
+
+    abstract protected function createClient(): ClientInterface;
+
+    abstract protected function createTable(): void;
+
+    protected function createFixtureTable(): TableInterface
     {
-        $this->dynamoDbClient->createTable([
-            'TableName' => 'Users',
+        return new class() extends AbstractTable implements TableInterface {
+            protected function configure(): void
+            {
+                $this
+                    ->setTableName(IntegrationTestCase::TABLE_NAME)
+                    ->addAttributes([
+                        new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                        new Attribute('Email', ScalarAttributeTypeEnum::String),
+                    ])
+                    ->addGlobalSecondaryIndex('Emails', ProjectionTypeEnum::KeysOnly, 'Email')
+                    ->setProvisionedThroughput(1, 1)
+                ;
+            }
+        };
+    }
+
+    /**
+     * @param array<int, Record> $items
+     */
+    protected function createFixture(array $items): FixtureInterface
+    {
+        return new class($items) extends AbstractFixture implements FixtureInterface {
+            protected function configure(): void
+            {
+                $this->setTableName(IntegrationTestCase::TABLE_NAME);
+            }
+        };
+    }
+
+    /**
+     * @return array{
+     *     TableName: string,
+     *     AttributeDefinitions: array<int, array{AttributeName: string, AttributeType: string}>,
+     *     KeySchema: array<int, array{AttributeName: string, KeyType: string}>,
+     *     GlobalSecondaryIndexes: array<int, mixed>,
+     *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
+     * }
+     */
+    protected function getFixtureTableSchema(): array
+    {
+        return [
+            'TableName' => self::TABLE_NAME,
             'AttributeDefinitions' => [
                 [
                     'AttributeName' => 'Id',
-                    'AttributeType' => ScalarAttributeType::S,
+                    'AttributeType' => ScalarAttributeTypeEnum::String->value,
                 ],
                 [
                     'AttributeName' => 'Email',
-                    'AttributeType' => ScalarAttributeType::S,
+                    'AttributeType' => ScalarAttributeTypeEnum::String->value,
                 ],
             ],
             'KeySchema' => [
                 [
                     'AttributeName' => 'Id',
-                    'KeyType' => KeyType::HASH,
+                    'KeyType' => KeyTypeEnum::Hash->value,
                 ],
             ],
             'GlobalSecondaryIndexes' => [
                 [
                     'IndexName' => 'Emails',
                     'Projection' => [
-                        'ProjectionType' => ProjectionType::KEYS_ONLY,
+                        'ProjectionType' => ProjectionTypeEnum::KeysOnly->value,
                     ],
                     'KeySchema' => [
                         [
                             'AttributeName' => 'Email',
-                            'KeyType' => KeyType::HASH,
+                            'KeyType' => KeyTypeEnum::Hash->value,
                         ],
                     ],
                     'ProvisionedThroughput' => [
@@ -91,16 +146,11 @@ abstract class IntegrationTestCase extends TestCase
                 'ReadCapacityUnits' => 1,
                 'WriteCapacityUnits' => 1,
             ],
-        ])->resolve();
+        ];
     }
 
-    private function createDynamoDbClient(): DynamoDbClient
+    protected function createFakerFactory(): Generator
     {
-        return new DynamoDbClient(
-            [
-                'endpoint' => 'http://localhost:8000',
-            ],
-            new Credentials('AccessKey', 'SecretKey')
-        );
+        return Factory::create();
     }
 }
