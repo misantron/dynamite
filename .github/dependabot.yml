@@ -1,12 +1,15 @@
 version: 2
 updates:
   - package-ecosystem: composer
-    directory: '/'
+    directory: "/"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "aws/aws-sdk-php"
+        update-types: [ "version-update:semver-patch" ]
     open-pull-requests-limit: 10
   - package-ecosystem: github-actions
-    directory: '/'
+    directory: "/"
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
