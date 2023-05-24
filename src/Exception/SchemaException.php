@@ -6,18 +6,18 @@ namespace Dynamite\Exception;
 
 final class SchemaException extends AbstractException
 {
-    public static function notDefinedAttribute(string $attribute): SchemaException
+    public static function notDefinedAttribute(string $attribute): self
     {
-        return new SchemaException("Attribute `$attribute` is not defined");
+        return new self("Attribute `$attribute` is not defined");
     }
 
-    public static function hashKeyNotSet(): SchemaException
+    public static function hashKeyNotSet(): self
     {
-        return new SchemaException('Table key require at least one hash attribute');
+        return new self('Table key require at least one hash attribute');
     }
 
-    public static function provisionedThroughputNotSet(): SchemaException
+    public static function provisionedThroughputNotSet(): self
     {
-        return new SchemaException('Table provisioned throughput not set');
+        return new self('Table provisioned throughput not set');
     }
 }

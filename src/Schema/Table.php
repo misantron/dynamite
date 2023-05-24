@@ -95,40 +95,12 @@ final class Table
         return $this->attributeDefinitions;
     }
 
-    private function addKeyElement(string $name, KeyTypeEnum $type): void
-    {
-        if ($this->keySchema === null) {
-            $this->keySchema = [];
-        }
-
-        $this->keySchema[] = [
-            'AttributeName' => $name,
-            'KeyType' => $type,
-        ];
-    }
-
     /**
      * @return array<int, array{AttributeName: string, KeyType: KeyTypeEnum}>|null
      */
     public function getKeySchema(): ?array
     {
         return $this->keySchema;
-    }
-
-    /**
-     * @param array<int, array{AttributeName: string, KeyType: KeyTypeEnum}> $keySchema
-     */
-    private function assertKeySchemaAttributesDefined(array $keySchema): void
-    {
-        array_walk($keySchema, function (array $element): void {
-            foreach ($this->attributeDefinitions ?? [] as $definition) {
-                if ($definition['AttributeName'] === $element['AttributeName']) {
-                    return;
-                }
-            }
-
-            throw SchemaException::notDefinedAttribute($element['AttributeName']);
-        });
     }
 
     public function addGlobalSecondaryIndex(
@@ -193,38 +165,6 @@ final class Table
         }
 
         return $this->normalizeGlobalSecondaryIndexes();
-    }
-
-    /**
-     * @return array<int, array{
-     *     IndexName: string,
-     *     KeySchema: array<int, array{
-     *          AttributeName: string,
-     *          KeyType: KeyTypeEnum
-     *     }>,
-     *     Projection: array{ProjectionType: ProjectionTypeEnum},
-     *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
-     * }>
-     */
-    private function normalizeGlobalSecondaryIndexes(): array
-    {
-        return array_map(
-            function (array $index): array {
-                // try to use global provisioned throughput value if index value not set
-                if ($index['ProvisionedThroughput'] === null) {
-                    if ($this->provisionedThroughput === null) {
-                        throw SchemaException::provisionedThroughputNotSet();
-                    }
-
-                    $index['ProvisionedThroughput'] = $this->provisionedThroughput;
-                }
-
-                $this->assertKeySchemaAttributesDefined($index['KeySchema']);
-
-                return $index;
-            },
-            $this->globalSecondaryIndexes ?? []
-        );
     }
 
     public function addLocalSecondaryIndex(string $name, string $hashAttribute, ?string $rangeAttribute): void
@@ -304,5 +244,65 @@ final class Table
         if (\count($hashKeys) < 1) {
             throw SchemaException::hashKeyNotSet();
         }
+    }
+
+    private function addKeyElement(string $name, KeyTypeEnum $type): void
+    {
+        if ($this->keySchema === null) {
+            $this->keySchema = [];
+        }
+
+        $this->keySchema[] = [
+            'AttributeName' => $name,
+            'KeyType' => $type,
+        ];
+    }
+
+    /**
+     * @param array<int, array{AttributeName: string, KeyType: KeyTypeEnum}> $keySchema
+     */
+    private function assertKeySchemaAttributesDefined(array $keySchema): void
+    {
+        array_walk($keySchema, function (array $element): void {
+            foreach ($this->attributeDefinitions ?? [] as $definition) {
+                if ($definition['AttributeName'] === $element['AttributeName']) {
+                    return;
+                }
+            }
+
+            throw SchemaException::notDefinedAttribute($element['AttributeName']);
+        });
+    }
+
+    /**
+     * @return array<int, array{
+     *     IndexName: string,
+     *     KeySchema: array<int, array{
+     *          AttributeName: string,
+     *          KeyType: KeyTypeEnum
+     *     }>,
+     *     Projection: array{ProjectionType: ProjectionTypeEnum},
+     *     ProvisionedThroughput: array{ReadCapacityUnits: int, WriteCapacityUnits: int}
+     * }>
+     */
+    private function normalizeGlobalSecondaryIndexes(): array
+    {
+        return array_map(
+            function (array $index): array {
+                // try to use global provisioned throughput value if index value not set
+                if ($index['ProvisionedThroughput'] === null) {
+                    if ($this->provisionedThroughput === null) {
+                        throw SchemaException::provisionedThroughputNotSet();
+                    }
+
+                    $index['ProvisionedThroughput'] = $this->provisionedThroughput;
+                }
+
+                $this->assertKeySchemaAttributesDefined($index['KeySchema']);
+
+                return $index;
+            },
+            $this->globalSecondaryIndexes ?? []
+        );
     }
 }
