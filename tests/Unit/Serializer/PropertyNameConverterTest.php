@@ -7,8 +7,10 @@ namespace Dynamite\Tests\Unit\Serializer;
 use Dynamite\Serializer\PropertyNameConverter;
 use Dynamite\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
+#[Group('unit')]
 class PropertyNameConverterTest extends UnitTestCase
 {
     private NameConverterInterface $converter;

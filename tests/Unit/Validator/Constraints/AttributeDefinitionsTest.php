@@ -8,7 +8,9 @@ use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\AttributeDefinitions;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
+#[Group('unit')]
 class AttributeDefinitionsTest extends UnitTestCase
 {
     #[DataProvider('validateDataProvider')]

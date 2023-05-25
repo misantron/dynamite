@@ -8,7 +8,9 @@ use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\KeySchema;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
+#[Group('unit')]
 class KeySchemaTest extends UnitTestCase
 {
     #[DataProvider('validateDataProvider')]

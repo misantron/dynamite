@@ -13,6 +13,7 @@ use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('AwsSdk')]
+#[Group('integration')]
 class ExecutorTest extends IntegrationTestCase
 {
     use AwsSdkIntegrationTrait;

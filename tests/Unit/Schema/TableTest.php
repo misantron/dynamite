@@ -11,10 +11,12 @@ use Dynamite\Exception\SchemaException;
 use Dynamite\Schema\Table;
 use Dynamite\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\Constraint\IsNull;
 
+#[Group('unit')]
 class TableTest extends UnitTestCase
 {
     public function testAddGlobalSecondaryIndexWithoutProvisionedThroughput(): void

@@ -10,6 +10,7 @@ use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('AsyncAws')]
+#[Group('integration')]
 class TableTest extends IntegrationTestCase
 {
     use AsyncAwsIntegrationTrait;

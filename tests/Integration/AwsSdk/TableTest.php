@@ -11,6 +11,7 @@ use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('AwsSdk')]
+#[Group('integration')]
 class TableTest extends IntegrationTestCase
 {
     use AwsSdkIntegrationTrait;

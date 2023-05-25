@@ -23,8 +23,8 @@ class Executor
     }
 
     /**
-     * @param array<string, FixtureInterface> $fixtures
-     * @param array<string, TableInterface> $tables
+     * @param list<FixtureInterface> $fixtures
+     * @param list<TableInterface> $tables
      */
     public function execute(array $fixtures, array $tables): void
     {
@@ -49,8 +49,8 @@ class Executor
     }
 
     /**
-     * @param array<string, FixtureInterface> $fixtures
-     * @param array<string, TableInterface> $tables
+     * @param list<FixtureInterface> $fixtures
+     * @param list<TableInterface> $tables
      */
     protected function purge(array $fixtures, array $tables): void
     {
