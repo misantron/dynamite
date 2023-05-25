@@ -17,7 +17,9 @@ use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
 use Dynamite\Tests\Unit\UnitTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
+#[Group('unit')]
 class TableTest extends UnitTestCase
 {
     public function testLoadWithoutTableNameSet(): void

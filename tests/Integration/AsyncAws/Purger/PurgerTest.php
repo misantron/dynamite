@@ -15,6 +15,7 @@ use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('AsyncAws')]
+#[Group('integration')]
 class PurgerTest extends IntegrationTestCase
 {
     use AsyncAwsIntegrationTrait;
@@ -44,12 +45,8 @@ class PurgerTest extends IntegrationTestCase
 
         $purger = new Purger($this->client);
         $purger->purge(
-            [
-                $fixture::class => $fixture,
-            ],
-            [
-                $table::class => $table,
-            ]
+            [$fixture],
+            [$table]
         );
 
         $response = $this->dynamoDbClient->describeTable([
@@ -74,9 +71,7 @@ class PurgerTest extends IntegrationTestCase
         ]);
         $fixture->setValidator($this->validator);
 
-        $fixtures = [
-            $fixture::class => $fixture,
-        ];
+        $fixtures = [$fixture];
 
         $executor = new Executor($this->client);
         $executor->execute($fixtures, []);

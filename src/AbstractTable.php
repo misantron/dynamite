@@ -28,6 +28,24 @@ abstract class AbstractTable
         $this->schema = new Table();
     }
 
+    final public function create(ClientInterface $client, LoggerInterface $logger): void
+    {
+        $this->initialize();
+
+        $violations = $this->validator->validate($this->schema);
+        if ($violations->count() > 0) {
+            throw new ValidationException($violations);
+        }
+
+        $this->schema->assertHashKeySet();
+
+        $client->createTable($this->schema);
+
+        $logger->debug('Table created', [
+            'table' => $this->schema->getTableName(),
+        ]);
+    }
+
     protected function addAttribute(string $name, ScalarAttributeTypeEnum $type, KeyTypeEnum $keyType = null): self
     {
         $this->schema->addAttribute($name, $type, $keyType);
@@ -79,24 +97,6 @@ abstract class AbstractTable
         $this->schema->setProvisionedThroughput($writeCapacity, $readCapacity);
 
         return $this;
-    }
-
-    final public function create(ClientInterface $client, LoggerInterface $logger): void
-    {
-        $this->initialize();
-
-        $violations = $this->validator->validate($this->schema);
-        if ($violations->count() > 0) {
-            throw new ValidationException($violations);
-        }
-
-        $this->schema->assertHashKeySet();
-
-        $client->createTable($this->schema);
-
-        $logger->debug('Table created', [
-            'table' => $this->schema->getTableName(),
-        ]);
     }
 
     abstract protected function configure(): void;

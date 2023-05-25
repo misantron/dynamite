@@ -8,7 +8,9 @@ use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\Projection;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
+#[Group('unit')]
 class ProjectionTest extends UnitTestCase
 {
     #[DataProvider('validateDataProvider')]

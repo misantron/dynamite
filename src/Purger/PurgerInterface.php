@@ -10,8 +10,8 @@ use Dynamite\TableInterface;
 interface PurgerInterface
 {
     /**
-     * @param array<string, FixtureInterface> $fixtures
-     * @param array<string, TableInterface> $tables
+     * @param list<FixtureInterface> $fixtures
+     * @param list<TableInterface> $tables
      */
     public function purge(array $fixtures, array $tables): void;
 }

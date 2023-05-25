@@ -27,9 +27,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 abstract class IntegrationTestCase extends TestCase
 {
-    public const TABLE_NAME = 'Users';
-
     use DependencyMockTrait;
+
+    public const TABLE_NAME = 'Users';
 
     protected ClientInterface $client;
 

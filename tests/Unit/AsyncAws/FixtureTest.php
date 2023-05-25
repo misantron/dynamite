@@ -21,9 +21,11 @@ use Dynamite\FixtureInterface;
 use Dynamite\Schema\Record;
 use Dynamite\Schema\Value;
 use Dynamite\Tests\Unit\UnitTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 
+#[Group('unit')]
 class FixtureTest extends UnitTestCase
 {
     public function testLoadWithoutTableNameSet(): void

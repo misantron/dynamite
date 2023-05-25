@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite;
 
+use Dynamite\Attribute\Groups;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webmozart\Assert\Assert;
@@ -16,9 +17,19 @@ class Loader
     private array $tables = [];
 
     /**
+     * @var array<string, array<string, bool>>
+     */
+    private array $groupedTablesMapping = [];
+
+    /**
      * @var array<string, FixtureInterface>
      */
     private array $fixtures = [];
+
+    /**
+     * @var array<string, array<string, bool>>
+     */
+    private array $groupedFixturesMapping = [];
 
     public function __construct(
         private readonly ValidatorInterface $validator,
@@ -62,7 +73,16 @@ class Loader
         $table->setValidator($this->validator);
         $table->setNormalizer($this->serializer);
 
+        $reflectionClass = new \ReflectionClass($table);
+        $groups = $this->getGroups($reflectionClass);
+
         $this->tables[$table::class] = $table;
+
+        if ($groups !== null) {
+            foreach ($groups as $group) {
+                $this->groupedTablesMapping[$group][$table::class] = true;
+            }
+        }
     }
 
     public function addFixture(FixtureInterface $fixture): void
@@ -73,23 +93,64 @@ class Loader
 
         $fixture->setValidator($this->validator);
 
+        $reflectionClass = new \ReflectionClass($fixture);
+        $groups = $this->getGroups($reflectionClass);
+
         $this->fixtures[$fixture::class] = $fixture;
+
+        if ($groups !== null) {
+            foreach ($groups as $group) {
+                $this->groupedFixturesMapping[$group][$fixture::class] = true;
+            }
+        }
     }
 
     /**
-     * @return array<string, TableInterface>
+     * @param list<string> $groups
+     *
+     * @return list<TableInterface>
      */
-    public function getTables(): array
+    public function getTables(array $groups = []): array
     {
-        return $this->tables;
+        if (\count($groups) < 1) {
+            return array_values($this->tables);
+        }
+
+        $filteredTables = [];
+        foreach ($this->tables as $table) {
+            foreach ($groups as $group) {
+                if (isset($this->groupedTablesMapping[$group][$table::class])) {
+                    $filteredTables[$table::class] = $table;
+                    continue 2;
+                }
+            }
+        }
+
+        return array_values($filteredTables);
     }
 
     /**
-     * @return array<string, FixtureInterface>
+     * @param list<string> $groups
+     *
+     * @return list<FixtureInterface>
      */
-    public function getFixtures(): array
+    public function getFixtures(array $groups = []): array
     {
-        return $this->fixtures;
+        if (\count($groups) < 1) {
+            return array_values($this->fixtures);
+        }
+
+        $filteredFixtures = [];
+        foreach ($this->fixtures as $fixture) {
+            foreach ($groups as $group) {
+                if (isset($this->groupedFixturesMapping[$group][$fixture::class])) {
+                    $filteredFixtures[$fixture::class] = $fixture;
+                    continue 2;
+                }
+            }
+        }
+
+        return array_values($filteredFixtures);
     }
 
     /**
@@ -101,11 +162,13 @@ class Loader
 
         foreach ($declared as $className) {
             $reflectionClass = new \ReflectionClass($className);
-            $interfaces = $reflectionClass->getInterfaces();
 
-            if (!\in_array($reflectionClass->getFileName(), $files, true)) {
+            if ($reflectionClass->isAbstract() || !\in_array($reflectionClass->getFileName(), $files, true)) {
                 continue;
             }
+
+            $interfaces = $reflectionClass->getInterfaces();
+            $groups = $this->getGroups($reflectionClass);
 
             if (isset($interfaces[TableInterface::class])) {
                 $this->tables[$className] = $this->createTable($className);
@@ -113,7 +176,34 @@ class Loader
             if (isset($interfaces[FixtureInterface::class])) {
                 $this->fixtures[$className] = $this->createFixture($className);
             }
+
+            if ($groups !== null) {
+                foreach ($groups as $group) {
+                    if (isset($interfaces[TableInterface::class])) {
+                        $this->groupedTablesMapping[$group][$className] = true;
+                    }
+                    if (isset($interfaces[FixtureInterface::class])) {
+                        $this->groupedFixturesMapping[$group][$className] = true;
+                    }
+                }
+            }
         }
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    private function getGroups(\ReflectionClass $reflectionClass): ?array
+    {
+        $attributes = $reflectionClass->getAttributes(Groups::class);
+        if (\count($attributes) < 1) {
+            return null;
+        }
+
+        /** @var Groups $groupsAttribute */
+        $groupsAttribute = $attributes[0]->newInstance();
+
+        return $groupsAttribute->getNames();
     }
 
     /**

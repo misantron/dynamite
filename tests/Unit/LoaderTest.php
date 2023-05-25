@@ -49,6 +49,8 @@ class LoaderTest extends UnitTestCase
         $loader->addTable(new Table1());
 
         self::assertCount(1, $loader->getTables());
+        self::assertCount(1, $loader->getTables(['group1']));
+        self::assertCount(0, $loader->getTables(['group2']));
         self::assertCount(0, $loader->getFixtures());
     }
 
@@ -69,5 +71,7 @@ class LoaderTest extends UnitTestCase
 
         self::assertCount(0, $loader->getTables());
         self::assertCount(1, $loader->getFixtures());
+        self::assertCount(0, $loader->getFixtures(['group1']));
+        self::assertCount(1, $loader->getFixtures(['group2']));
     }
 }

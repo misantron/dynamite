@@ -7,7 +7,9 @@ namespace Dynamite\Tests\Unit\Validator\Constraints;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\TableOrIndexName;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
+#[Group('unit')]
 class TableOrIndexNameTest extends UnitTestCase
 {
     #[DataProvider('validateDataProvider')]

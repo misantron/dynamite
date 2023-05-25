@@ -30,25 +30,6 @@ abstract class AbstractFixture
         }
     }
 
-    protected function addRecord(Record $record): self
-    {
-        $this->schema->addRecord($record);
-
-        return $this;
-    }
-
-    /**
-     * @param array<int, Record> $records
-     */
-    protected function addRecords(array $records): self
-    {
-        foreach ($records as $record) {
-            $this->schema->addRecord($record);
-        }
-
-        return $this;
-    }
-
     final public function load(ClientInterface $client, LoggerInterface $logger): void
     {
         $this->initialize();
@@ -77,6 +58,25 @@ abstract class AbstractFixture
         $logger->debug('Batch records loaded', [
             'table' => $tableName,
         ]);
+    }
+
+    protected function addRecord(Record $record): self
+    {
+        $this->schema->addRecord($record);
+
+        return $this;
+    }
+
+    /**
+     * @param array<int, Record> $records
+     */
+    protected function addRecords(array $records): self
+    {
+        foreach ($records as $record) {
+            $this->schema->addRecord($record);
+        }
+
+        return $this;
     }
 
     abstract protected function configure(): void;

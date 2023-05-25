@@ -16,6 +16,7 @@ use Dynamite\Tests\Integration\IntegrationTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('AwsSdk')]
+#[Group('integration')]
 class PurgerTest extends IntegrationTestCase
 {
     use AwsSdkIntegrationTrait;
@@ -42,12 +43,8 @@ class PurgerTest extends IntegrationTestCase
 
         $purger = new Purger($this->client);
         $purger->purge(
-            [
-                $fixture::class => $fixture,
-            ],
-            [
-                $table::class => $table,
-            ]
+            [$fixture],
+            [$table]
         );
 
         try {
@@ -80,9 +77,7 @@ class PurgerTest extends IntegrationTestCase
         ]);
         $fixture->setValidator($this->validator);
 
-        $fixtures = [
-            $fixture::class => $fixture,
-        ];
+        $fixtures = [$fixture];
 
         $executor = new Executor($this->client);
         $executor->execute($fixtures, []);
