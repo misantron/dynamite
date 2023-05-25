@@ -32,12 +32,14 @@ declare(strict_types=1);
 namespace Fixtures;
 
 use Dynamite\AbstractTable;
+use Dynamite\Attribute\Groups;
 use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Enum\ProjectionTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;
 use Dynamite\TableInterface;
 use Dynamite\Schema\Attribute;
 
+#[Groups(['group1'])] // groups can be used optionally with console command
 final class UsersTable extends AbstractTable implements TableInterface
 {
     protected function configure(): void
@@ -71,10 +73,12 @@ declare(strict_types=1);
 namespace Fixtures;
 
 use Dynamite\AbstractFixture;
+use Dynamite\Attribute\Groups;
 use Dynamite\FixtureInterface;
 use Dynamite\Schema\Record;
 use Dynamite\Schema\Value;
 
+#[Groups(['group1'])] // groups can be used optionally with console command
 final class UserFixtures extends AbstractFixture implements FixtureInterface
 {
     protected function configure(): void
@@ -150,6 +154,7 @@ declare(strict_types=1);
 
 use Dynamite\Client;
 use Dynamite\Executor;
+use Dynamite\Loader;
 use Dynamite\Serializer\PropertyNameConverter;
 use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -170,11 +175,19 @@ $clientFactory = new ClientFactory($serializer);
 $loader = new Loader($validator, $serializer);
 $loader->loadFromDirectory('/path/to/YourFixtures');
 
+$groups = ['group1']; // loading fixtures belong to the selected group only
+
 $executor = new Executor($clientFactory->createAsyncAwsClient());
-$executor->execute($loader->getFixtures(), $loader->getTables());
+$executor->execute($loader->getFixtures($groups), $loader->getTables($groups));
 ```
 
 **Important!** Each executor class comes with a purger class which executed before, drop tables and truncate data. 
+
+### Load fixtures via console command
+
+```shell
+bin/console dynamite:fixtures:load --path path/to/fixtures
+```
 
 ### Debug logger
 

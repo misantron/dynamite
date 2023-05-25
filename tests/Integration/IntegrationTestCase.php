@@ -52,6 +52,8 @@ abstract class IntegrationTestCase extends TestCase
     protected function tearDown(): void
     {
         $this->client->dropTable(self::TABLE_NAME);
+        $this->client->dropTable('Table1');
+        $this->client->dropTable('Table2');
 
         $this->logger->cleanLogs();
     }
