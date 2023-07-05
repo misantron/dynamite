@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: composer
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     ignore:
       - dependency-name: "aws/aws-sdk-php"
         update-types: [ "version-update:semver-patch" ]
