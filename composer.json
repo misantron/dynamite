@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "async-aws/dynamo-db": "^1.4",
-        "aws/aws-sdk-php": "3.275.2",
+        "aws/aws-sdk-php": "3.277.4",
         "fakerphp/faker": "^1.23",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-deprecation-rules": "^1.1",
@@ -29,8 +29,8 @@
         "phpstan/phpstan-strict-rules": "^1.5",
         "phpunit/phpunit": "^10.2",
         "symfony/error-handler": "^5.4 || ^6.0",
-        "symplify/easy-coding-standard": "^11.5",
-        "vimeo/psalm": "^5.13"
+        "symplify/easy-coding-standard": "^12.0",
+        "vimeo/psalm": "^5.14"
     },
     "suggest": {
         "async-aws/dynamo-db": "Async first DynamoDb client from Symfony Core developers",
