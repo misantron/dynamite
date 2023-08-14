@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "async-aws/dynamo-db": "^1.4",
-        "aws/aws-sdk-php": "3.277.4",
+        "aws/aws-sdk-php": "3.278.1",
         "fakerphp/faker": "^1.23",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-deprecation-rules": "^1.1",
