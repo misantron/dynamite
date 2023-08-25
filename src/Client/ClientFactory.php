@@ -28,7 +28,7 @@ final class ClientFactory
 
     /**
      * @see \AsyncAws\Core\Configuration
-     * @param array<string, mixed>|Configuration $configuration
+     * @param array<\AsyncAws\Core\Configuration::OPTION_*, string|null>|Configuration $configuration
      */
     public function createAsyncAwsClient(
         Configuration|array $configuration = [],

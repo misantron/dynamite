@@ -33,7 +33,8 @@ final class Table
      *     KeySchema: array<int, array{
      *          AttributeName: string,
      *          KeyType: KeyTypeEnum
-     *     }>
+     *     }>,
+     *     Projection: array{ProjectionType: ProjectionTypeEnum}
      * }>|null
      */
     #[Assert\LocalSecondaryIndexes]
@@ -167,8 +168,12 @@ final class Table
         return $this->normalizeGlobalSecondaryIndexes();
     }
 
-    public function addLocalSecondaryIndex(string $name, string $hashAttribute, ?string $rangeAttribute): void
-    {
+    public function addLocalSecondaryIndex(
+        string $name,
+        ProjectionTypeEnum $projectionType,
+        string $hashAttribute,
+        ?string $rangeAttribute
+    ): void {
         if ($this->localSecondaryIndexes === null) {
             $this->localSecondaryIndexes = [];
         }
@@ -190,6 +195,9 @@ final class Table
         $this->localSecondaryIndexes[] = [
             'IndexName' => $name,
             'KeySchema' => $keySchema,
+            'Projection' => [
+                'ProjectionType' => $projectionType,
+            ],
         ];
     }
 
@@ -199,7 +207,8 @@ final class Table
      *     KeySchema: array<int, array{
      *          AttributeName: string,
      *          KeyType: KeyTypeEnum
-     *     }>
+     *     }>,
+     *     Projection: array{ProjectionType: ProjectionTypeEnum}
      * }>|null
      */
     public function getLocalSecondaryIndexes(): ?array
