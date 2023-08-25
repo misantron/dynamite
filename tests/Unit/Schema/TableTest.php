@@ -104,7 +104,7 @@ class TableTest extends UnitTestCase
         $schema = new Table();
         $schema->setProvisionedThroughput(1, 1);
         $schema->addAttribute('Id', ScalarAttributeTypeEnum::String);
-        $schema->addLocalSecondaryIndex('Index', 'Email', null);
+        $schema->addLocalSecondaryIndex('Index', ProjectionTypeEnum::KeysOnly, 'Email', null);
         $schema->getLocalSecondaryIndexes();
     }
 
@@ -117,6 +117,7 @@ class TableTest extends UnitTestCase
         $schema->addAttribute('Email', ScalarAttributeTypeEnum::String);
         $schema->addLocalSecondaryIndex(
             'Index',
+            ProjectionTypeEnum::KeysOnly,
             'Type',
             'Email'
         );
@@ -133,6 +134,9 @@ class TableTest extends UnitTestCase
                         'AttributeName' => 'Email',
                         'KeyType' => KeyTypeEnum::Range,
                     ],
+                ],
+                'Projection' => [
+                    'ProjectionType' => ProjectionTypeEnum::KeysOnly,
                 ],
             ],
         ], $schema->getLocalSecondaryIndexes());

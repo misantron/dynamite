@@ -26,6 +26,9 @@ final class LocalSecondaryIndexes extends Assert\Compound
                     'KeySchema' => new Assert\Required([
                         new KeySchema(),
                     ]),
+                    'Projection' => new Assert\Required([
+                        new Projection(),
+                    ]),
                 ]),
             ]),
         ];

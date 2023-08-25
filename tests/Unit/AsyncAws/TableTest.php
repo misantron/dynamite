@@ -105,6 +105,9 @@ class TableTest extends UnitTestCase
                                     'KeyType' => KeyTypeEnum::Hash->value,
                                 ],
                             ],
+                            'Projection' => [
+                                'ProjectionType' => ProjectionTypeEnum::All->value,
+                            ],
                         ],
                     ],
                 ])
@@ -131,7 +134,7 @@ class TableTest extends UnitTestCase
                     ->setTableName('Users')
                     ->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash)
                     ->addAttribute('Email', ScalarAttributeTypeEnum::String, KeyTypeEnum::Range)
-                    ->addLocalSecondaryIndex('Emails', 'Email')
+                    ->addLocalSecondaryIndex('Emails', ProjectionTypeEnum::All, 'Email')
                 ;
             }
         };

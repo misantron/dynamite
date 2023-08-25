@@ -85,9 +85,13 @@ abstract class AbstractTable
         return $this;
     }
 
-    protected function addLocalSecondaryIndex(string $name, string $hashAttribute, string $rangeAttribute = null): self
-    {
-        $this->schema->addLocalSecondaryIndex($name, $hashAttribute, $rangeAttribute);
+    protected function addLocalSecondaryIndex(
+        string $name,
+        ProjectionTypeEnum $projectionType,
+        string $hashAttribute,
+        string $rangeAttribute = null
+    ): self {
+        $this->schema->addLocalSecondaryIndex($name, $projectionType, $hashAttribute, $rangeAttribute);
 
         return $this;
     }
