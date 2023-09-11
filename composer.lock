@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8af61da0ddd5d2f448f44cf26fc26423",
+    "content-hash": "8b61439945c0f18a2bc93430434561fe",
     "packages": [
         {
             "name": "psr/container",
@@ -598,16 +598,16 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.27.0",
+            "version": "v1.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936"
+                "reference": "6caa57379c4aec19c0a12a38b59b26487dcfe4b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/6caa57379c4aec19c0a12a38b59b26487dcfe4b5",
+                "reference": "6caa57379c4aec19c0a12a38b59b26487dcfe4b5",
                 "shasum": ""
             },
             "require": {
@@ -616,7 +616,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.27-dev"
+                    "dev-main": "1.28-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -661,7 +661,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.27.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.28.0"
             },
             "funding": [
                 {
@@ -677,7 +677,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-03T14:55:06+00:00"
+            "time": "2023-01-26T09:26:14+00:00"
         },
         {
             "name": "symfony/polyfill-php83",
@@ -1648,16 +1648,16 @@
         },
         {
             "name": "async-aws/dynamo-db",
-            "version": "2.0.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/dynamo-db.git",
-                "reference": "27d318b7c264fcc8f7d2ab0ddd992e0f163da61e"
+                "reference": "b5b388d54b55662cd1b87be16dca4dd45525e93a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/dynamo-db/zipball/27d318b7c264fcc8f7d2ab0ddd992e0f163da61e",
-                "reference": "27d318b7c264fcc8f7d2ab0ddd992e0f163da61e",
+                "url": "https://api.github.com/repos/async-aws/dynamo-db/zipball/b5b388d54b55662cd1b87be16dca4dd45525e93a",
+                "reference": "b5b388d54b55662cd1b87be16dca4dd45525e93a",
                 "shasum": ""
             },
             "require": {
@@ -1673,7 +1673,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.5-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -1694,7 +1694,7 @@
                 "sdk"
             ],
             "support": {
-                "source": "https://github.com/async-aws/dynamo-db/tree/2.0.0"
+                "source": "https://github.com/async-aws/dynamo-db/tree/3.0.0"
             },
             "funding": [
                 {
@@ -1706,7 +1706,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-08-07T20:00:50+00:00"
+            "time": "2023-09-07T06:56:44+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -5480,16 +5480,16 @@
         },
         {
             "name": "symfony/polyfill-uuid",
-            "version": "v1.27.0",
+            "version": "v1.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-uuid.git",
-                "reference": "f3cf1a645c2734236ed1e2e671e273eeb3586166"
+                "reference": "9c44518a5aff8da565c8a55dbe85d2769e6f630e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-uuid/zipball/f3cf1a645c2734236ed1e2e671e273eeb3586166",
-                "reference": "f3cf1a645c2734236ed1e2e671e273eeb3586166",
+                "url": "https://api.github.com/repos/symfony/polyfill-uuid/zipball/9c44518a5aff8da565c8a55dbe85d2769e6f630e",
+                "reference": "9c44518a5aff8da565c8a55dbe85d2769e6f630e",
                 "shasum": ""
             },
             "require": {
@@ -5504,7 +5504,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.27-dev"
+                    "dev-main": "1.28-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -5542,7 +5542,7 @@
                 "uuid"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-uuid/tree/v1.27.0"
+                "source": "https://github.com/symfony/polyfill-uuid/tree/v1.28.0"
             },
             "funding": [
                 {
@@ -5558,7 +5558,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-03T14:55:06+00:00"
+            "time": "2023-01-26T09:26:14+00:00"
         },
         {
             "name": "symfony/var-dumper",

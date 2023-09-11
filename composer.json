@@ -20,7 +20,7 @@
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
-        "async-aws/dynamo-db": "^2.0",
+        "async-aws/dynamo-db": "^2.0 || ^3.0",
         "aws/aws-sdk-php": "3.279.2",
         "fakerphp/faker": "^1.23",
         "phpstan/extension-installer": "^1.3",
