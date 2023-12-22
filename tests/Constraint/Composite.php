@@ -28,7 +28,7 @@ final class Composite extends Constraint
         }
     }
 
-    public function evaluate(mixed $other, string $description = '', bool $returnResult = false): ?bool
+    public function evaluate(mixed $other, string $description = '', bool $returnResult = false): bool
     {
         $success = true;
         foreach ($this->constraints as $constraint) {
