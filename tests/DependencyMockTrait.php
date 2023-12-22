@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Validator\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -27,7 +27,7 @@ trait DependencyMockTrait
     protected function createValidator(): ValidatorInterface
     {
         return Validation::createValidatorBuilder()
-            ->addLoader(new AnnotationLoader())
+            ->addLoader(new AttributeLoader())
             ->getValidator();
     }
 
