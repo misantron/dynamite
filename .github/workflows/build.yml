@@ -38,7 +38,7 @@ jobs:
           dependency-versions: locked
           composer-options: --no-ansi --no-interaction --no-progress
       - name: Run PHPStan analyse
-        run: vendor/bin/phpstan analyse
+        run: vendor/bin/phpstan analyse --memory-limit 2G
       - name: Run Psalm analyse
         run: vendor/bin/psalm
   test:
