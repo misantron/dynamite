@@ -15,7 +15,7 @@ jobs:
           php-version: 8.3
           coverage: none
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3
         with:
           dependency-versions: locked
           composer-options: --no-ansi --no-interaction --no-progress
@@ -33,7 +33,7 @@ jobs:
           php-version: 8.3
           coverage: none
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3
         with:
           dependency-versions: locked
           composer-options: --no-ansi --no-interaction --no-progress
@@ -66,7 +66,7 @@ jobs:
       - name: Initialize tests
         run: make initialize
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3
         with:
           dependency-versions: ${{ matrix.dependencies }}
           composer-options: --no-ansi --no-interaction --no-progress
@@ -88,7 +88,7 @@ jobs:
       - name: Initialize tests
         run: make initialize
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3
         with:
           dependency-versions: locked
           composer-options: --no-ansi --no-interaction --no-progress
