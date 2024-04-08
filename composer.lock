@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19f8008f5b1d8d5f62e841b0434e0bb3",
+    "content-hash": "8a8426d7cf5a061d74d13ccf058fbf89",
     "packages": [
         {
             "name": "psr/container",
@@ -1757,16 +1757,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.301.6",
+            "version": "3.303.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "18c0ebd71d3071304f1ea02aa9af75f95863177a"
+                "reference": "9ae5429f7699701cb158780cd287d1549f45ad32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/18c0ebd71d3071304f1ea02aa9af75f95863177a",
-                "reference": "18c0ebd71d3071304f1ea02aa9af75f95863177a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9ae5429f7699701cb158780cd287d1549f45ad32",
+                "reference": "9ae5429f7699701cb158780cd287d1549f45ad32",
                 "shasum": ""
             },
             "require": {
@@ -1846,9 +1846,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.301.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.303.4"
             },
-            "time": "2024-03-22T18:05:21+00:00"
+            "time": "2024-04-05T18:04:15+00:00"
         },
         {
             "name": "composer/pcre",
