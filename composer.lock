@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19f8008f5b1d8d5f62e841b0434e0bb3",
+    "content-hash": "85f70f3cb80ba114f17b7c739ed09626",
     "packages": [
         {
             "name": "psr/container",
@@ -1703,16 +1703,16 @@
         },
         {
             "name": "aws/aws-crt-php",
-            "version": "v1.2.4",
+            "version": "v1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/awslabs/aws-crt-php.git",
-                "reference": "eb0c6e4e142224a10b08f49ebf87f32611d162b2"
+                "reference": "0ea1f04ec5aa9f049f97e012d1ed63b76834a31b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/eb0c6e4e142224a10b08f49ebf87f32611d162b2",
-                "reference": "eb0c6e4e142224a10b08f49ebf87f32611d162b2",
+                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/0ea1f04ec5aa9f049f97e012d1ed63b76834a31b",
+                "reference": "0ea1f04ec5aa9f049f97e012d1ed63b76834a31b",
                 "shasum": ""
             },
             "require": {
@@ -1751,22 +1751,22 @@
             ],
             "support": {
                 "issues": "https://github.com/awslabs/aws-crt-php/issues",
-                "source": "https://github.com/awslabs/aws-crt-php/tree/v1.2.4"
+                "source": "https://github.com/awslabs/aws-crt-php/tree/v1.2.5"
             },
-            "time": "2023-11-08T00:42:13+00:00"
+            "time": "2024-04-19T21:30:56+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.301.6",
+            "version": "3.305.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "18c0ebd71d3071304f1ea02aa9af75f95863177a"
+                "reference": "fc26a2ebf720e0b75a353d7e8fe206796671e00b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/18c0ebd71d3071304f1ea02aa9af75f95863177a",
-                "reference": "18c0ebd71d3071304f1ea02aa9af75f95863177a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fc26a2ebf720e0b75a353d7e8fe206796671e00b",
+                "reference": "fc26a2ebf720e0b75a353d7e8fe206796671e00b",
                 "shasum": ""
             },
             "require": {
@@ -1846,9 +1846,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.301.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.305.4"
             },
-            "time": "2024-03-22T18:05:21+00:00"
+            "time": "2024-04-26T18:06:31+00:00"
         },
         {
             "name": "composer/pcre",
