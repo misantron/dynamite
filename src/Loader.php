@@ -191,6 +191,7 @@ class Loader
     }
 
     /**
+     * @param \ReflectionClass<object> $reflectionClass
      * @return list<string>|null
      */
     private function getGroups(\ReflectionClass $reflectionClass): ?array
