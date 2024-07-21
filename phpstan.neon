@@ -6,7 +6,6 @@ parameters:
   bootstrapFiles:
     - vendor/autoload.php
   tmpDir: .cache/phpstan
-  checkGenericClassInNonGenericObjectType: false
   ignoreErrors:
     -
       message: '#should be contravariant with parameter \$options \(array\) of method Symfony\\Component\\Validator\\Constraints\\Compound\:\:getConstraints\(\)$#'
