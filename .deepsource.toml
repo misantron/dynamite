@@ -1,0 +1,16 @@
+version = 1
+
+test_patterns = [
+    "tests/**"
+]
+
+exclude_patterns = [
+    "vendor/**",
+]
+
+[[analyzers]]
+name = "php"
+enabled = true
+
+    [analyzers.meta]
+    bootstrap_files = ["vendor/autoload.php"]
