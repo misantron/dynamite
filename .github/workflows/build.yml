@@ -40,7 +40,7 @@ jobs:
       - name: Run PHPStan analyse
         run: vendor/bin/phpstan analyse --memory-limit 2G
       - name: Run Psalm analyse
-        run: vendor/bin/psalm
+        run: vendor/bin/psalm --threads=1
   test:
     name: Tests
     runs-on: ${{ matrix.operating-system }}
