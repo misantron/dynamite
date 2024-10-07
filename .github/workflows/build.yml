@@ -21,8 +21,8 @@ jobs:
           composer-options: --no-ansi --no-interaction --no-progress
       - name: Run ecs check
         run: vendor/bin/ecs check
-  static-analysis:
-    name: Static Analysis
+  phpstan:
+    name: PHPStan
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -37,10 +37,26 @@ jobs:
         with:
           dependency-versions: locked
           composer-options: --no-ansi --no-interaction --no-progress
-      - name: Run PHPStan analyse
+      - name: Run analyse
         run: vendor/bin/phpstan analyse --memory-limit 2G
-      - name: Run Psalm analyse
-        run: vendor/bin/psalm --threads=1
+  psalm:
+    name: Psalm
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: locked
+          composer-options: --no-ansi --no-interaction --no-progress
+      - name: Run analyse
+        run: vendor/bin/psalm
   test:
     name: Tests
     runs-on: ${{ matrix.operating-system }}
