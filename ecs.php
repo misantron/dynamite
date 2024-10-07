@@ -8,22 +8,18 @@ use PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
-return static function (ECSConfig $ecsConfig): void {
-    $ecsConfig->parallel();
-
-    $ecsConfig->paths([
+return ECSConfig::configure()
+    ->withParallel()
+    ->withPaths([
         __DIR__ . '/src',
         __DIR__ . '/tests',
-    ]);
-
-    $ecsConfig->cacheDirectory('.cache/ecs');
-
-    $ecsConfig->skip([
+    ])
+    ->withCache(directory: '.cache/ecs')
+    ->withSkip([
         NotOperatorWithSuccessorSpaceFixer::class,
         ExplicitStringVariableFixer::class,
-    ]);
-
-    $ecsConfig->sets([
+    ])
+    ->withSets([
         SetList::SPACES,
         SetList::ARRAY,
         SetList::CLEAN_CODE,
@@ -32,14 +28,16 @@ return static function (ECSConfig $ecsConfig): void {
         SetList::PHPUNIT,
         SetList::CONTROL_STRUCTURES,
         SetList::NAMESPACES,
-    ]);
-
-    $ecsConfig->ruleWithConfiguration(OrderedImportsFixer::class, [
-        'sort_algorithm' => 'alpha',
-        'imports_order' => [
-            'const',
-            'class',
-            'function',
+    ])
+    ->withConfiguredRule(
+        checkerClass: OrderedImportsFixer::class,
+        configuration: [
+            'sort_algorithm' => 'alpha',
+            'imports_order' => [
+                'const',
+                'class',
+                'function',
+            ],
         ],
-    ]);
-};
+    )
+;

@@ -1,4 +1,4 @@
-IMAGE_NAME := amazon/dynamodb-local:2.2.1
+IMAGE_NAME := amazon/dynamodb-local:2.5.2
 
 .PHONY: initialize
 initialize: start-docker
@@ -31,4 +31,4 @@ static-analyze: phpstan psalm
 phpstan:
 	vendor/bin/phpstan analyse --memory-limit 2G
 psalm:
-	vendor/bin/psalm
+	vendor/bin/psalm --memory-limit 2G

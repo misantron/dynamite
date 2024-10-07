@@ -8,7 +8,6 @@
         strictBinaryOperands="true"
         cacheDirectory=".cache/psalm"
         findUnusedBaselineEntry="true"
-        findUnusedCode="false"
 >
     <projectFiles>
         <directory name="src" />
