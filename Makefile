@@ -1,4 +1,4 @@
-IMAGE_NAME := amazon/dynamodb-local:2.5.2
+IMAGE_NAME := amazon/dynamodb-local:2.6.1
 
 .PHONY: initialize
 initialize: start-docker
