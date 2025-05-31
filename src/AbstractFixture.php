@@ -19,15 +19,13 @@ abstract class AbstractFixture
     private Records $schema;
 
     /**
-     * @param ?array<int, Record> $records
+     * @param array<int, Record> $records
      */
-    public function __construct(array $records = null)
+    public function __construct(array $records = [])
     {
         $this->schema = new Records();
 
-        if ($records !== null) {
-            $this->addRecords($records);
-        }
+        $this->addRecords($records);
     }
 
     final public function load(ClientInterface $client, LoggerInterface $logger): void

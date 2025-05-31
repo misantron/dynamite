@@ -46,7 +46,7 @@ abstract class AbstractTable
         ]);
     }
 
-    protected function addAttribute(string $name, ScalarAttributeTypeEnum $type, KeyTypeEnum $keyType = null): self
+    protected function addAttribute(string $name, ScalarAttributeTypeEnum $type, ?KeyTypeEnum $keyType = null): self
     {
         $this->schema->addAttribute($name, $type, $keyType);
 
@@ -69,9 +69,9 @@ abstract class AbstractTable
         string $name,
         ProjectionTypeEnum $projectionType,
         string $hashAttribute,
-        string $rangeAttribute = null,
-        int $writeCapacity = null,
-        int $readCapacity = null
+        ?string $rangeAttribute = null,
+        ?int $writeCapacity = null,
+        ?int $readCapacity = null
     ): self {
         $this->schema->addGlobalSecondaryIndex(
             $name,
@@ -89,7 +89,7 @@ abstract class AbstractTable
         string $name,
         ProjectionTypeEnum $projectionType,
         string $hashAttribute,
-        string $rangeAttribute = null
+        ?string $rangeAttribute = null
     ): self {
         $this->schema->addLocalSecondaryIndex($name, $projectionType, $hashAttribute, $rangeAttribute);
 

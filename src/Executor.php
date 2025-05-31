@@ -16,7 +16,7 @@ class Executor
 
     public function __construct(
         private readonly ClientInterface $client,
-        PurgerInterface $purger = null,
+        ?PurgerInterface $purger = null,
         private readonly LoggerInterface $logger = new NullLogger()
     ) {
         $this->purger = $purger ?? new Purger($this->client);
