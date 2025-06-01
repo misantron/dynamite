@@ -22,6 +22,6 @@ final class Delegate extends Constraint
 
     public function toString(): string
     {
-        return $this->name . ' ' . $this->matcher->toString();
+        return $this->name . ' ' . $this->matcher->toString(); // @phpstan-ignore method.internalInterface
     }
 }
