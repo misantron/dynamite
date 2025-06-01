@@ -32,8 +32,8 @@ final class ClientFactory
      */
     public function createAsyncAwsClient(
         Configuration|array $configuration = [],
-        CredentialProvider $credentialProvider = null,
-        HttpClientInterface $httpClient = null
+        ?CredentialProvider $credentialProvider = null,
+        ?HttpClientInterface $httpClient = null
     ): ClientInterface {
         return new AsyncAwsClient(
             new \AsyncAws\DynamoDb\DynamoDbClient($configuration, $credentialProvider, $httpClient, $this->logger),

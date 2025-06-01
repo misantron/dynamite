@@ -6,7 +6,6 @@ use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Operator\NotOperatorWithSuccessorSpaceFixer;
 use PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
-use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
 return ECSConfig::configure()
     ->withParallel()
@@ -19,16 +18,11 @@ return ECSConfig::configure()
         NotOperatorWithSuccessorSpaceFixer::class,
         ExplicitStringVariableFixer::class,
     ])
-    ->withSets([
-        SetList::SPACES,
-        SetList::ARRAY,
-        SetList::CLEAN_CODE,
-        SetList::STRICT,
-        SetList::PSR_12,
-        SetList::PHPUNIT,
-        SetList::CONTROL_STRUCTURES,
-        SetList::NAMESPACES,
-    ])
+    ->withPreparedSets(
+        psr12: true,
+        common: true,
+        strict: true
+    )
     ->withConfiguredRule(
         checkerClass: OrderedImportsFixer::class,
         configuration: [
