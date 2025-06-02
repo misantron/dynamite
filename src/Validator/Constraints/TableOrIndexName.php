@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class TableOrIndexName extends Assert\Compound
 {
     /**
-     * @param array<int, mixed> $options
+     * @param array<string, mixed> $options
      * @return array<int, Constraint>
      */
     protected function getConstraints(array $options): array
@@ -22,7 +22,7 @@ final class TableOrIndexName extends Assert\Compound
                 min: 3,
                 max: 255,
                 minMessage: 'Name should have at least {{ limit }} characters length',
-                maxMessage: 'Name cannot have more than {{ limit }} characters length'
+                maxMessage: 'Name cannot have more than {{ limit }} characters length',
             ),
             new Assert\Regex('/^[a-zA-Z0-9_\-.]+$/'),
         ];

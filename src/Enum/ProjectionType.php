@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Enum;
 
-enum ProjectionTypeEnum: string
+enum ProjectionType: string
 {
     case All = 'ALL';
     case Include = 'INCLUDE';

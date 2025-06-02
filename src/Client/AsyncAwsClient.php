@@ -4,41 +4,51 @@ declare(strict_types=1);
 
 namespace Dynamite\Client;
 
-use AsyncAws\DynamoDb;
-use AsyncAws\DynamoDb\Enum;
-use AsyncAws\DynamoDb\Exception;
-use AsyncAws\DynamoDb\Input;
+use AsyncAws\DynamoDb\DynamoDbClient;
+use AsyncAws\DynamoDb\Enum\KeyType;
+use AsyncAws\DynamoDb\Exception\ResourceNotFoundException;
+use AsyncAws\DynamoDb\Input\BatchWriteItemInput;
+use AsyncAws\DynamoDb\Input\CreateTableInput;
+use AsyncAws\DynamoDb\Input\DeleteTableInput;
+use AsyncAws\DynamoDb\Input\DescribeTableInput;
+use AsyncAws\DynamoDb\Input\PutItemInput;
+use AsyncAws\DynamoDb\Input\ScanInput;
 use AsyncAws\DynamoDb\ValueObject;
+use AsyncAws\DynamoDb\ValueObject\AttributeValue;
+use AsyncAws\DynamoDb\ValueObject\DeleteRequest;
+use AsyncAws\DynamoDb\ValueObject\PutRequest;
+use AsyncAws\DynamoDb\ValueObject\TableDescription;
+use AsyncAws\DynamoDb\ValueObject\WriteRequest;
 use Dynamite\Schema\Record;
 use Dynamite\Schema\Table;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Serializer\Normalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class AsyncAwsClient implements ClientInterface
+final readonly class AsyncAwsClient implements ClientInterface
 {
     public function __construct(
-        private readonly DynamoDb\DynamoDbClient $client,
-        private readonly Normalizer\NormalizerInterface $normalizer,
-        private readonly LoggerInterface $logger
-    ) {
-    }
+        private DynamoDbClient $client,
+        private NormalizerInterface $normalizer,
+        private LoggerInterface $logger,
+    ) {}
 
     public function createTable(Table $schema): void
     {
         $input = (array) $this->normalizer->normalize(
             $schema,
             context: [
-                Normalizer\AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-            ]
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
+            ],
         );
 
-        $this->client->createTable(new Input\CreateTableInput($input))->resolve();
+        $this->client->createTable(new CreateTableInput($input))->resolve();
     }
 
     public function dropTable(string $tableName): void
     {
         try {
-            $input = new Input\DeleteTableInput([
+            $input = new DeleteTableInput([
                 'TableName' => $tableName,
             ]);
 
@@ -47,14 +57,14 @@ final class AsyncAwsClient implements ClientInterface
             $this->logger->debug('Table dropped', [
                 'table' => $tableName,
             ]);
-        } catch (Exception\ResourceNotFoundException) {
+        } catch (ResourceNotFoundException) {
             // ignore a non-existent table exception
         }
     }
 
     public function createRecord(string $tableName, Record $record): void
     {
-        $input = new Input\PutItemInput([
+        $input = new PutItemInput([
             'TableName' => $tableName,
             'Item' => $record->getValues(),
         ]);
@@ -70,7 +80,7 @@ final class AsyncAwsClient implements ClientInterface
         $mapped = [];
         foreach ($records as $k => $record) {
             foreach ($record->getValues() as $name => $value) {
-                $mapped[$k][$name] = new ValueObject\AttributeValue($value);
+                $mapped[$k][$name] = new AttributeValue($value);
             }
         }
 
@@ -80,27 +90,28 @@ final class AsyncAwsClient implements ClientInterface
     public function truncateRecords(string $tableName): void
     {
         try {
-            $input = new Input\DescribeTableInput([
+            $input = new DescribeTableInput([
                 'TableName' => $tableName,
             ]);
 
             $response = $this->client->describeTable($input);
             $response->resolve();
-        } catch (Exception\ResourceNotFoundException) {
+        } catch (ResourceNotFoundException) {
             return;
         }
 
         // @codeCoverageIgnoreStart
-        if ($response->getTable() === null) {
+        if (!$response->getTable() instanceof TableDescription) {
             return;
         }
+
         // @codeCoverageIgnoreEnd
 
         $primaryKey = $this->getPrimaryKeyAttributes(
-            $response->getTable()->getKeySchema()
+            $response->getTable()->getKeySchema(),
         );
 
-        $input = new Input\ScanInput([
+        $input = new ScanInput([
             'TableName' => $tableName,
             'ConsistentRead' => true,
         ]);
@@ -136,12 +147,12 @@ final class AsyncAwsClient implements ClientInterface
         $this->batchWriteRequest(
             $tableName,
             $keys,
-            static fn (array $key): ValueObject\WriteRequest => new ValueObject\WriteRequest([
-                'DeleteRequest' => new ValueObject\DeleteRequest([
+            static fn (array $key): WriteRequest => new WriteRequest([
+                'DeleteRequest' => new DeleteRequest([
                     'Key' => $key,
                 ]),
             ]),
-            'Data batch deleted'
+            'Data batch deleted',
         );
     }
 
@@ -153,12 +164,12 @@ final class AsyncAwsClient implements ClientInterface
         $this->batchWriteRequest(
             $tableName,
             $items,
-            static fn (array $item): ValueObject\WriteRequest => new ValueObject\WriteRequest([
-                'PutRequest' => new ValueObject\PutRequest([
+            static fn (array $item): WriteRequest => new WriteRequest([
+                'PutRequest' => new PutRequest([
                     'Item' => $item,
                 ]),
             ]),
-            'Data batch executed'
+            'Data batch executed',
         );
     }
 
@@ -169,12 +180,12 @@ final class AsyncAwsClient implements ClientInterface
         string $tableName,
         array $items,
         callable $mappingCallback,
-        string $logMessage
+        string $logMessage,
     ): void {
         $chunks = array_chunk($items, self::BATCH_MAX_SIZE);
 
         foreach ($chunks as $number => $chunk) {
-            $input = new Input\BatchWriteItemInput([
+            $input = new BatchWriteItemInput([
                 'RequestItems' => [
                     $tableName => array_map($mappingCallback, $chunk),
                 ],
@@ -197,10 +208,11 @@ final class AsyncAwsClient implements ClientInterface
     {
         $attributes = [];
         foreach ($keySchema as $value) {
-            if ($value->getKeyType() === Enum\KeyType::HASH) {
+            if ($value->getKeyType() === KeyType::HASH) {
                 $attributes[] = $value->getAttributeName();
             }
         }
+
         return $attributes;
     }
 
@@ -214,7 +226,7 @@ final class AsyncAwsClient implements ClientInterface
         return array_filter(
             $item,
             static fn (string $name) => \in_array($name, $primaryKey, true),
-            ARRAY_FILTER_USE_KEY
+            ARRAY_FILTER_USE_KEY,
         );
     }
 }

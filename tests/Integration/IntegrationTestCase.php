@@ -7,9 +7,9 @@ namespace Dynamite\Tests\Integration;
 use Dynamite\AbstractFixture;
 use Dynamite\AbstractTable;
 use Dynamite\Client\ClientInterface;
-use Dynamite\Enum\KeyTypeEnum;
-use Dynamite\Enum\ProjectionTypeEnum;
-use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Enum\KeyType;
+use Dynamite\Enum\ProjectionType;
+use Dynamite\Enum\ScalarAttributeType;
 use Dynamite\FixtureInterface;
 use Dynamite\Schema\Attribute;
 use Dynamite\Schema\Record;
@@ -68,16 +68,16 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function createFixtureTable(): TableInterface
     {
-        return new class() extends AbstractTable implements TableInterface {
+        return new class extends AbstractTable implements TableInterface {
             protected function configure(): void
             {
                 $this
                     ->setTableName(IntegrationTestCase::TABLE_NAME)
                     ->addAttributes([
-                        new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
-                        new Attribute('Email', ScalarAttributeTypeEnum::String),
+                        new Attribute('Id', ScalarAttributeType::String, KeyType::Hash),
+                        new Attribute('Email', ScalarAttributeType::String),
                     ])
-                    ->addGlobalSecondaryIndex('Emails', ProjectionTypeEnum::KeysOnly, 'Email')
+                    ->addGlobalSecondaryIndex('Emails', ProjectionType::KeysOnly, 'Email')
                     ->setProvisionedThroughput(1, 1)
                 ;
             }
@@ -89,7 +89,7 @@ abstract class IntegrationTestCase extends TestCase
      */
     protected function createFixture(array $items): FixtureInterface
     {
-        return new class($items) extends AbstractFixture implements FixtureInterface {
+        return new class ($items) extends AbstractFixture implements FixtureInterface {
             protected function configure(): void
             {
                 $this->setTableName(IntegrationTestCase::TABLE_NAME);
@@ -113,29 +113,29 @@ abstract class IntegrationTestCase extends TestCase
             'AttributeDefinitions' => [
                 [
                     'AttributeName' => 'Id',
-                    'AttributeType' => ScalarAttributeTypeEnum::String->value,
+                    'AttributeType' => ScalarAttributeType::String->value,
                 ],
                 [
                     'AttributeName' => 'Email',
-                    'AttributeType' => ScalarAttributeTypeEnum::String->value,
+                    'AttributeType' => ScalarAttributeType::String->value,
                 ],
             ],
             'KeySchema' => [
                 [
                     'AttributeName' => 'Id',
-                    'KeyType' => KeyTypeEnum::Hash->value,
+                    'KeyType' => KeyType::Hash->value,
                 ],
             ],
             'GlobalSecondaryIndexes' => [
                 [
                     'IndexName' => 'Emails',
                     'Projection' => [
-                        'ProjectionType' => ProjectionTypeEnum::KeysOnly->value,
+                        'ProjectionType' => ProjectionType::KeysOnly->value,
                     ],
                     'KeySchema' => [
                         [
                             'AttributeName' => 'Email',
-                            'KeyType' => KeyTypeEnum::Hash->value,
+                            'KeyType' => KeyType::Hash->value,
                         ],
                     ],
                     'ProvisionedThroughput' => [

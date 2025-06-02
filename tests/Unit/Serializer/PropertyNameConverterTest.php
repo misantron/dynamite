@@ -23,7 +23,7 @@ class PropertyNameConverterTest extends UnitTestCase
     #[DataProvider('normalizeDataProvider')]
     public function testNormalize(string $propertyName, string $expected): void
     {
-        self::assertSame($expected, $this->converter->normalize($propertyName));
+        $this->assertSame($expected, $this->converter->normalize($propertyName));
     }
 
     /**
@@ -40,7 +40,7 @@ class PropertyNameConverterTest extends UnitTestCase
     #[DataProvider('denormalizeDataProvider')]
     public function testDenormalize(string $propertyName, string $expected): void
     {
-        self::assertSame($expected, $this->converter->denormalize($propertyName));
+        $this->assertSame($expected, $this->converter->denormalize($propertyName));
     }
 
     /**

@@ -19,16 +19,21 @@ test-integration:
 test-unit:
 	vendor/bin/phpunit --testsuite Unit
 
-lint: ecs-fix
+lint: rector-fix ecs-fix
 
 ecs:
 	vendor/bin/ecs check
 ecs-fix:
 	vendor/bin/ecs check --fix
 
+rector:
+	vendor/bin/rector process --dry-run
+rector-fix:
+	vendor/bin/rector process
+
 static-analyze: phpstan psalm
 
 phpstan:
-	vendor/bin/phpstan analyse --memory-limit 2G
+	vendor/bin/phpstan analyse --memory-limit 1G
 psalm:
 	vendor/bin/psalm --threads=1

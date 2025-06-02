@@ -33,9 +33,8 @@ class Loader
 
     public function __construct(
         private readonly ValidatorInterface $validator,
-        private readonly NormalizerInterface $serializer
-    ) {
-    }
+        private readonly NormalizerInterface $serializer,
+    ) {}
 
     public function loadFromDirectory(string $path): void
     {
@@ -56,7 +55,7 @@ class Loader
 
             Assert::notFalse($filepath, 'Filepath is not valid');
 
-            self::requireOnce($filepath);
+            $this->requireOnce($filepath);
 
             $files[] = $filepath;
         }
@@ -162,8 +161,11 @@ class Loader
 
         foreach ($declared as $className) {
             $reflectionClass = new \ReflectionClass($className);
+            if ($reflectionClass->isAbstract()) {
+                continue;
+            }
 
-            if ($reflectionClass->isAbstract() || !\in_array($reflectionClass->getFileName(), $files, true)) {
+            if (!\in_array($reflectionClass->getFileName(), $files, true)) {
                 continue;
             }
 
@@ -173,6 +175,7 @@ class Loader
             if (isset($interfaces[TableInterface::class])) {
                 $this->tables[$className] = $this->createTable($className);
             }
+
             if (isset($interfaces[FixtureInterface::class])) {
                 $this->fixtures[$className] = $this->createFixture($className);
             }
@@ -182,6 +185,7 @@ class Loader
                     if (isset($interfaces[TableInterface::class])) {
                         $this->groupedTablesMapping[$group][$className] = true;
                     }
+
                     if (isset($interfaces[FixtureInterface::class])) {
                         $this->groupedFixturesMapping[$group][$className] = true;
                     }
@@ -214,7 +218,7 @@ class Loader
     {
         return new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS),
-            \RecursiveIteratorIterator::LEAVES_ONLY
+            \RecursiveIteratorIterator::LEAVES_ONLY,
         );
     }
 
@@ -237,7 +241,7 @@ class Loader
         return $fixture;
     }
 
-    private static function requireOnce(string $path): void
+    private function requireOnce(string $path): void
     {
         require_once $path;
     }

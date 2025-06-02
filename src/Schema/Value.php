@@ -4,35 +4,34 @@ declare(strict_types=1);
 
 namespace Dynamite\Schema;
 
-use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Enum\ScalarAttributeType;
 
-final class Value
+final readonly class Value
 {
     public function __construct(
-        private readonly string $name,
-        private readonly ScalarAttributeTypeEnum $type,
-        private readonly mixed $value
-    ) {
-    }
+        private string $name,
+        private ScalarAttributeType $type,
+        private mixed $value,
+    ) {}
 
     public static function stringValue(string $name, string $value): self
     {
-        return new self($name, ScalarAttributeTypeEnum::String, $value);
+        return new self($name, ScalarAttributeType::String, $value);
     }
 
     public static function numericValue(string $name, int|float $value): self
     {
-        return new self($name, ScalarAttributeTypeEnum::Numeric, $value);
+        return new self($name, ScalarAttributeType::Numeric, $value);
     }
 
     public static function boolValue(string $name, bool $value): self
     {
-        return new self($name, ScalarAttributeTypeEnum::Bool, $value);
+        return new self($name, ScalarAttributeType::Bool, $value);
     }
 
     public static function binaryValue(string $name, string $value): self
     {
-        return new self($name, ScalarAttributeTypeEnum::Binary, $value);
+        return new self($name, ScalarAttributeType::Binary, $value);
     }
 
     public function getName(): string
@@ -40,7 +39,7 @@ final class Value
         return $this->name;
     }
 
-    public function getType(): ScalarAttributeTypeEnum
+    public function getType(): ScalarAttributeType
     {
         return $this->type;
     }

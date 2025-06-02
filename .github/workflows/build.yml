@@ -1,11 +1,11 @@
-name: build
+name: CI
 
 on: [push]
 
 jobs:
-  coding-standards:
-    name: Coding Standards Check
-    runs-on: ubuntu-22.04
+  ecs:
+    name: ECS
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,9 +21,27 @@ jobs:
           composer-options: --no-ansi --no-interaction --no-progress
       - name: Run ecs check
         run: vendor/bin/ecs check
+  rector:
+    name: Rector
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          coverage: none
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: locked
+          composer-options: --no-ansi --no-interaction --no-progress
+      - name: Run ecs check
+        run: vendor/bin/rector process --dry-run
   phpstan:
     name: PHPStan
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,7 +59,7 @@ jobs:
         run: vendor/bin/phpstan analyse --memory-limit 2G
   psalm:
     name: Psalm
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,7 +75,7 @@ jobs:
           composer-options: --no-ansi --no-interaction --no-progress
       - name: Run analyse
         run: vendor/bin/psalm
-  test:
+  tests:
     name: Tests
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -68,7 +86,6 @@ jobs:
         operating-system:
           - ubuntu-latest
         php-version:
-          - 8.1
           - 8.2
           - 8.3
           - 8.4
@@ -93,7 +110,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite Integration
   coverage:
     name: Tests Coverage
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -112,7 +129,7 @@ jobs:
       - name: PHPUnit run with coverage
         run: vendor/bin/phpunit --coverage-clover=clover.xml
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: clover.xml

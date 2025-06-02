@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'dynamite:fixtures:load',
-    description: 'Load data fixtures (and optionally create tables) to database'
+    description: 'Load data fixtures (and optionally create tables) to database',
 )]
 final class FixturesLoadCommand extends Command
 {
@@ -26,7 +26,7 @@ final class FixturesLoadCommand extends Command
         parent::__construct();
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

@@ -20,7 +20,7 @@ class ExecutorTest extends UnitTestCase
         $executor = new Executor($dynamoDbClient);
         $executor->execute([], []);
 
-        self::assertInstanceOf(Purger::class, $executor->getPurger());
-        self::assertInstanceOf(NullLogger::class, $executor->getLogger());
+        $this->assertInstanceOf(Purger::class, $executor->getPurger());
+        $this->assertInstanceOf(NullLogger::class, $executor->getLogger());
     }
 }

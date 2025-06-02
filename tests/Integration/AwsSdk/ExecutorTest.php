@@ -43,12 +43,12 @@ class ExecutorTest extends IntegrationTestCase
             'TableName' => self::TABLE_NAME,
         ]);
 
-        self::assertSame(self::TABLE_NAME, $response['Table']['TableName']);
+        $this->assertSame(self::TABLE_NAME, $response['Table']['TableName']);
 
         $response = $this->dynamoDbClient->scan([
             'TableName' => self::TABLE_NAME,
         ]);
 
-        self::assertSame(2, $response['Count']);
+        $this->assertSame(2, $response['Count']);
     }
 }

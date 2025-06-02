@@ -4,29 +4,28 @@ declare(strict_types=1);
 
 namespace Dynamite\Schema;
 
-use Dynamite\Enum\KeyTypeEnum;
-use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Enum\KeyType;
+use Dynamite\Enum\ScalarAttributeType;
 
-final class Attribute
+final readonly class Attribute
 {
     public function __construct(
-        private readonly string $name,
-        private readonly ScalarAttributeTypeEnum $type,
-        private readonly ?KeyTypeEnum $keyType = null
-    ) {
-    }
+        private string $name,
+        private ScalarAttributeType $type,
+        private ?KeyType $keyType = null,
+    ) {}
 
     public function getName(): string
     {
         return $this->name;
     }
 
-    public function getType(): ScalarAttributeTypeEnum
+    public function getType(): ScalarAttributeType
     {
         return $this->type;
     }
 
-    public function getKeyType(): ?KeyTypeEnum
+    public function getKeyType(): ?KeyType
     {
         return $this->keyType;
     }

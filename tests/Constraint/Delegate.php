@@ -12,8 +12,7 @@ final class Delegate extends Constraint
         private readonly Constraint $matcher,
         private readonly \Closure $getter,
         private readonly string $name,
-    ) {
-    }
+    ) {}
 
     public function evaluate(mixed $other, string $description = '', bool $returnResult = false): ?bool
     {

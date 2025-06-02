@@ -17,7 +17,7 @@ final class GroupsTest extends UnitTestCase
     {
         $groups = new Groups(['group1', 'group2']);
 
-        self::assertSame(['group1', 'group2'], $groups->getNames());
+        $this->assertSame(['group1', 'group2'], $groups->getNames());
     }
 
     public function testAttributeOnTableClass(): void
@@ -25,8 +25,8 @@ final class GroupsTest extends UnitTestCase
         $reflectionClass = new \ReflectionClass(Table1::class);
         $attributes = $reflectionClass->getAttributes(Groups::class);
 
-        self::assertCount(1, $attributes);
-        self::assertSame(Groups::class, $attributes[0]->getName());
+        $this->assertCount(1, $attributes);
+        $this->assertSame(Groups::class, $attributes[0]->getName());
     }
 
     public function testAttributeOnFixtureClass(): void
@@ -34,7 +34,7 @@ final class GroupsTest extends UnitTestCase
         $reflectionClass = new \ReflectionClass(Table1DomainDataLoader::class);
         $attributes = $reflectionClass->getAttributes(Groups::class);
 
-        self::assertCount(1, $attributes);
-        self::assertSame(Groups::class, $attributes[0]->getName());
+        $this->assertCount(1, $attributes);
+        $this->assertSame(Groups::class, $attributes[0]->getName());
     }
 }

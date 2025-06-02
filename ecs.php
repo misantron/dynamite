@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use PhpCsFixer\Fixer\FunctionNotation\FunctionDeclarationFixer;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Operator\NotOperatorWithSuccessorSpaceFixer;
 use PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer;
@@ -18,10 +19,16 @@ return ECSConfig::configure()
         NotOperatorWithSuccessorSpaceFixer::class,
         ExplicitStringVariableFixer::class,
     ])
+    ->withPhpCsFixerSets(perCS: true)
     ->withPreparedSets(
-        psr12: true,
         common: true,
         strict: true
+    )
+    ->withConfiguredRule(
+        checkerClass: FunctionDeclarationFixer::class,
+        configuration: [
+            'closure_fn_spacing' => 'one',
+        ],
     )
     ->withConfiguredRule(
         checkerClass: OrderedImportsFixer::class,

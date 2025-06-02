@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Schema;
 
-use Dynamite\Enum\KeyTypeEnum;
-use Dynamite\Enum\ProjectionTypeEnum;
-use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Enum\KeyType;
+use Dynamite\Enum\ProjectionType;
+use Dynamite\Enum\ScalarAttributeType;
 use Dynamite\Exception\SchemaException;
 use Dynamite\Schema\Table;
 use Dynamite\Tests\Unit\UnitTestCase;
@@ -27,11 +27,11 @@ class TableTest extends UnitTestCase
         $schema = new Table();
         $schema->addGlobalSecondaryIndex(
             'Index',
-            ProjectionTypeEnum::KeysOnly,
+            ProjectionType::KeysOnly,
             'Id',
             null,
             null,
-            null
+            null,
         );
         $schema->getGlobalSecondaryIndexes();
     }
@@ -43,14 +43,14 @@ class TableTest extends UnitTestCase
 
         $schema = new Table();
         $schema->setProvisionedThroughput(1, 1);
-        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String);
+        $schema->addAttribute('Id', ScalarAttributeType::String);
         $schema->addGlobalSecondaryIndex(
             'Index',
-            ProjectionTypeEnum::KeysOnly,
+            ProjectionType::KeysOnly,
             'Email',
             null,
             null,
-            null
+            null,
         );
         $schema->getGlobalSecondaryIndexes();
     }
@@ -58,35 +58,35 @@ class TableTest extends UnitTestCase
     public function testAddGlobalSecondaryIndex(): void
     {
         $schema = new Table();
-        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String);
-        $schema->addAttribute('Type', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash);
-        $schema->addAttribute('Email', ScalarAttributeTypeEnum::String, KeyTypeEnum::Range);
+        $schema->addAttribute('Id', ScalarAttributeType::String);
+        $schema->addAttribute('Type', ScalarAttributeType::String, KeyType::Hash);
+        $schema->addAttribute('Email', ScalarAttributeType::String, KeyType::Range);
         $schema->addGlobalSecondaryIndex(
             'Index',
-            ProjectionTypeEnum::KeysOnly,
+            ProjectionType::KeysOnly,
             'Type',
             'Email',
             1,
-            1
+            1,
         );
 
         $indexes = $schema->getGlobalSecondaryIndexes();
 
-        self::assertSame([
+        $this->assertSame([
             [
                 'IndexName' => 'Index',
                 'KeySchema' => [
                     [
                         'AttributeName' => 'Type',
-                        'KeyType' => KeyTypeEnum::Hash,
+                        'KeyType' => KeyType::Hash,
                     ],
                     [
                         'AttributeName' => 'Email',
-                        'KeyType' => KeyTypeEnum::Range,
+                        'KeyType' => KeyType::Range,
                     ],
                 ],
                 'Projection' => [
-                    'ProjectionType' => ProjectionTypeEnum::KeysOnly,
+                    'ProjectionType' => ProjectionType::KeysOnly,
                 ],
                 'ProvisionedThroughput' => [
                     'ReadCapacityUnits' => 1,
@@ -103,8 +103,8 @@ class TableTest extends UnitTestCase
 
         $schema = new Table();
         $schema->setProvisionedThroughput(1, 1);
-        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String);
-        $schema->addLocalSecondaryIndex('Index', ProjectionTypeEnum::KeysOnly, 'Email', null);
+        $schema->addAttribute('Id', ScalarAttributeType::String);
+        $schema->addLocalSecondaryIndex('Index', ProjectionType::KeysOnly, 'Email', null);
         $schema->getLocalSecondaryIndexes();
     }
 
@@ -112,31 +112,31 @@ class TableTest extends UnitTestCase
     {
         $schema = new Table();
         $schema->setProvisionedThroughput(1, 1);
-        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String);
-        $schema->addAttribute('Type', ScalarAttributeTypeEnum::String);
-        $schema->addAttribute('Email', ScalarAttributeTypeEnum::String);
+        $schema->addAttribute('Id', ScalarAttributeType::String);
+        $schema->addAttribute('Type', ScalarAttributeType::String);
+        $schema->addAttribute('Email', ScalarAttributeType::String);
         $schema->addLocalSecondaryIndex(
             'Index',
-            ProjectionTypeEnum::KeysOnly,
+            ProjectionType::KeysOnly,
             'Type',
-            'Email'
+            'Email',
         );
 
-        self::assertSame([
+        $this->assertSame([
             [
                 'IndexName' => 'Index',
                 'KeySchema' => [
                     [
                         'AttributeName' => 'Type',
-                        'KeyType' => KeyTypeEnum::Hash,
+                        'KeyType' => KeyType::Hash,
                     ],
                     [
                         'AttributeName' => 'Email',
-                        'KeyType' => KeyTypeEnum::Range,
+                        'KeyType' => KeyType::Range,
                     ],
                 ],
                 'Projection' => [
-                    'ProjectionType' => ProjectionTypeEnum::KeysOnly,
+                    'ProjectionType' => ProjectionType::KeysOnly,
                 ],
             ],
         ], $schema->getLocalSecondaryIndexes());
@@ -155,7 +155,7 @@ class TableTest extends UnitTestCase
     public function testAssertHashKeySet(): void
     {
         $schema = new Table();
-        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash);
+        $schema->addAttribute('Id', ScalarAttributeType::String, KeyType::Hash);
         $schema->assertHashKeySet();
 
         $this->expectNotToPerformAssertions();
@@ -164,44 +164,44 @@ class TableTest extends UnitTestCase
     public function testAddAttribute(): void
     {
         $schema = new Table();
-        $schema->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash);
-        $schema->addAttribute('Active', ScalarAttributeTypeEnum::Bool);
+        $schema->addAttribute('Id', ScalarAttributeType::String, KeyType::Hash);
+        $schema->addAttribute('Active', ScalarAttributeType::Bool);
 
         $expected = [
             [
                 'AttributeName' => 'Id',
-                'AttributeType' => ScalarAttributeTypeEnum::String,
+                'AttributeType' => ScalarAttributeType::String,
             ],
             [
                 'AttributeName' => 'Active',
-                'AttributeType' => ScalarAttributeTypeEnum::Bool,
+                'AttributeType' => ScalarAttributeType::Bool,
             ],
         ];
 
-        self::assertSame($expected, $schema->getAttributeDefinitions());
+        $this->assertSame($expected, $schema->getAttributeDefinitions());
 
         $expected = [
             [
                 'AttributeName' => 'Id',
-                'KeyType' => KeyTypeEnum::Hash,
+                'KeyType' => KeyType::Hash,
             ],
         ];
 
-        self::assertSame($expected, $schema->getKeySchema());
+        $this->assertSame($expected, $schema->getKeySchema());
     }
 
     #[DataProvider('setProvisionedThroughputDataProvider')]
     public function testSetProvisionedThroughput(
         ?int $writeCapacity,
         ?int $readCapacity,
-        Constraint $expected
+        Constraint $expected,
     ): void {
         $schema = new Table();
         if ($writeCapacity !== null && $readCapacity !== null) {
             $schema->setProvisionedThroughput($writeCapacity, $readCapacity);
         }
 
-        self::assertThat($schema->getProvisionedThroughput(), $expected);
+        $this->assertThat($schema->getProvisionedThroughput(), $expected);
     }
 
     /**

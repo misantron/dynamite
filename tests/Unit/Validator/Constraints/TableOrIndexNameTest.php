@@ -15,13 +15,13 @@ class TableOrIndexNameTest extends UnitTestCase
     #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
-        $entity = new class() {
+        $entity = new class {
             #[TableOrIndexName]
             public ?string $tableName = null;
         };
         $entity->tableName = $input;
 
-        self::assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
+        $this->assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
     }
 
     /**

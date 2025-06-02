@@ -30,7 +30,7 @@ trait AwsSdkIntegrationTrait
     protected function createClient(): ClientInterface
     {
         return ClientFactory::create($this->serializer, $this->logger)->createAwsSdkClient(
-            $this->getClientConfiguration()
+            $this->getClientConfiguration(),
         );
     }
 

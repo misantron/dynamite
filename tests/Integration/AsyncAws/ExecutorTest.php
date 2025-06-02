@@ -44,13 +44,13 @@ class ExecutorTest extends IntegrationTestCase
         ]);
         $response->resolve();
 
-        self::assertSame(self::TABLE_NAME, $response->getTable()?->getTableName());
+        $this->assertSame(self::TABLE_NAME, $response->getTable()?->getTableName());
 
         $response = $this->dynamoDbClient->scan([
             'TableName' => self::TABLE_NAME,
         ]);
         $response->resolve();
 
-        self::assertSame(2, $response->getCount());
+        $this->assertSame(2, $response->getCount());
     }
 }

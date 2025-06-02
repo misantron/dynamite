@@ -20,7 +20,7 @@ class TableTest extends IntegrationTestCase
     {
         $table = $this->createFixtureTable();
 
-        self::assertSame(self::TABLE_NAME, $table->getTableName());
+        $this->assertSame(self::TABLE_NAME, $table->getTableName());
 
         $table->setValidator($this->validator);
         $table->setNormalizer($this->serializer);
@@ -35,9 +35,10 @@ class TableTest extends IntegrationTestCase
             if ($e->getAwsErrorCode() === AwsSdkClient::RESOURCE_NOT_FOUND_ERROR_CODE) {
                 self::fail('Table does not exists: ' . self::TABLE_NAME);
             }
+
             throw $e;
         }
 
-        self::assertSame(self::TABLE_NAME, $response['Table']['TableName']);
+        $this->assertSame(self::TABLE_NAME, $response['Table']['TableName']);
     }
 }
