@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 final class ValidationException extends AbstractException
 {
     public function __construct(
-        private readonly ConstraintViolationListInterface $violationList
+        private readonly ConstraintViolationListInterface $violationList,
     ) {
         parent::__construct('Validation failed');
     }

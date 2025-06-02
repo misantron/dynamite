@@ -15,9 +15,8 @@ final readonly class Record
      * @param array<int, Value> $values
      */
     public function __construct(
-        private array $values
-    ) {
-    }
+        private array $values,
+    ) {}
 
     /**
      * @return array<string, AttributeValue>

@@ -11,9 +11,8 @@ final readonly class Value
     public function __construct(
         private string $name,
         private ScalarAttributeType $type,
-        private mixed $value
-    ) {
-    }
+        private mixed $value,
+    ) {}
 
     public static function stringValue(string $name, string $value): self
     {

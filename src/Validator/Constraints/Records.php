@@ -19,7 +19,7 @@ final class Records extends Assert\Compound
         return [
             new Assert\Count(
                 min: 1,
-                minMessage: 'At least {{ limit }} record is required'
+                minMessage: 'At least {{ limit }} record is required',
             ),
         ];
     }

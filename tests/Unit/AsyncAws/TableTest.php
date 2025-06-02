@@ -32,10 +32,10 @@ class TableTest extends UnitTestCase
         $client = new AsyncAwsClient(
             $dynamoDbClientMock,
             $serializer,
-            $logger
+            $logger,
         );
 
-        $table = new class() extends AbstractTable implements TableInterface {
+        $table = new class extends AbstractTable implements TableInterface {
             public function configure(): void
             {
                 $this->addAttributes([
@@ -110,10 +110,10 @@ class TableTest extends UnitTestCase
                             ],
                         ],
                     ],
-                ])
+                ]),
             )
             ->willReturn(
-                ResultMockFactory::create(CreateTableOutput::class)
+                ResultMockFactory::create(CreateTableOutput::class),
             )
         ;
 
@@ -124,10 +124,10 @@ class TableTest extends UnitTestCase
         $client = new AsyncAwsClient(
             $dynamoDbClientMock,
             $serializer,
-            $logger
+            $logger,
         );
 
-        $table = new class() extends AbstractTable implements TableInterface {
+        $table = new class extends AbstractTable implements TableInterface {
             public function configure(): void
             {
                 $this
@@ -209,10 +209,10 @@ class TableTest extends UnitTestCase
                         'ReadCapacityUnits' => 1,
                         'WriteCapacityUnits' => 1,
                     ],
-                ])
+                ]),
             )
             ->willReturn(
-                ResultMockFactory::create(CreateTableOutput::class)
+                ResultMockFactory::create(CreateTableOutput::class),
             )
         ;
 
@@ -223,10 +223,10 @@ class TableTest extends UnitTestCase
         $client = new AsyncAwsClient(
             $dynamoDbClientMock,
             $serializer,
-            $logger
+            $logger,
         );
 
-        $table = new class() extends AbstractTable implements TableInterface {
+        $table = new class extends AbstractTable implements TableInterface {
             public function configure(): void
             {
                 $this
@@ -241,7 +241,7 @@ class TableTest extends UnitTestCase
                         'Emails',
                         ProjectionType::KeysOnly,
                         'Email',
-                        'Id'
+                        'Id',
                     )
                     ->setProvisionedThroughput(1, 1)
                 ;

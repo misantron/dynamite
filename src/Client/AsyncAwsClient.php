@@ -30,9 +30,8 @@ final readonly class AsyncAwsClient implements ClientInterface
     public function __construct(
         private DynamoDbClient $client,
         private NormalizerInterface $normalizer,
-        private LoggerInterface $logger
-    ) {
-    }
+        private LoggerInterface $logger,
+    ) {}
 
     public function createTable(Table $schema): void
     {
@@ -40,7 +39,7 @@ final readonly class AsyncAwsClient implements ClientInterface
             $schema,
             context: [
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-            ]
+            ],
         );
 
         $this->client->createTable(new CreateTableInput($input))->resolve();
@@ -109,7 +108,7 @@ final readonly class AsyncAwsClient implements ClientInterface
         // @codeCoverageIgnoreEnd
 
         $primaryKey = $this->getPrimaryKeyAttributes(
-            $response->getTable()->getKeySchema()
+            $response->getTable()->getKeySchema(),
         );
 
         $input = new ScanInput([
@@ -153,7 +152,7 @@ final readonly class AsyncAwsClient implements ClientInterface
                     'Key' => $key,
                 ]),
             ]),
-            'Data batch deleted'
+            'Data batch deleted',
         );
     }
 
@@ -170,7 +169,7 @@ final readonly class AsyncAwsClient implements ClientInterface
                     'Item' => $item,
                 ]),
             ]),
-            'Data batch executed'
+            'Data batch executed',
         );
     }
 
@@ -181,7 +180,7 @@ final readonly class AsyncAwsClient implements ClientInterface
         string $tableName,
         array $items,
         callable $mappingCallback,
-        string $logMessage
+        string $logMessage,
     ): void {
         $chunks = array_chunk($items, self::BATCH_MAX_SIZE);
 
@@ -227,7 +226,7 @@ final readonly class AsyncAwsClient implements ClientInterface
         return array_filter(
             $item,
             static fn (string $name) => \in_array($name, $primaryKey, true),
-            ARRAY_FILTER_USE_KEY
+            ARRAY_FILTER_USE_KEY,
         );
     }
 }

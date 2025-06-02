@@ -16,7 +16,7 @@ class AttributeDefinitionsTest extends UnitTestCase
     #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
-        $entity = new class() {
+        $entity = new class {
             /**
              * @var array<int, array{AttributeName: string, AttributeType: ScalarAttributeType}>|null
              */

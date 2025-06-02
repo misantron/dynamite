@@ -110,7 +110,7 @@ final class Table
         string $hashAttribute,
         ?string $rangeAttribute,
         ?int $writeCapacity,
-        ?int $readCapacity
+        ?int $readCapacity,
     ): void {
         if ($this->globalSecondaryIndexes === null) {
             $this->globalSecondaryIndexes = [];
@@ -172,7 +172,7 @@ final class Table
         string $name,
         ProjectionType $projectionType,
         string $hashAttribute,
-        ?string $rangeAttribute
+        ?string $rangeAttribute,
     ): void {
         if ($this->localSecondaryIndexes === null) {
             $this->localSecondaryIndexes = [];
@@ -311,7 +311,7 @@ final class Table
 
                 return $index;
             },
-            $this->globalSecondaryIndexes ?? []
+            $this->globalSecondaryIndexes ?? [],
         );
     }
 }

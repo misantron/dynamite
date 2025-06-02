@@ -15,7 +15,7 @@ class TableOrIndexNameTest extends UnitTestCase
     #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
-        $entity = new class() {
+        $entity = new class {
             #[TableOrIndexName]
             public ?string $tableName = null;
         };

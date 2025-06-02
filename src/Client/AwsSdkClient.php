@@ -23,9 +23,8 @@ final class AwsSdkClient implements ClientInterface
     public function __construct(
         private readonly DynamoDbClient $client,
         private readonly NormalizerInterface $normalizer,
-        private readonly LoggerInterface $logger
-    ) {
-    }
+        private readonly LoggerInterface $logger,
+    ) {}
 
     public function createTable(Table $schema): void
     {
@@ -33,7 +32,7 @@ final class AwsSdkClient implements ClientInterface
             $schema,
             context: [
                 AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
-            ]
+            ],
         );
 
         $this->client->createTable($input);
@@ -79,7 +78,7 @@ final class AwsSdkClient implements ClientInterface
     {
         $mapped = array_map(
             static fn (Record $record) => $record->getValues(),
-            $records
+            $records,
         );
 
         $this->executeBatchPut($tableName, $mapped);
@@ -141,7 +140,7 @@ final class AwsSdkClient implements ClientInterface
                     'Item' => $item,
                 ],
             ],
-            'Data batch executed'
+            'Data batch executed',
         );
     }
 
@@ -158,7 +157,7 @@ final class AwsSdkClient implements ClientInterface
                     'Key' => $key,
                 ],
             ],
-            'Data batch deleted'
+            'Data batch deleted',
         );
     }
 
@@ -169,7 +168,7 @@ final class AwsSdkClient implements ClientInterface
         string $tableName,
         array $items,
         callable $mappingCallback,
-        string $logMessage
+        string $logMessage,
     ): void {
         $chunks = array_chunk($items, self::BATCH_MAX_SIZE);
 
@@ -199,7 +198,7 @@ final class AwsSdkClient implements ClientInterface
         return array_filter(
             $item,
             static fn (string $name) => \in_array($name, $primaryKey, true),
-            ARRAY_FILTER_USE_KEY
+            ARRAY_FILTER_USE_KEY,
         );
     }
 

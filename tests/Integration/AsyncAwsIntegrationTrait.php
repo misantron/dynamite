@@ -28,7 +28,7 @@ trait AsyncAwsIntegrationTrait
     protected function createClient(): ClientInterface
     {
         return ClientFactory::create($this->serializer, $this->logger)->createAsyncAwsClient(
-            ...$this->getClientArguments()
+            ...$this->getClientArguments(),
         );
     }
 

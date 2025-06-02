@@ -22,7 +22,7 @@ final class TableOrIndexName extends Assert\Compound
                 min: 3,
                 max: 255,
                 minMessage: 'Name should have at least {{ limit }} characters length',
-                maxMessage: 'Name cannot have more than {{ limit }} characters length'
+                maxMessage: 'Name cannot have more than {{ limit }} characters length',
             ),
             new Assert\Regex('/^[a-zA-Z0-9_\-.]+$/'),
         ];

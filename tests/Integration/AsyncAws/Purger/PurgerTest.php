@@ -46,7 +46,7 @@ class PurgerTest extends IntegrationTestCase
         $purger = new Purger($this->client);
         $purger->purge(
             [$fixture],
-            [$table]
+            [$table],
         );
 
         $response = $this->dynamoDbClient->describeTable([

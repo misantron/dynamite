@@ -17,8 +17,7 @@ final readonly class ClientFactory
     public function __construct(
         private NormalizerInterface $normalizer,
         private LoggerInterface $logger = new NullLogger(),
-    ) {
-    }
+    ) {}
 
     public static function create(
         NormalizerInterface $normalizer,
@@ -34,12 +33,12 @@ final readonly class ClientFactory
     public function createAsyncAwsClient(
         Configuration|array $configuration = [],
         ?CredentialProvider $credentialProvider = null,
-        ?HttpClientInterface $httpClient = null
+        ?HttpClientInterface $httpClient = null,
     ): ClientInterface {
         return new AsyncAwsClient(
             new DynamoDbClient($configuration, $credentialProvider, $httpClient, $this->logger),
             $this->normalizer,
-            $this->logger
+            $this->logger,
         );
     }
 
@@ -52,7 +51,7 @@ final readonly class ClientFactory
         return new AwsSdkClient(
             new \Aws\DynamoDb\DynamoDbClient($configuration),
             $this->normalizer,
-            $this->logger
+            $this->logger,
         );
     }
 }

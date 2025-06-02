@@ -71,7 +71,7 @@ abstract class AbstractTable
         string $hashAttribute,
         ?string $rangeAttribute = null,
         ?int $writeCapacity = null,
-        ?int $readCapacity = null
+        ?int $readCapacity = null,
     ): self {
         $this->schema->addGlobalSecondaryIndex(
             $name,
@@ -79,7 +79,7 @@ abstract class AbstractTable
             $hashAttribute,
             $rangeAttribute,
             $writeCapacity,
-            $readCapacity
+            $readCapacity,
         );
 
         return $this;
@@ -89,7 +89,7 @@ abstract class AbstractTable
         string $name,
         ProjectionType $projectionType,
         string $hashAttribute,
-        ?string $rangeAttribute = null
+        ?string $rangeAttribute = null,
     ): self {
         $this->schema->addLocalSecondaryIndex($name, $projectionType, $hashAttribute, $rangeAttribute);
 

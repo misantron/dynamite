@@ -33,9 +33,8 @@ class Loader
 
     public function __construct(
         private readonly ValidatorInterface $validator,
-        private readonly NormalizerInterface $serializer
-    ) {
-    }
+        private readonly NormalizerInterface $serializer,
+    ) {}
 
     public function loadFromDirectory(string $path): void
     {
@@ -219,7 +218,7 @@ class Loader
     {
         return new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS),
-            \RecursiveIteratorIterator::LEAVES_ONLY
+            \RecursiveIteratorIterator::LEAVES_ONLY,
         );
     }
 

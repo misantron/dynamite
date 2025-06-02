@@ -11,9 +11,8 @@ final readonly class Groups
      * @param list<string> $names
      */
     public function __construct(
-        private array $names
-    ) {
-    }
+        private array $names,
+    ) {}
 
     /**
      * @return list<string>

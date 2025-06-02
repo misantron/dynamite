@@ -68,7 +68,7 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function createFixtureTable(): TableInterface
     {
-        return new class() extends AbstractTable implements TableInterface {
+        return new class extends AbstractTable implements TableInterface {
             protected function configure(): void
             {
                 $this
@@ -89,7 +89,7 @@ abstract class IntegrationTestCase extends TestCase
      */
     protected function createFixture(array $items): FixtureInterface
     {
-        return new class($items) extends AbstractFixture implements FixtureInterface {
+        return new class ($items) extends AbstractFixture implements FixtureInterface {
             protected function configure(): void
             {
                 $this->setTableName(IntegrationTestCase::TABLE_NAME);

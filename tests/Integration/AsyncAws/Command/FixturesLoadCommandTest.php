@@ -60,7 +60,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
             [
                 '--path' => $path,
             ],
-            $options
+            $options,
         ));
 
         $tester->assertCommandIsSuccessful();
@@ -88,7 +88,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
                         return iterator_to_array($tables);
                     },
-                    'tables-list'
+                    'tables-list',
                 ),
                 new Delegate(
                     new IsIdentical(1),
@@ -99,8 +99,8 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
                         return $response->getCount();
                     },
-                    'table1-has-records'
-                )
+                    'table1-has-records',
+                ),
             ),
         ];
 
@@ -119,7 +119,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
                         return iterator_to_array($tables);
                     },
-                    'tables-list'
+                    'tables-list',
                 ),
                 new Delegate(
                     new IsIdentical(2),
@@ -130,8 +130,8 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
                         return $response->getCount();
                     },
-                    'table2-has-records'
-                )
+                    'table2-has-records',
+                ),
             ),
         ];
 
@@ -150,7 +150,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
                         return iterator_to_array($tables);
                     },
-                    'tables-list'
+                    'tables-list',
                 ),
                 new Delegate(
                     new IsIdentical(0),
@@ -161,7 +161,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
                         return $response->getCount();
                     },
-                    'table1-has-no-records'
+                    'table1-has-no-records',
                 ),
                 new Delegate(
                     new IsIdentical(0),
@@ -172,8 +172,8 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
                         return $response->getCount();
                     },
-                    'table2-has-no-records'
-                )
+                    'table2-has-no-records',
+                ),
             ),
         ];
     }
@@ -182,7 +182,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
     {
         return new FixturesLoadCommand(
             new Loader($this->createValidator(), $this->createSerializer()),
-            new Executor($this->createClient())
+            new Executor($this->createClient()),
         );
     }
 }

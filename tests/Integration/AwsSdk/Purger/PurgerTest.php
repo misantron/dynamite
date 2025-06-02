@@ -44,7 +44,7 @@ class PurgerTest extends IntegrationTestCase
         $purger = new Purger($this->client);
         $purger->purge(
             [$fixture],
-            [$table]
+            [$table],
         );
 
         try {

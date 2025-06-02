@@ -37,10 +37,10 @@ class FixtureTest extends UnitTestCase
         $client = new AsyncAwsClient(
             $dynamoDbClientMock,
             $this->createSerializer(),
-            $logger
+            $logger,
         );
 
-        $fixture = new class() extends AbstractFixture implements FixtureInterface {
+        $fixture = new class extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
                 $this->addRecord(
@@ -49,7 +49,7 @@ class FixtureTest extends UnitTestCase
                         Value::numericValue('Balance', 11.35),
                         Value::boolValue('Active', true),
                         Value::binaryValue('Avatar', 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='),
-                    ])
+                    ]),
                 );
             }
         };
@@ -92,7 +92,7 @@ class FixtureTest extends UnitTestCase
                             'S' => '5957ddc9-6039-4e76-85e7-3d759a9d819c',
                         ],
                     ],
-                ])
+                ]),
             )
             ->willReturn(new PutItemOutput($this->createMockedResponse()))
         ;
@@ -101,10 +101,10 @@ class FixtureTest extends UnitTestCase
         $client = new AsyncAwsClient(
             $dynamoDbClientMock,
             $this->createSerializer(),
-            $logger
+            $logger,
         );
 
-        $fixture = new class() extends AbstractFixture implements FixtureInterface {
+        $fixture = new class extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
                 $this
@@ -112,7 +112,7 @@ class FixtureTest extends UnitTestCase
                     ->addRecord(
                         new Record([
                             Value::stringValue('Id', '5957ddc9-6039-4e76-85e7-3d759a9d819c'),
-                        ])
+                        ]),
                     )
                 ;
             }
@@ -167,7 +167,7 @@ class FixtureTest extends UnitTestCase
                             ]),
                         ],
                     ],
-                ])
+                ]),
             )
             ->willReturn(new BatchWriteItemOutput($this->createMockedResponse()))
         ;
@@ -176,10 +176,10 @@ class FixtureTest extends UnitTestCase
         $client = new AsyncAwsClient(
             $dynamoDbClientMock,
             $this->createSerializer(),
-            $logger
+            $logger,
         );
 
-        $fixture = new class() extends AbstractFixture implements FixtureInterface {
+        $fixture = new class extends AbstractFixture implements FixtureInterface {
             public function configure(): void
             {
                 $this
@@ -226,7 +226,7 @@ class FixtureTest extends UnitTestCase
         return new Response(
             $client->request('POST', 'http://localhost'),
             $client,
-            new NullLogger()
+            new NullLogger(),
         );
     }
 }

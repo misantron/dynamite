@@ -31,7 +31,7 @@ class TableTest extends UnitTestCase
             'Id',
             null,
             null,
-            null
+            null,
         );
         $schema->getGlobalSecondaryIndexes();
     }
@@ -50,7 +50,7 @@ class TableTest extends UnitTestCase
             'Email',
             null,
             null,
-            null
+            null,
         );
         $schema->getGlobalSecondaryIndexes();
     }
@@ -67,7 +67,7 @@ class TableTest extends UnitTestCase
             'Type',
             'Email',
             1,
-            1
+            1,
         );
 
         $indexes = $schema->getGlobalSecondaryIndexes();
@@ -119,7 +119,7 @@ class TableTest extends UnitTestCase
             'Index',
             ProjectionType::KeysOnly,
             'Type',
-            'Email'
+            'Email',
         );
 
         $this->assertSame([
@@ -194,7 +194,7 @@ class TableTest extends UnitTestCase
     public function testSetProvisionedThroughput(
         ?int $writeCapacity,
         ?int $readCapacity,
-        Constraint $expected
+        Constraint $expected,
     ): void {
         $schema = new Table();
         if ($writeCapacity !== null && $readCapacity !== null) {

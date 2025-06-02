@@ -10,8 +10,7 @@ readonly class Purger implements PurgerInterface
 {
     public function __construct(
         private ClientInterface $client,
-    ) {
-    }
+    ) {}
 
     public function purge(array $fixtures, array $tables): void
     {

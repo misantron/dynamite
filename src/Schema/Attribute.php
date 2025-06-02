@@ -12,9 +12,8 @@ final readonly class Attribute
     public function __construct(
         private string $name,
         private ScalarAttributeType $type,
-        private ?KeyType $keyType = null
-    ) {
-    }
+        private ?KeyType $keyType = null,
+    ) {}
 
     public function getName(): string
     {
