@@ -6,10 +6,10 @@ namespace Dynamite\Purger;
 
 use Dynamite\Client\ClientInterface;
 
-class Purger implements PurgerInterface
+readonly class Purger implements PurgerInterface
 {
     public function __construct(
-        private readonly ClientInterface $client
+        private ClientInterface $client,
     ) {
     }
 

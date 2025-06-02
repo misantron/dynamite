@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Validator\Constraints;
 
-use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\KeyType;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,7 +26,7 @@ final class KeySchema extends Assert\Compound
                     ]),
                     'KeyType' => new Assert\Required([
                         new Assert\NotBlank(),
-                        new Assert\Type(KeyTypeEnum::class),
+                        new Assert\Type(KeyType::class),
                     ]),
                 ]),
             ]),

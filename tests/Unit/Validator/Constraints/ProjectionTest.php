@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Tests\Unit\Validator\Constraints;
 
-use Dynamite\Enum\ProjectionTypeEnum;
+use Dynamite\Enum\ProjectionType;
 use Dynamite\Tests\Unit\UnitTestCase;
 use Dynamite\Validator\Constraints\Projection;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -40,7 +40,7 @@ class ProjectionTest extends UnitTestCase
         ];
         yield 'valid-value' => [
             [
-                'ProjectionType' => ProjectionTypeEnum::KeysOnly,
+                'ProjectionType' => ProjectionType::KeysOnly,
             ],
             false,
         ];

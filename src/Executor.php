@@ -10,14 +10,14 @@ use Dynamite\Purger\PurgerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class Executor
+readonly class Executor
 {
-    private readonly PurgerInterface $purger;
+    private PurgerInterface $purger;
 
     public function __construct(
-        private readonly ClientInterface $client,
+        private ClientInterface $client,
         ?PurgerInterface $purger = null,
-        private readonly LoggerInterface $logger = new NullLogger()
+        private LoggerInterface $logger = new NullLogger(),
     ) {
         $this->purger = $purger ?? new Purger($this->client);
     }

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Dynamite;
 
 use Dynamite\Client\ClientInterface;
-use Dynamite\Enum\KeyTypeEnum;
-use Dynamite\Enum\ProjectionTypeEnum;
-use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Enum\KeyType;
+use Dynamite\Enum\ProjectionType;
+use Dynamite\Enum\ScalarAttributeType;
 use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Attribute;
 use Dynamite\Schema\Table;
@@ -46,7 +46,7 @@ abstract class AbstractTable
         ]);
     }
 
-    protected function addAttribute(string $name, ScalarAttributeTypeEnum $type, ?KeyTypeEnum $keyType = null): self
+    protected function addAttribute(string $name, ScalarAttributeType $type, ?KeyType $keyType = null): self
     {
         $this->schema->addAttribute($name, $type, $keyType);
 
@@ -67,7 +67,7 @@ abstract class AbstractTable
 
     protected function addGlobalSecondaryIndex(
         string $name,
-        ProjectionTypeEnum $projectionType,
+        ProjectionType $projectionType,
         string $hashAttribute,
         ?string $rangeAttribute = null,
         ?int $writeCapacity = null,
@@ -87,7 +87,7 @@ abstract class AbstractTable
 
     protected function addLocalSecondaryIndex(
         string $name,
-        ProjectionTypeEnum $projectionType,
+        ProjectionType $projectionType,
         string $hashAttribute,
         ?string $rangeAttribute = null
     ): self {

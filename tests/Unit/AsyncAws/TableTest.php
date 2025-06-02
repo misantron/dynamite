@@ -10,9 +10,9 @@ use AsyncAws\DynamoDb\Input\CreateTableInput;
 use AsyncAws\DynamoDb\Result\CreateTableOutput;
 use Dynamite\AbstractTable;
 use Dynamite\Client\AsyncAwsClient;
-use Dynamite\Enum\KeyTypeEnum;
-use Dynamite\Enum\ProjectionTypeEnum;
-use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Enum\KeyType;
+use Dynamite\Enum\ProjectionType;
+use Dynamite\Enum\ScalarAttributeType;
 use Dynamite\Exception\ValidationException;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
@@ -39,8 +39,8 @@ class TableTest extends UnitTestCase
             public function configure(): void
             {
                 $this->addAttributes([
-                    new Attribute('Id', ScalarAttributeTypeEnum::String),
-                    new Attribute('Email', ScalarAttributeTypeEnum::String),
+                    new Attribute('Id', ScalarAttributeType::String),
+                    new Attribute('Email', ScalarAttributeType::String),
                 ]);
             }
         };
@@ -79,21 +79,21 @@ class TableTest extends UnitTestCase
                     'AttributeDefinitions' => [
                         [
                             'AttributeName' => 'Id',
-                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
+                            'AttributeType' => ScalarAttributeType::String->value,
                         ],
                         [
                             'AttributeName' => 'Email',
-                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
+                            'AttributeType' => ScalarAttributeType::String->value,
                         ],
                     ],
                     'KeySchema' => [
                         [
                             'AttributeName' => 'Id',
-                            'KeyType' => KeyTypeEnum::Hash->value,
+                            'KeyType' => KeyType::Hash->value,
                         ],
                         [
                             'AttributeName' => 'Email',
-                            'KeyType' => KeyTypeEnum::Range->value,
+                            'KeyType' => KeyType::Range->value,
                         ],
                     ],
                     'LocalSecondaryIndexes' => [
@@ -102,11 +102,11 @@ class TableTest extends UnitTestCase
                             'KeySchema' => [
                                 [
                                     'AttributeName' => 'Email',
-                                    'KeyType' => KeyTypeEnum::Hash->value,
+                                    'KeyType' => KeyType::Hash->value,
                                 ],
                             ],
                             'Projection' => [
-                                'ProjectionType' => ProjectionTypeEnum::All->value,
+                                'ProjectionType' => ProjectionType::All->value,
                             ],
                         ],
                     ],
@@ -132,9 +132,9 @@ class TableTest extends UnitTestCase
             {
                 $this
                     ->setTableName('Users')
-                    ->addAttribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash)
-                    ->addAttribute('Email', ScalarAttributeTypeEnum::String, KeyTypeEnum::Range)
-                    ->addLocalSecondaryIndex('Emails', ProjectionTypeEnum::All, 'Email')
+                    ->addAttribute('Id', ScalarAttributeType::String, KeyType::Hash)
+                    ->addAttribute('Email', ScalarAttributeType::String, KeyType::Range)
+                    ->addLocalSecondaryIndex('Emails', ProjectionType::All, 'Email')
                 ;
             }
         };
@@ -158,29 +158,29 @@ class TableTest extends UnitTestCase
                     'AttributeDefinitions' => [
                         [
                             'AttributeName' => 'Id',
-                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
+                            'AttributeType' => ScalarAttributeType::String->value,
                         ],
                         [
                             'AttributeName' => 'Email',
-                            'AttributeType' => ScalarAttributeTypeEnum::String->value,
+                            'AttributeType' => ScalarAttributeType::String->value,
                         ],
                         [
                             'AttributeName' => 'Active',
-                            'AttributeType' => ScalarAttributeTypeEnum::Binary->value,
+                            'AttributeType' => ScalarAttributeType::Binary->value,
                         ],
                         [
                             'AttributeName' => 'CreatedAt',
-                            'AttributeType' => ScalarAttributeTypeEnum::Numeric->value,
+                            'AttributeType' => ScalarAttributeType::Numeric->value,
                         ],
                     ],
                     'KeySchema' => [
                         [
                             'AttributeName' => 'Id',
-                            'KeyType' => KeyTypeEnum::Hash->value,
+                            'KeyType' => KeyType::Hash->value,
                         ],
                         [
                             'AttributeName' => 'CreatedAt',
-                            'KeyType' => KeyTypeEnum::Range->value,
+                            'KeyType' => KeyType::Range->value,
                         ],
                     ],
                     'GlobalSecondaryIndexes' => [
@@ -189,15 +189,15 @@ class TableTest extends UnitTestCase
                             'KeySchema' => [
                                 [
                                     'AttributeName' => 'Email',
-                                    'KeyType' => KeyTypeEnum::Hash->value,
+                                    'KeyType' => KeyType::Hash->value,
                                 ],
                                 [
                                     'AttributeName' => 'Id',
-                                    'KeyType' => KeyTypeEnum::Range->value,
+                                    'KeyType' => KeyType::Range->value,
                                 ],
                             ],
                             'Projection' => [
-                                'ProjectionType' => ProjectionTypeEnum::KeysOnly->value,
+                                'ProjectionType' => ProjectionType::KeysOnly->value,
                             ],
                             'ProvisionedThroughput' => [
                                 'ReadCapacityUnits' => 1,
@@ -232,14 +232,14 @@ class TableTest extends UnitTestCase
                 $this
                     ->setTableName('Users')
                     ->addAttributes([
-                        new Attribute('Id', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
-                        new Attribute('Email', ScalarAttributeTypeEnum::String),
-                        new Attribute('Active', ScalarAttributeTypeEnum::Binary),
-                        new Attribute('CreatedAt', ScalarAttributeTypeEnum::Numeric, KeyTypeEnum::Range),
+                        new Attribute('Id', ScalarAttributeType::String, KeyType::Hash),
+                        new Attribute('Email', ScalarAttributeType::String),
+                        new Attribute('Active', ScalarAttributeType::Binary),
+                        new Attribute('CreatedAt', ScalarAttributeType::Numeric, KeyType::Range),
                     ])
                     ->addGlobalSecondaryIndex(
                         'Emails',
-                        ProjectionTypeEnum::KeysOnly,
+                        ProjectionType::KeysOnly,
                         'Email',
                         'Id'
                     )

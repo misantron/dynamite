@@ -6,8 +6,8 @@ namespace Dynamite\Tests\Fixtures\Tables;
 
 use Dynamite\AbstractTable;
 use Dynamite\Attribute\Groups;
-use Dynamite\Enum\KeyTypeEnum;
-use Dynamite\Enum\ScalarAttributeTypeEnum;
+use Dynamite\Enum\KeyType;
+use Dynamite\Enum\ScalarAttributeType;
 use Dynamite\Schema\Attribute;
 use Dynamite\TableInterface;
 
@@ -19,7 +19,7 @@ final class Table2 extends AbstractTable implements TableInterface
         $this
             ->setTableName('Table2')
             ->addAttributes([
-                new Attribute('Column1', ScalarAttributeTypeEnum::String, KeyTypeEnum::Hash),
+                new Attribute('Column1', ScalarAttributeType::String, KeyType::Hash),
             ])
             ->setProvisionedThroughput(1, 1)
         ;

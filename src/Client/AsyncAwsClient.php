@@ -25,12 +25,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class AsyncAwsClient implements ClientInterface
+final readonly class AsyncAwsClient implements ClientInterface
 {
     public function __construct(
-        private readonly DynamoDbClient $client,
-        private readonly NormalizerInterface $normalizer,
-        private readonly LoggerInterface $logger
+        private DynamoDbClient $client,
+        private NormalizerInterface $normalizer,
+        private LoggerInterface $logger
     ) {
     }
 

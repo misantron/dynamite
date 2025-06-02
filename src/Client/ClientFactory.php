@@ -12,17 +12,17 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class ClientFactory
+final readonly class ClientFactory
 {
     public function __construct(
-        private readonly NormalizerInterface $normalizer,
-        private readonly LoggerInterface $logger = new NullLogger()
+        private NormalizerInterface $normalizer,
+        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
     public static function create(
         NormalizerInterface $normalizer,
-        LoggerInterface $logger = new NullLogger()
+        LoggerInterface $logger = new NullLogger(),
     ): self {
         return new self($normalizer, $logger);
     }

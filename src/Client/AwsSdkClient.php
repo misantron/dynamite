@@ -6,7 +6,7 @@ namespace Dynamite\Client;
 
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Exception\DynamoDbException;
-use Dynamite\Enum\KeyTypeEnum;
+use Dynamite\Enum\KeyType;
 use Dynamite\Schema\Record;
 use Dynamite\Schema\Table;
 use Psr\Log\LoggerInterface;
@@ -211,7 +211,7 @@ final class AwsSdkClient implements ClientInterface
     {
         $attributes = [];
         foreach ($keySchema as $element) {
-            if (KeyTypeEnum::tryFrom($element['KeyType']) === KeyTypeEnum::Hash) {
+            if (KeyType::tryFrom($element['KeyType']) === KeyType::Hash) {
                 $attributes[] = $element['AttributeName'];
             }
         }

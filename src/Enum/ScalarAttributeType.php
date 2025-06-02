@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Enum;
 
-enum ScalarAttributeTypeEnum: string
+enum ScalarAttributeType: string
 {
     case Binary = 'B';
     case Numeric = 'N';

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dynamite\Enum;
 
-enum KeyTypeEnum: string
+enum KeyType: string
 {
     case Hash = 'HASH';
     case Range = 'RANGE';
