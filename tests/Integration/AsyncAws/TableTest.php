@@ -19,7 +19,7 @@ class TableTest extends IntegrationTestCase
     {
         $table = $this->createFixtureTable();
 
-        self::assertSame(self::TABLE_NAME, $table->getTableName());
+        $this->assertSame(self::TABLE_NAME, $table->getTableName());
 
         $table->setValidator($this->validator);
         $table->setNormalizer($this->serializer);
@@ -31,7 +31,7 @@ class TableTest extends IntegrationTestCase
         ]);
         $response->resolve();
 
-        self::assertTrue($response->isSuccess());
+        $this->assertTrue($response->isSuccess());
 
         try {
             $response = $this->dynamoDbClient->describeTable([
@@ -42,6 +42,6 @@ class TableTest extends IntegrationTestCase
             self::fail('Table does not exists: ' . self::TABLE_NAME);
         }
 
-        self::assertSame(self::TABLE_NAME, $response->getTable()?->getTableName());
+        $this->assertSame(self::TABLE_NAME, $response->getTable()?->getTableName());
     }
 }

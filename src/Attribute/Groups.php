@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Dynamite\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
-final class Groups
+final readonly class Groups
 {
     /**
      * @param list<string> $names
      */
     public function __construct(
-        private readonly array $names
+        private array $names
     ) {
     }
 

@@ -24,6 +24,7 @@ final class Composite extends Constraint
             if (!$constraint instanceof Constraint) {
                 $constraint = new IsEqual($constraint);
             }
+
             $this->constraints[] = $constraint;
         }
     }
@@ -62,6 +63,7 @@ final class Composite extends Constraint
         foreach ($this->constraints as $constraint) {
             $string[] = $constraint->toString(); // @phpstan-ignore method.internalInterface
         }
+
         return implode('; ', $string);
     }
 

@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class GlobalSecondaryIndexes extends Assert\Compound
 {
     /**
-     * @param array<int, mixed> $options
+     * @param array<string, mixed> $options
      * @return array<int, Constraint>
      */
     protected function getConstraints(array $options): array

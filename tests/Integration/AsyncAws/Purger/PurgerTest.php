@@ -81,7 +81,7 @@ class PurgerTest extends IntegrationTestCase
         ]);
         $response->resolve();
 
-        self::assertSame(2, $response->getCount());
+        $this->assertSame(2, $response->getCount());
 
         $purger = new Purger($this->client);
         $purger->purge($fixtures, []);
@@ -91,7 +91,7 @@ class PurgerTest extends IntegrationTestCase
         ]);
         $response->resolve();
 
-        self::assertSame(0, $response->getCount());
+        $this->assertSame(0, $response->getCount());
     }
 
     public function testPurgeLargeFixturesBatch(): void
@@ -122,7 +122,7 @@ class PurgerTest extends IntegrationTestCase
         ]);
         $response->resolve();
 
-        self::assertSame(70, $response->getCount());
+        $this->assertSame(70, $response->getCount());
 
         $purger = new Purger($this->client);
         $purger->purge($loader->getFixtures(), []);
@@ -132,7 +132,7 @@ class PurgerTest extends IntegrationTestCase
         ]);
         $response->resolve();
 
-        self::assertSame(0, $response->getCount());
+        $this->assertSame(0, $response->getCount());
 
         $expectedLogs = [
             [
@@ -199,6 +199,6 @@ class PurgerTest extends IntegrationTestCase
             ],
         ];
 
-        self::assertSame($expectedLogs, $this->logger->cleanLogs());
+        $this->assertSame($expectedLogs, $this->logger->cleanLogs());
     }
 }

@@ -7,12 +7,12 @@ namespace Dynamite\Schema;
 use Dynamite\Enum\KeyTypeEnum;
 use Dynamite\Enum\ScalarAttributeTypeEnum;
 
-final class Attribute
+final readonly class Attribute
 {
     public function __construct(
-        private readonly string $name,
-        private readonly ScalarAttributeTypeEnum $type,
-        private readonly ?KeyTypeEnum $keyType = null
+        private string $name,
+        private ScalarAttributeTypeEnum $type,
+        private ?KeyTypeEnum $keyType = null
     ) {
     }
 

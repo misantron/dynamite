@@ -39,8 +39,8 @@ class FixturesLoadCommandTest extends IntegrationTestCase
             '--group' => ['group1'],
         ]);
 
-        self::assertSame(Command::FAILURE, $tester->getStatusCode());
-        self::assertSame('[ERROR] Could not find any fixture to load in the groups (group1)', trim($tester->getDisplay()));
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertSame('[ERROR] Could not find any fixture to load in the groups (group1)', trim($tester->getDisplay()));
     }
 
     /**
@@ -65,7 +65,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
         $tester->assertCommandIsSuccessful();
 
-        self::assertThat($this->dynamoDbClient, $expected);
+        $this->assertThat($this->dynamoDbClient, $expected);
     }
 
     /**
@@ -86,7 +86,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
                         ]);
                         $tables = $response->getTableNames(true);
 
-                        return iterator_to_array($tables); // @phpstan-ignore-line
+                        return iterator_to_array($tables);
                     },
                     'tables-list'
                 ),
@@ -117,7 +117,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
                         ]);
                         $tables = $response->getTableNames(true);
 
-                        return iterator_to_array($tables); // @phpstan-ignore-line
+                        return iterator_to_array($tables);
                     },
                     'tables-list'
                 ),
@@ -148,7 +148,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
                         ]);
                         $tables = $response->getTableNames(true);
 
-                        return iterator_to_array($tables); // @phpstan-ignore-line
+                        return iterator_to_array($tables);
                     },
                     'tables-list'
                 ),

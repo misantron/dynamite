@@ -6,12 +6,12 @@ namespace Dynamite\Schema;
 
 use Dynamite\Enum\ScalarAttributeTypeEnum;
 
-final class Value
+final readonly class Value
 {
     public function __construct(
-        private readonly string $name,
-        private readonly ScalarAttributeTypeEnum $type,
-        private readonly mixed $value
+        private string $name,
+        private ScalarAttributeTypeEnum $type,
+        private mixed $value
     ) {
     }
 

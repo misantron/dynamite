@@ -9,13 +9,13 @@ use Dynamite\Client\ClientInterface;
 /**
  * @phpstan-import-type AttributeValue from ClientInterface
  */
-final class Record
+final readonly class Record
 {
     /**
      * @param array<int, Value> $values
      */
     public function __construct(
-        private readonly array $values
+        private array $values
     ) {
     }
 

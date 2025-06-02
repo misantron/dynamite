@@ -53,6 +53,7 @@ final class AwsSdkClient implements ClientInterface
             if ($e->getAwsErrorCode() === self::RESOURCE_NOT_FOUND_ERROR_CODE) {
                 return;
             }
+
             // @codeCoverageIgnoreStart
             throw $e;
             // @codeCoverageIgnoreEnd
@@ -94,6 +95,7 @@ final class AwsSdkClient implements ClientInterface
             if ($e->getAwsErrorCode() === self::RESOURCE_NOT_FOUND_ERROR_CODE) {
                 return;
             }
+
             // @codeCoverageIgnoreStart
             throw $e;
             // @codeCoverageIgnoreEnd
@@ -213,6 +215,7 @@ final class AwsSdkClient implements ClientInterface
                 $attributes[] = $element['AttributeName'];
             }
         }
+
         return $attributes;
     }
 }

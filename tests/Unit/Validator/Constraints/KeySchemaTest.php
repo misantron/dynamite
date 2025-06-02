@@ -25,7 +25,7 @@ class KeySchemaTest extends UnitTestCase
         };
         $entity->keySchema = $input;
 
-        self::assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
+        $this->assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
     }
 
     /**

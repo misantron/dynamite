@@ -72,7 +72,7 @@ class TableTest extends UnitTestCase
 
         $indexes = $schema->getGlobalSecondaryIndexes();
 
-        self::assertSame([
+        $this->assertSame([
             [
                 'IndexName' => 'Index',
                 'KeySchema' => [
@@ -122,7 +122,7 @@ class TableTest extends UnitTestCase
             'Email'
         );
 
-        self::assertSame([
+        $this->assertSame([
             [
                 'IndexName' => 'Index',
                 'KeySchema' => [
@@ -178,7 +178,7 @@ class TableTest extends UnitTestCase
             ],
         ];
 
-        self::assertSame($expected, $schema->getAttributeDefinitions());
+        $this->assertSame($expected, $schema->getAttributeDefinitions());
 
         $expected = [
             [
@@ -187,7 +187,7 @@ class TableTest extends UnitTestCase
             ],
         ];
 
-        self::assertSame($expected, $schema->getKeySchema());
+        $this->assertSame($expected, $schema->getKeySchema());
     }
 
     #[DataProvider('setProvisionedThroughputDataProvider')]
@@ -201,7 +201,7 @@ class TableTest extends UnitTestCase
             $schema->setProvisionedThroughput($writeCapacity, $readCapacity);
         }
 
-        self::assertThat($schema->getProvisionedThroughput(), $expected);
+        $this->assertThat($schema->getProvisionedThroughput(), $expected);
     }
 
     /**

@@ -81,7 +81,7 @@ final class Table
             'AttributeType' => $type,
         ];
 
-        if ($keyType === null) {
+        if (!$keyType instanceof KeyTypeEnum) {
             return;
         }
 

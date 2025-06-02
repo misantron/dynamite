@@ -46,7 +46,7 @@ class FixturesLoadCommandTest extends IntegrationTestCase
 
         $tester->assertCommandIsSuccessful();
 
-        self::assertThat($this->dynamoDbClient, $expected);
+        $this->assertThat($this->dynamoDbClient, $expected);
     }
 
     /**

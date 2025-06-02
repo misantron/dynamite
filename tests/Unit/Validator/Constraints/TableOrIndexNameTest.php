@@ -21,7 +21,7 @@ class TableOrIndexNameTest extends UnitTestCase
         };
         $entity->tableName = $input;
 
-        self::assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
+        $this->assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
     }
 
     /**

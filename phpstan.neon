@@ -8,8 +8,8 @@ parameters:
   tmpDir: .cache/phpstan
   ignoreErrors:
     -
-      message: '#should be contravariant with parameter \$options \(array\) of method Symfony\\Component\\Validator\\Constraints\\Compound\:\:getConstraints\(\)$#'
+      identifier: staticMethod.dynamicCall
       paths:
-        - src/Validator/Constraints/*
+        - tests/*
 includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon

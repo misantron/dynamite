@@ -29,8 +29,8 @@ class LoaderTest extends UnitTestCase
         $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->loadFromDirectory($path);
 
-        self::assertCount(2, $loader->getTables());
-        self::assertCount(3, $loader->getFixtures());
+        $this->assertCount(2, $loader->getTables());
+        $this->assertCount(3, $loader->getFixtures());
     }
 
     public function testAddTableDuplication(): void
@@ -39,8 +39,8 @@ class LoaderTest extends UnitTestCase
         $loader->addTable(new Table1());
         $loader->addTable(new Table1());
 
-        self::assertCount(1, $loader->getTables());
-        self::assertCount(0, $loader->getFixtures());
+        $this->assertCount(1, $loader->getTables());
+        $this->assertCount(0, $loader->getFixtures());
     }
 
     public function testAddTable(): void
@@ -48,10 +48,10 @@ class LoaderTest extends UnitTestCase
         $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->addTable(new Table1());
 
-        self::assertCount(1, $loader->getTables());
-        self::assertCount(1, $loader->getTables(['group1']));
-        self::assertCount(0, $loader->getTables(['group2']));
-        self::assertCount(0, $loader->getFixtures());
+        $this->assertCount(1, $loader->getTables());
+        $this->assertCount(1, $loader->getTables(['group1']));
+        $this->assertCount(0, $loader->getTables(['group2']));
+        $this->assertCount(0, $loader->getFixtures());
     }
 
     public function testAddFixtureDuplication(): void
@@ -60,8 +60,8 @@ class LoaderTest extends UnitTestCase
         $loader->addFixture(new Table2DomainDataLoader());
         $loader->addFixture(new Table2DomainDataLoader());
 
-        self::assertCount(0, $loader->getTables());
-        self::assertCount(1, $loader->getFixtures());
+        $this->assertCount(0, $loader->getTables());
+        $this->assertCount(1, $loader->getFixtures());
     }
 
     public function testAddFixture(): void
@@ -69,9 +69,9 @@ class LoaderTest extends UnitTestCase
         $loader = new Loader($this->createValidator(), $this->createSerializer());
         $loader->addFixture(new Table2DomainDataLoader());
 
-        self::assertCount(0, $loader->getTables());
-        self::assertCount(1, $loader->getFixtures());
-        self::assertCount(0, $loader->getFixtures(['group1']));
-        self::assertCount(1, $loader->getFixtures(['group2']));
+        $this->assertCount(0, $loader->getTables());
+        $this->assertCount(1, $loader->getFixtures());
+        $this->assertCount(0, $loader->getFixtures(['group1']));
+        $this->assertCount(1, $loader->getFixtures(['group2']));
     }
 }

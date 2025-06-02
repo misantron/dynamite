@@ -59,9 +59,9 @@ class TableTest extends UnitTestCase
                 ],
             ];
 
-            self::assertInstanceOf(ValidationException::class, $e);
-            self::assertSame('Validation failed', $e->getMessage());
-            self::assertSame($expectedErrors, $e->getErrors());
+            $this->assertInstanceOf(ValidationException::class, $e);
+            $this->assertSame('Validation failed', $e->getMessage());
+            $this->assertSame($expectedErrors, $e->getErrors());
         }
 
         $logger->cleanLogs();
@@ -71,7 +71,7 @@ class TableTest extends UnitTestCase
     {
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $dynamoDbClientMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('createTable')
             ->with(
                 new CreateTableInput([
@@ -150,7 +150,7 @@ class TableTest extends UnitTestCase
     {
         $dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $dynamoDbClientMock
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('createTable')
             ->with(
                 new CreateTableInput([
@@ -262,6 +262,6 @@ class TableTest extends UnitTestCase
             ],
         ];
 
-        self::assertSame($expectedLogs, $logger->cleanLogs());
+        $this->assertSame($expectedLogs, $logger->cleanLogs());
     }
 }

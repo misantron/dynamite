@@ -33,6 +33,7 @@ class Executor
         foreach ($tables as $table) {
             $this->createTable($table);
         }
+
         foreach ($fixtures as $fixture) {
             $this->loadFixture($fixture);
         }

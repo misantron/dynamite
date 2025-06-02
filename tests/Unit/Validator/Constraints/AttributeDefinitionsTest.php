@@ -25,7 +25,7 @@ class AttributeDefinitionsTest extends UnitTestCase
         };
         $entity->attributeDefinitions = $input;
 
-        self::assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
+        $this->assertSame($expected, $this->createValidator()->validate($entity)->count() > 0);
     }
 
     /**

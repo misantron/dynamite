@@ -16,7 +16,7 @@ class ProjectionTest extends UnitTestCase
     #[DataProvider('validateDataProvider')]
     public function testValidate(mixed $input, bool $expected): void
     {
-        self::assertSame($expected, $this->createValidator()->validate($input, new Projection())->count() > 0);
+        $this->assertSame($expected, $this->createValidator()->validate($input, new Projection())->count() > 0);
     }
 
     /**

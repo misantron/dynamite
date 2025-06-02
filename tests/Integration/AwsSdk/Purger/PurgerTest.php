@@ -52,8 +52,8 @@ class PurgerTest extends IntegrationTestCase
                 'TableName' => self::TABLE_NAME,
             ]);
         } catch (DynamoDbException $e) {
-            self::assertSame(AwsSdkClient::RESOURCE_NOT_FOUND_ERROR_CODE, $e->getAwsErrorCode());
-            self::assertSame('Cannot do operations on a non-existent table', $e->getAwsErrorMessage());
+            $this->assertSame(AwsSdkClient::RESOURCE_NOT_FOUND_ERROR_CODE, $e->getAwsErrorCode());
+            $this->assertSame('Cannot do operations on a non-existent table', $e->getAwsErrorMessage());
 
             return;
         }
@@ -86,7 +86,7 @@ class PurgerTest extends IntegrationTestCase
             'TableName' => self::TABLE_NAME,
         ]);
 
-        self::assertSame(2, $response['Count']);
+        $this->assertSame(2, $response['Count']);
 
         $purger = new Purger($this->client);
         $purger->purge($fixtures, []);
@@ -95,7 +95,7 @@ class PurgerTest extends IntegrationTestCase
             'TableName' => self::TABLE_NAME,
         ]);
 
-        self::assertSame(0, $response['Count']);
+        $this->assertSame(0, $response['Count']);
     }
 
     public function testPurgeLargeFixturesBatch(): void
@@ -125,7 +125,7 @@ class PurgerTest extends IntegrationTestCase
             'TableName' => self::TABLE_NAME,
         ]);
 
-        self::assertSame(70, $response['Count']);
+        $this->assertSame(70, $response['Count']);
 
         $purger = new Purger($this->client);
         $purger->purge($loader->getFixtures(), []);
@@ -134,7 +134,7 @@ class PurgerTest extends IntegrationTestCase
             'TableName' => self::TABLE_NAME,
         ]);
 
-        self::assertSame(0, $response['Count']);
+        $this->assertSame(0, $response['Count']);
 
         $expectedLogs = [
             [
@@ -201,6 +201,6 @@ class PurgerTest extends IntegrationTestCase
             ],
         ];
 
-        self::assertSame($expectedLogs, $this->logger->cleanLogs());
+        $this->assertSame($expectedLogs, $this->logger->cleanLogs());
     }
 }

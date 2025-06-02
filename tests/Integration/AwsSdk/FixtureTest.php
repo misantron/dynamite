@@ -42,7 +42,7 @@ class FixtureTest extends IntegrationTestCase
 
         $response = $this->dynamoDbClient->query($input);
 
-        self::assertSame(1, $response['Count']);
+        $this->assertSame(1, $response['Count']);
     }
 
     public function testInsertBatchItems(): void
@@ -71,6 +71,6 @@ class FixtureTest extends IntegrationTestCase
             'TableName' => self::TABLE_NAME,
         ]);
 
-        self::assertSame(3, $response['Count']);
+        $this->assertSame(3, $response['Count']);
     }
 }

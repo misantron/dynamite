@@ -6,6 +6,7 @@ namespace Dynamite\Client;
 
 use AsyncAws\Core\Configuration;
 use AsyncAws\Core\Credentials\CredentialProvider;
+use AsyncAws\DynamoDb\DynamoDbClient;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -36,7 +37,7 @@ final class ClientFactory
         ?HttpClientInterface $httpClient = null
     ): ClientInterface {
         return new AsyncAwsClient(
-            new \AsyncAws\DynamoDb\DynamoDbClient($configuration, $credentialProvider, $httpClient, $this->logger),
+            new DynamoDbClient($configuration, $credentialProvider, $httpClient, $this->logger),
             $this->normalizer,
             $this->logger
         );
