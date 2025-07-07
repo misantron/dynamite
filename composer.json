@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "async-aws/dynamo-db": "^3.6",
-        "aws/aws-sdk-php": "3.343.22",
+        "aws/aws-sdk-php": "3.349.2",
         "fakerphp/faker": "^1.24",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
