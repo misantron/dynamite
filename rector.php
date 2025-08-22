@@ -17,7 +17,11 @@ return RectorConfig::configure()
         CatchExceptionNameMatchingTypeRector::class,
     ])
     ->withCache(cacheDirectory: '.cache/rector')
-    ->withImportNames(importShortClasses: false)
+    ->withImportNames(
+        importShortClasses: false,
+        removeUnusedImports: true,
+    )
+    ->withComposerBased(phpunit: true)
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,

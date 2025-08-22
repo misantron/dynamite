@@ -16,7 +16,7 @@ final class Composite extends Constraint
      */
     private array $constraints = [];
 
-    private ?ExpectationFailedException $expectationFailedException = null; // @phpstan-ignore property.internalClass
+    private ?ExpectationFailedException $expectationFailedException = null;
 
     public function __construct(mixed ...$constraints)
     {
@@ -35,7 +35,7 @@ final class Composite extends Constraint
         foreach ($this->constraints as $constraint) {
             try {
                 $constraint->evaluate($other, $description);
-            } catch (ExpectationFailedException $ex) { // @phpstan-ignore catch.internalClass
+            } catch (ExpectationFailedException $ex) {
                 $success = false;
                 $this->expectationFailedException = $ex;
                 break;
@@ -55,7 +55,7 @@ final class Composite extends Constraint
 
     public function toString(): string
     {
-        if ($this->expectationFailedException instanceof ExpectationFailedException) { // @phpstan-ignore instanceof.internalClass
+        if ($this->expectationFailedException instanceof ExpectationFailedException) {
             return ThrowableToStringMapper::map($this->expectationFailedException); // @phpstan-ignore staticMethod.internalClass
         }
 

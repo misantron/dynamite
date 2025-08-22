@@ -27,7 +27,7 @@ ecs-fix:
 	vendor/bin/ecs check --fix
 
 rector:
-	vendor/bin/rector process --dry-run
+	vendor/bin/rector process --clear-cache --dry-run
 rector-fix:
 	vendor/bin/rector process
 
